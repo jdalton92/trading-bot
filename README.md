@@ -25,15 +25,17 @@ $ npm start
 
 2. Integrate backend to allow user creation, login, save dashboard, and contact form.
 
-Create `.env` file in backend root directory with environment variables shown in the below example `.env` file:
+Create `.env` file in backend root directory with development environment variables shown in the below example `.env` file:
 
 ```sh
 DJANGO_SECRET_KEY=<your-django-secret-key>
 DEBUG='true'
+LOG_LEVEL=DEBUG
+LOG_REQUESTS='true'
 
-ALPACA_SECRET_KEY=<your-alpaca-secret-key>
-ALPACA_API_KEY=<your-alpaca-api-key>
-ALPACA_END_POINT=https://paper-api.alpaca.markets
+APCA_API_SECRET_KEY=<your-alpaca-secret-key>
+APCA_API_KEY_ID=<your-alpaca-api-key>
+APCA_API_BASE_URL=https://paper-api.alpaca.markets
 
 DB_NAME=<elephantsql-name>
 DB_HOST=<elephantsql-host>

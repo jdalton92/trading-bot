@@ -21,7 +21,7 @@ env = environ.Env()
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 ENVIRONMENT = env("ENVIRONMENT", default="development")
 
@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     "django_filters",
     'debug_toolbar',
     # My apps
-
+    'api.users',
 ]
 
 MIDDLEWARE = [
@@ -116,6 +116,52 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Logging
+# https://docs.djangoproject.com/en/3.1/topics/logging/
+LOG_LEVEL = env("LOG_LEVEL", default="ERROR")
+
+# Log request body. Avoid enabling in production environments, unless required to
+# temporarily debug an issue.
+LOG_REQUESTS = env.bool("LOG_REQUESTS", default=False)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    "formatters": {
+        "standard": {"format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"}
+    },
+    'handlers': {
+        'file': {
+            'level': LOG_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(os.path.dirname(BASE_DIR), 'debug.log'),
+            'maxBytes': 1024*1024*10,  # 10 MB
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "standard"
+        }
+    },
+    'loggers': {
+        "": {
+            "level": LOG_LEVEL,
+            "handlers": ['console', 'file'],
+        },
+        'django': {
+            'level': "ERROR",
+            'handlers': ['file'],
+            'propagate': True,
+        },
+        "django.request": {
+            "level": "DEBUG" if LOG_REQUESTS else "ERROR",
+            "handlers": ["console"],
+            "propagate": False,
+        },
+    },
+}
 
 
 # Internationalization
