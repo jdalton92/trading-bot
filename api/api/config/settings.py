@@ -43,8 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Plugins
-    "rest_framework",
-    "django_filters",
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
     'debug_toolbar',
     # My apps
     'api.users',
@@ -98,6 +99,36 @@ DATABASES = {
     }
 }
 
+# Rest framework configuration
+
+REST_FRAMEWORK = {
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    "DEFAULT_PARSER_CLASSES": (
+        "rest_framework.parsers.JSONParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.MultiPartParser",
+    ),
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
+    ),
+    "DEFAULT_FILTER_BACKENDS": (
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.OrderingFilter",
+        "rest_framework.filters.SearchFilter",
+    ),
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
+}
+
+
+# Authentication Settings
+AUTH_USER_MODEL = "users.User"
+ANONYMOUS_USER_NAME = None
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
