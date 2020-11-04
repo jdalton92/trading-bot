@@ -44,7 +44,7 @@ DB_USER=<elephantsql-user>
 DB_PASSWORD=<elephantsql-password>
 ```
 
-Then navidate to the server directory and install dependencies, and run the backend;
+Then navidate to the api directory, install dependencies and run the backend;
 
 ```sh
 $ cd api
