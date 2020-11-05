@@ -27,7 +27,7 @@ ENVIRONMENT = env("ENVIRONMENT", default="development")
 
 DEBUG = env.bool("DEBUG", default=False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INTERNAL_IPS = [
     '127.0.0.1',  # Required for Django Debug Toolbar
@@ -122,7 +122,6 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
         "rest_framework.filters.SearchFilter",
     ),
-    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
 }
 
 
@@ -179,7 +178,7 @@ LOGGING = {
     'loggers': {
         "": {
             "level": LOG_LEVEL,
-            "handlers": ['console', 'file'],
+            "handlers": ['console'],
         },
         'django': {
             'level': "ERROR",

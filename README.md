@@ -1,8 +1,17 @@
-# **Alpaca Trading Bot**
+# **Trading Bot**
 
-Algorithmic trading bot using [Alpaca Web API](https://alpaca.markets/docs/api-documentation/) for real time data subscription, and paper trading account
+Algorithmic trading bot using market data from [Alpaca API](https://alpaca.markets/docs/api-documentation/) for a real time data subscription, and paper trading account
 
-// INSERT IMAGE
+
+# **Alpaca API**
+
+Alpaca Data API provides the market data available to the client user through the REST and websocket streaming interfaces. Alpaca Data API consolidates data sources from five different exchanges.
+
+- IEX (Investors Exchange LLC)
+- NYSE National, Inc.
+- Nasdaq BX, Inc.
+- Nasdaq PSX
+- NYSE Chicago, Inc.
 
 ## Prototype
 
@@ -51,6 +60,10 @@ $ cd api
 $ pipenv shell
 $ python manage.py runserver
 ```
+
+## Testing
+
+> TBC
 
 ## Built with
 

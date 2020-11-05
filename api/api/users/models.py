@@ -31,15 +31,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
 
     class Meta:
-            verbose_name = 'user'
-            verbose_name_plural = 'users'
+        verbose_name = 'user'
+        verbose_name_plural = 'users'
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
     def get_full_name(self):
         """Return the user's full name."""
-        return self.first_name + self.last_name
+        return f"{self.first_name} {self.last_name}"
 
     @property
     def is_admin(self):

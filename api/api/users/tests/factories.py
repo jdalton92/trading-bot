@@ -7,7 +7,7 @@ class UserFactory(DjangoModelFactory):
     """Construct a user of the system."""
 
     name = factory.Faker('name')
-    email = factory.Sequence(lambda n: 'user{0}@ucroo.com'.format(n))
+    email = factory.Sequence(lambda n: 'user_{0}@tradingbot.com'.format(n))
     password = factory.PostGenerationMethodCall('set_password', None)
 
     class Meta:  # NOQA

@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 
 class CustomAuthToken(ObtainAuthToken):
+    """Create custom auth token."""
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
@@ -14,7 +15,7 @@ class CustomAuthToken(ObtainAuthToken):
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
         return Response({
-            'name': f'{user.first_name} {user.last_name}',
+            'user_id': user.pk,
             'email': user.email,
             'token': token.key,
         },
@@ -40,9 +41,9 @@ class LoginView(APIView):
             token, created = Token.objects.get_or_create(user=user)
             return Response(
                 {
-                    "name": user.get_full_name(),
-                    "email": user.email,
-                    "token": token.key,
+                    'user_id': user.pk,
+                    'email': user.email,
+                    'token': token.key,
                 },
                 status=200
             )
