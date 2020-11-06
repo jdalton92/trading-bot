@@ -149,10 +149,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Logging
 # https://docs.djangoproject.com/en/3.1/topics/logging/
+
 LOG_LEVEL = env("LOG_LEVEL", default="ERROR")
 
-# Log request body. Avoid enabling in production environments, unless required to
-# temporarily debug an issue.
+# Logging of request's body in development environment
 LOG_REQUESTS = env.bool("LOG_REQUESTS", default=False)
 
 LOGGING = {

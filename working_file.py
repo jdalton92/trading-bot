@@ -50,6 +50,20 @@ class TradeApiRest:
         """Retrieves account information."""
         return self.api.get_account()
 
+    def _list_assets(self, status=None, asset_class=None):
+        """
+        Get master list of assets available for trade and data consumption from Alpaca.
+
+        Params:
+            - status(str): e.g. “active”. By default, all statuses are included
+            - asset_class(str): Defaults to us_equity
+        """
+        return self.api.list_assets(status, asset_class)
+
+    def _get_asset(self, symbol):
+        """Get an asset for the given symbol."""
+        return self.api.get_asset(symbol)
+
     def _list_positions(self):
         """Retrieves a list of the account’s open positions."""
         return self.api.list_positions()
@@ -58,9 +72,8 @@ class TradeApiRest:
         """Retrieves the account’s open position for the given symbol."""
         return self.api.get_position(symbol)
 
-    def _get_orders(
-        self, status=None, limit=None, after=None, until=None, direction=None, nested=None
-    ):
+    def _get_orders(self, status=None, limit=None, after=None, until=None,
+                    direction=None, nested=None):
         """
         Get order information.
 
@@ -75,7 +88,9 @@ class TradeApiRest:
         return self.api.list_orders(status, limit, after, until, direction, nested)
 
     def _get_order_by_client_order_id(self, client_order_id):
-        """"Get order details when client_order_id is manually speicified by client."""
+        """"
+        Get order details when client_order_id is manually speicified by client.
+        """
         return self.api.get_order_by_client_order_id(client_order_id)
 
     def _get_order_by_id(self, order_id):
@@ -90,11 +105,10 @@ class TradeApiRest:
         """Closes (liquidates) all of the account’s open long and short positions."""
         return self.api.cancel_all_orders()
 
-    def _submit_order(
-        self, symbol, qty, side, type, time_in_force, limit_price=None, stop_price=None,
-        client_order_id=None, order_class=None, take_profit=None, stop_loss=None,
-        trail_price=None, trail_percent=None
-    ):
+    def _submit_order(self, symbol, qty, side, type, time_in_force,
+                      limit_price=None, stop_price=None, client_order_id=None,
+                      order_class=None, take_profit=None, stop_loss=None,
+                      trail_price=None, trail_percent=None):
         """
         Submit an order.
 
@@ -103,7 +117,15 @@ class TradeApiRest:
             - qty(float): number of shares to trade
             - side(str): buy or sell
             - type(str): market, limit, stop, stop_limit, or trailing_stop
-            - time_in_force(str): day, gtc, opg, cls, ioc, fok
+            - time_in_force(str):
+                - day: a day order is eligible for execution only on the day it is live
+                - gtc: good til cancelled
+                - opg: use with a market/limit order type to submit 'market on open' (MOO) and 'limit on open' (LOO) orders
+                - cls: use with a market/limit order type to submit 'market on close' (MOC) and 'limit on close' (LOC) orders
+                - ioc: immediate or cancel requires all or part of the order to be executed immediately. Any unfilled portion
+                    of the order is canceled (v2 API only)
+                - fok: fill or kill is only executed if the entire order quantity can be filled, otherwise the order is
+                    canceled (v2 API only)
             - limit_price(float): required if type is 'limit' or 'stop_limit'
             - stop_price(float): required if type is 'stop' or 'stop_limit'
             - tail_price(float): this or 'trail_percent' is required if type is 'trailing_stop'
@@ -130,7 +152,7 @@ class TradeApiRest:
         return float(account.equity) - float(account.last_equity)
 
     def _is_tradable(self, symbol):
-        """Is an asset is tradable via Alpaca api."""
+        """Is an asset tradable via Alpaca api."""
         if not isinstance(symbol, str):
             symbol = str(symbol)
         return self.api.get_asset(symbol).tradable
@@ -161,12 +183,6 @@ class TradeApiRest:
         return self.api.get_barset(symbols, limit, start, end, after, until)
 
 
-class TradeApiInfo(TradeApi):
-
-    def _get_account_info(self):
-        return self.api.get_account()
-
-
 if __name__ == "__main__":
     import alpaca_trade_api as tradeapi
 
@@ -174,7 +190,7 @@ if __name__ == "__main__":
     #   * APCA_API_KEY_ID
     #   * APCA_API_SECRET_KEY
     #   * APCA_API_BASE_URL
-    api = TradeApi()
+    api = TradeApiRest()
 
     # print(api._get_account_info())
 
