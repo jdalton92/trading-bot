@@ -6,10 +6,36 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=trading-bot
-      - POSTGRES_DB=trading-bot
+      POSTGRES_USER: trading-bot
+      POSTGRES_DB: trading-bot
       # No password required. Use for localhost development only
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: .
+    command: sh -c "celery -A api.config worker -l info"
+    volumes:
+      - .:/trading-bot
+    depends_on:
+      - redis
+    env_file:
+      - .env
+
+  celery-beat:
+    build: .
+    command: sh -c "celery -A api.config beat -l info"
+    volumes:
+      - .:/trading-bot
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - celery
 
 volumes:
   postgres_data:

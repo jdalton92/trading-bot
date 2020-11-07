@@ -13,19 +13,20 @@ COPY ./requirements.txt ./trading-bot/requirements.txt
 RUN pip install -r ./trading-bot/requirements.txt
 
 # Copy code into docker build
-COPY . /trading-bot/
+RUN mkdir -p /trading-bot
+COPY . /trading-bot
 WORKDIR /trading-bot
 
-# These are the environment variables that K8s must define for Django.
+# These are the environment variables that we must define for Django.
 ENV DB_NAME=trading-bot
 ENV DB_HOST=postgres
 ENV DB_PASSWORD=
 ENV DB_USER=trading-bot
 
-# ENV CELERY_BROKER_USER=
-# ENV CELERY_BROKER_PASSWORD=
-# ENV CELERY_BROKER_HOST=
-# ENV CELERY_BROKER_PORT=5672
+# ENV CELERY_BROKER_USER=guest \
+#     CELERY_BROKER_PASSWORD=guest \
+#     CELERY_BROKER_HOST=redis \
+#     CELERY_BROKER_PORT=5672
 
 # Django will serve on this container port.
 EXPOSE 8000

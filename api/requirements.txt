@@ -26,3 +26,6 @@ urllib3===1.25.11
 websocket-client===0.57.0
 websockets===8.1
 wheel===0.35.1
+redis==3.4.1
+celery==4.4.7
+django-celery-beat==2.1.0

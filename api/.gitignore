@@ -1,6 +1,7 @@
 .env
 *.sqlite3
 debug.log
+celerybeat-schedule
 celerybeat-schedule.*
 celerybeat.pid
 __pycache__/

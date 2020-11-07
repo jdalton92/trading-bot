@@ -12,12 +12,12 @@ def update_asset_models(assets):
 
     # update exchanges
     for e in exchanges:
-        exchange, created = Exchange.objects.get_or_create(e)
+        exchange, _ = Exchange.objects.get_or_create(e)
 
     # update asset classes
     for a in asset_classes:
-        asset_class, created = AssetClass.objects.get_or_create(a)
+        asset_class, _ = AssetClass.objects.get_or_create(a)
 
     # from list of assets, create or update model instances
     for a in assets:
-        asset, created = Asset.objects.get_or_create(a)
+        asset, _ = Asset.objects.get_or_create(a)

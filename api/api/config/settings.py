@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'debug_toolbar',
+    'django_celery_beat',
+    'celery',
     # My apps
     'api.users',
     'api.assets'
@@ -194,6 +196,13 @@ LOGGING = {
     },
 }
 
+# Celery settings
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
