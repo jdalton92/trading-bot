@@ -2,6 +2,7 @@
 
 Algorithmic trading bot using market data from [Alpaca API](https://alpaca.markets/docs/api-documentation/) for a real time data subscription, and paper trading account
 
+Trades are placed with Alpaca Paper trading platform, with market data periodically sourced using Docker containers with Celery and Redis, and stored in a Postgresql database.
 
 # **Alpaca API**
 
@@ -13,50 +14,39 @@ Alpaca Data API provides the market data available to the client user through th
 - Nasdaq PSX
 - NYSE Chicago, Inc.
 
-## Prototype
-
-> [TBC]()
-
 ## Authors
 
 - **James Dalton**
 
-## Instructions
+## Instructions to use
 
-1. Clone app, install frontend dependencies
-
-```sh
-$ git clone https://github.com/jdalton92/trading-bot.git
-$ cd client
-$ npm install
-$ npm start
-```
-
-2. Integrate backend to allow user creation, login, save dashboard, and contact form.
-
-Create `.env` file in backend root directory with development environment variables shown in the below example `.env` file:
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/). Navigate to `/api` directory, and update `.env` file with the following:
 
 ```sh
 DJANGO_SECRET_KEY=<your-django-secret-key>
-DEBUG='true'
+DEBUG=true
 LOG_LEVEL=DEBUG
-LOG_REQUESTS='true'
+LOG_REQUESTS=true
 
 APCA_API_SECRET_KEY=<your-alpaca-secret-key>
 APCA_API_KEY_ID=<your-alpaca-api-key>
 APCA_API_BASE_URL=https://paper-api.alpaca.markets
 
-DB_NAME=<elephantsql-name>
-DB_HOST=<elephantsql-host>
-DB_PORT=5432
-DB_USER=<elephantsql-user>
-DB_PASSWORD=<elephantsql-password>
+POSTGRES_USER=trading-bot
+POSTGRES_DB=trading-bot
+POSTGRES_HOST_AUTH_METHOD=trust
 ```
+**Note:** setting `POSTGRES_HOST_AUTH_METHOD=trust` means postgresql does not require a password. This is used only in development mode, being run on localhost
 
-Then navidate to the api directory, install dependencies and run the backend;
+2. Run `docker-compose` to initialise postgres for databasing, and celery, celery-beat, and redis for handling of background tasks.
 
 ```sh
-$ cd api
+$ docker-compose up
+```
+
+3. Run the api on localhost a separte teriminal
+
+```sh
 $ pipenv shell
 $ python manage.py runserver
 ```
@@ -70,7 +60,9 @@ $ python manage.py runserver
 - [React](https://create-react-app.dev/docs/adding-typescript/) - Bootstrapped using Create React App, and using TypeScript template.
 - [Django](https://nodejs.org/en/) - Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design.
 - [Django-Rest-Framework](https://www.django-rest-framework.org/) - Django REST framework is a powerful and flexible toolkit for building Web APIs.
-- [ElephantSQL](https://www.elephantsql.com/) - ElephantSQL automates every part of setup and running of PostgreSQL clusters. Available on all major cloud and application platforms all over the world.
+- [Docker](https://www.docker.com/) - Docker is a set of platform as a service products that use OS-level virtualization to deliver software in packages called containers.
+- [Celery](https://docs.celeryproject.org/en/stable/index.html#) - Celery is a simple, flexible, and reliable distributed system to process vast amounts of messages, while providing operations with the tools required to maintain such a system. It’s a task queue with focus on real-time processing, while also supporting task scheduling.
+- [Redis](https://redis.io/) - Redis is an open source (BSD licensed), in-memory data structure store, used as a database, cache and message broker
 - [Visual Studio Code](https://code.visualstudio.com/) - IDE
 
 ## Licence
