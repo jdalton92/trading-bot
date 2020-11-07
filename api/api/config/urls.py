@@ -14,4 +14,5 @@ urlpatterns = [
     path(r'api-auth-token/', CustomAuthToken.as_view(), name="api-auth-token"),
     # App urls
     path(r'users/', include('api.users.urls')),
+    path(r'assets/', include('api.assets.urls')),
 ]

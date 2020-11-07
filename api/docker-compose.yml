@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:9.6
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=trading-bot
+      - POSTGRES_DB=trading-bot
+      # No password required. Use for localhost development only
+      - POSTGRES_HOST_AUTH_METHOD=trust
+
+volumes:
+  postgres_data:

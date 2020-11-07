@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     # My apps
     'api.users',
+    'api.assets'
 ]
 
 MIDDLEWARE = [
@@ -91,11 +92,11 @@ WSGI_APPLICATION = 'api.config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env("DB_NAME"),
-        "HOST": env("DB_HOST"),
+        'NAME': env("DB_NAME", default="trading-bot"),
+        "HOST": env("DB_HOST", default="localhost"),
         "PORT": env.int("DB_PORT", default=5432),
-        "USER": env("DB_USER"),
-        "PASSWORD": env("DB_PASSWORD"),
+        "USER": env("DB_USER", default="trading-bot"),
+        "PASSWORD": env("DB_PASSWORD", default=""),
     }
 }
 

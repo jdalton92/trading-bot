@@ -17,7 +17,8 @@ class UserView(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        Instantiates and returns the list of permissions that the user view requires.
+        Instantiates and returns the list of permissions that the user view
+        requires.
         """
         if self.action == 'list':
             permission_classes = [IsAuthenticated]
