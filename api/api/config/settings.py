@@ -90,6 +90,8 @@ WSGI_APPLICATION = 'api.config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+# POSTGRES_HOST_AUTH_METHOD is set as 'trust' for localhost development
+# environment, and no password is required. Do not do this in production
 
 DATABASES = {
     'default': {
