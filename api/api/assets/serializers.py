@@ -6,6 +6,17 @@ from .models import Asset, AssetClass, Exchange
 class AssetSerializer(serializers.ModelSerializer):
     """Serializer for a user of the system."""
 
+    asset_class = serializers.SlugRelatedField(
+        queryset=AssetClass.objects.all(),
+        slug_field="name",
+        required=True
+    )
+    exchange = serializers.SlugRelatedField(
+        queryset=Exchange.objects.all(),
+        slug_field="name",
+        required=True
+    )
+
     class Meta:
         model = Asset
         fields = '__all__'

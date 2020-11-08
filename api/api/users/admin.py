@@ -8,8 +8,16 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         ('User Information', {
             'fields': (
-                'first_name', 'last_name', 'email', 'is_active', 'is_staff', 'is_superuser', 'groups',
-                'last_login', 'date_joined',
+                'first_name', 'last_name', 'email', 'is_active', 'is_staff',
+                'is_superuser', 'groups', 'last_login', 'date_joined',
+            )
+        }),
+    )
+    add_fieldsets = (
+        ('User Information', {
+            'fields': (
+                'first_name', 'last_name', 'email', 'is_active', 'is_staff',
+                'is_superuser', 'groups',
             )
         }),
     )

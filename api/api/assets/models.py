@@ -23,6 +23,9 @@ class Exchange(models.Model):
         verbose_name = 'exchange'
         verbose_name_plural = 'exchanges'
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class AssetClass(models.Model):
     """An asset class."""
@@ -44,6 +47,9 @@ class AssetClass(models.Model):
     class Meta:
         verbose_name = 'asset class'
         verbose_name_plural = 'asset classes'
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class Asset(models.Model):

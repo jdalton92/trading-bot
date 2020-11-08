@@ -20,7 +20,7 @@ Alpaca Data API provides the market data available to the client user through th
 
 ## Instructions to use
 
-1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/). Navigate to `/api` directory, and update `.env` file with the following:
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/). Navigate to `api` directory, and update `.env` file with the following:
 
 ```sh
 DJANGO_SECRET_KEY=<your-django-secret-key>
@@ -38,13 +38,13 @@ POSTGRES_HOST_AUTH_METHOD=trust
 ```
 **Note:** setting `POSTGRES_HOST_AUTH_METHOD=trust` means postgresql does not require a password. This is used only in development mode, being run on localhost
 
-2. Run `docker-compose` to initialise postgres for databasing, and celery, celery-beat, and redis for handling of background tasks.
+2. Run `docker-compose up` to initialise postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
 
 ```sh
 $ docker-compose up
 ```
 
-3. Run the api on localhost a separte teriminal
+3. Run the api on localhost a separte terminal
 
 ```sh
 $ pipenv shell

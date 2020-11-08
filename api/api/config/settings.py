@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'celery',
     # My apps
+    'api.core',
     'api.users',
     'api.assets'
 ]
@@ -90,16 +91,17 @@ WSGI_APPLICATION = 'api.config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-# POSTGRES_HOST_AUTH_METHOD is set as 'trust' for localhost development
+
+# POSTGRES_HOST_AUTH_METHOD env is set as 'trust' for localhost development
 # environment, and no password is required. Do not do this in production
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env("DB_NAME", default="trading-bot"),
+        'NAME': env("DB_NAME", default="tradingbot"),
         "HOST": env("DB_HOST", default="localhost"),
         "PORT": env.int("DB_PORT", default=5432),
-        "USER": env("DB_USER", default="trading-bot"),
+        "USER": env("DB_USER", default="tradingbot"),
         "PASSWORD": env("DB_PASSWORD", default=""),
     }
 }

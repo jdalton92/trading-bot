@@ -12,9 +12,9 @@ class UserModelTests(TestCase):
 
     def test_login(self):
         """User can log in."""
-        # client = APIClient()
-        # client.login(username='testuser@tradingbot.com',
-        #              password='password123')
+        client = APIClient()
+        client.login(username='testuser@tradingbot.com',
+                     password='password123')
         self.assertIn(self.user, User.objects.all())
 
 

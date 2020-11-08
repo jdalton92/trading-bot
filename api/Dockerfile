@@ -10,7 +10,7 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" > /etc/
 
 # Copy and install requirements.txt
 COPY ./requirements.txt ./trading-bot/requirements.txt
-RUN pip install -r ./trading-bot/requirements.txt
+RUN pip install --no-cache-dir -r ./trading-bot/requirements.txt
 
 # Copy trading-bot code into docker build
 RUN mkdir -p /trading-bot
