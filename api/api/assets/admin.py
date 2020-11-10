@@ -18,10 +18,11 @@ class AssetAdmin(admin.ModelAdmin):
         ('Asset', {
             'fields': (
                 'status', 'name', 'symbol', 'asset_class', 'exchange',
-                'tradeable', 'shortable', 'marginable', 'easy_to_borrow'
+                'tradable', 'shortable', 'marginable', 'easy_to_borrow'
             )
         }),
     )
+    list_display = ('symbol', 'name', 'asset_class', 'exchange')
 
 
 admin.site.register(Exchange, ExchangeAdmin)

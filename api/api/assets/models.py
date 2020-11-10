@@ -95,8 +95,11 @@ class Asset(models.Model):
         unique=True,
         max_length=56,
     )
-    tradeable = models.BooleanField()
+    tradable = models.BooleanField()
 
     class Meta:
         verbose_name = _('asset')
         verbose_name_plural = _('assets')
+
+    def __str__(self):
+        return f"{self.name}"
