@@ -75,11 +75,13 @@ class Asset(models.Model):
     asset_class = models.ForeignKey(
         AssetClass,
         verbose_name=_('asset class'),
+        related_name='assets',
         on_delete=models.CASCADE,
     )
     easy_to_borrow = models.BooleanField()
     exchange = models.ForeignKey(
         Exchange,
+        related_name='assets',
         verbose_name=_('exchange'),
         on_delete=models.CASCADE,
     )

@@ -32,8 +32,11 @@ APCA_API_SECRET_KEY=<your-alpaca-secret-key>
 APCA_API_KEY_ID=<your-alpaca-api-key>
 APCA_API_BASE_URL=https://paper-api.alpaca.markets
 
-POSTGRES_USER=trading-bot
-POSTGRES_DB=trading-bot
+POSTGRES_USER=tradingbot
+POSTGRES_NAME=tradingbot
+POSTGRES_DB=tradingbot
+POSTGRES_PASSWORD=
+POSTGRES_HOST=localhost
 POSTGRES_HOST_AUTH_METHOD=trust
 ```
 **Note:** setting `POSTGRES_HOST_AUTH_METHOD=trust` means postgresql does not require a password. This is used only in development mode, being run on localhost

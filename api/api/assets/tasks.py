@@ -6,7 +6,6 @@ from api.core.utils import TradeApiRest
 from django.forms.models import model_to_dict
 
 from .models import Asset, AssetClass, Exchange
-from .serializers import AssetBulkCreateSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -43,35 +42,33 @@ def update_asset_models():
             additions_to_db += 1
 
     # From list of assets, create or update model instances
-    for item in assets[1:10]:
-        # Rename 'asset' to 'asset_class' to match model schema
-        item['asset_class'] = AssetClass.objects.get(name=item['class'])
-        item['exchange'] = Exchange.objects.get(name=item['exchange'])
-        del item['class']
+    # for item in assets[1:10]:
+    #     # Rename 'asset' to 'asset_class' to match model schema
+    #     item['asset_class'] = AssetClass.objects.get(name=item['class'])
+    #     item['exchange'] = Exchange.objects.get(name=item['exchange'])
+    #     del item['class']
 
-        # TO DO -> CREATE BULK ADD SERIALIZER
+    #     # TO DO -> CREATE BULK ADD SERIALIZER
 
-        _, created = Asset.objects.get_or_create(**item)
-        if created:
-            additions_to_db += 1
+    #     _, created = Asset.objects.get_or_create(**item)
+    #     if created:
+    #         additions_to_db += 1
 
-    serializer = AssetBulkCreateSerializer(data=assets, many=True)
-    # print('\n\n')
-    # print('isValid', serializer.is_valid())
-    # print('errors', serializer.errors)
-    # print('data', serializer.data)
-    # print('\n\n')
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
+    # serializer = AssetBulkCreateSerializer(data=assets, many=True)
 
-    logger.info(f"Updates: {additions_to_db}")
+    # serializer.is_valid(raise_exception=True)
+    # serializer.save()
+
+    logger.info(f"Updates to asset models: {additions_to_db}")
 
 
-@ celery_app.task(ignore_result=True)
+@celery_app.task(ignore_result=True)
 def bulk_add_assets(assets):
     """
     Bulk create assets.
 
     :param assets(list): list of serialized assets to be created
     """
-    return Asset.objects.bulk_create(assets, batch_size=1000, ignore_conflicts=True)
+    return Asset.objects.bulk_create(
+        objs=assets, batch_size=500, ignore_conflicts=True
+    )

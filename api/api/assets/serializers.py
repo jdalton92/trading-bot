@@ -3,8 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from .models import Asset, AssetClass, Exchange
-
-# from .tasks import bulk_add_assets
+from .tasks import bulk_add_assets
 
 
 class AssetSerializer(serializers.ModelSerializer):
@@ -52,9 +51,8 @@ class AssetBulkCreateSerializer(serializers.Serializer):
     """
 
     id = serializers.UUIDField(format='hex_verbose')
-    class_name = serializers.SerializerMethodField()
+    # class_name = serializers.SerializerMethodField()
     asset_class = serializers.SlugRelatedField(
-        source='class_name',
         queryset=AssetClass.objects.all(),
         slug_field='name',
     )
@@ -70,23 +68,5 @@ class AssetBulkCreateSerializer(serializers.Serializer):
     easy_to_borrow = serializers.BooleanField()
     symbol = serializers.CharField()
 
-    def get_class_name(self, instance):
-        """
-        Get `class` field from Alpaca api response, and serialize to
-        `class_name` field then validate as slugrelatedfield and saved to
-        database under `asset_class` field
-        """
-        print('\n\nself', self)
-        print('\n\ninstance', instance)
-        return 'us_equity'
-
-    # def validate(self, data):
-    #     try:
-    #         data["content_type"].get_object_for_this_type(
-    #             id=data["asset_class"])
-    #     except ObjectDoesNotExist:
-    #         raise ValidationError("Object does not exist")
-    #     return data
-
-    # def save(self, *args, **kwargs):
-    #     return bulk_add_assets.s(self.validated_data).delay
+    def create(self, *args, **kwargs):
+        return bulk_add_assets(self.validated_data)
