@@ -50,9 +50,9 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'celery',
     # My apps
-    'api.core',
-    'api.users',
-    'api.assets'
+    'server.core',
+    'server.users',
+    'server.assets'
 ]
 
 MIDDLEWARE = [
@@ -68,7 +68,7 @@ MIDDLEWARE = [
     # My middleware
 ]
 
-ROOT_URLCONF = 'api.config.urls'
+ROOT_URLCONF = 'server.config.urls'
 
 TEMPLATES = [
     {
@@ -86,7 +86,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.config.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database

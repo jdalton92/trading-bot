@@ -1,4 +1,4 @@
-from api.users.models import User
+from server.users.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 

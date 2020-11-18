@@ -17,8 +17,8 @@ auth_urls = [
 ]
 
 versioned_urls = [
-    path(r'users/', include('api.users.urls')),
-    path(r'', include('api.assets.urls')),
+    path(r'users/', include('server.users.urls')),
+    path(r'', include('server.assets.urls')),
 ]
 non_versioned_urls = sum([
     default_urls,

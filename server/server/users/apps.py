@@ -4,7 +4,7 @@ from django.db.models.signals import post_save
 
 class UsersConfig(AppConfig):
 
-    name = 'api.users'
+    name = 'server.users'
 
     def ready(self):
         from .models import User

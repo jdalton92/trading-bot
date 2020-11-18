@@ -20,7 +20,7 @@ services:
 
   celery:
     build: .
-    command: sh -c "celery -A api.config worker -l info"
+    command: sh -c "celery -A server.config worker -l info"
     volumes:
       - .:/trading-bot
     depends_on:
@@ -30,7 +30,7 @@ services:
 
   celery-beat:
     build: .
-    command: sh -c "celery -A api.config beat -l info"
+    command: sh -c "celery -A server.config beat -l info"
     volumes:
       - .:/trading-bot
     env_file:
