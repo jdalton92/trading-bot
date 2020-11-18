@@ -5,16 +5,16 @@ import django
 import requests
 from django.conf import settings  # NOQA
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'api.config.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'server.config.settings'
 django.setup()
 
 
 if __name__ == "__main__":
     import requests
 
-    from api.assets.serializers import AssetBulkCreateSerializer
-    from api.assets.tasks import update_asset_models
-    from api.core.utils import TradeApiRest
+    from server.assets.serializers import AssetBulkCreateSerializer
+    from server.assets.tasks import update_asset_models
+    from server.core.utils import TradeApiRest
 
     # update_asset_models()
     # api = TradeApiRest()
