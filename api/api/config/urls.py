@@ -16,18 +16,15 @@ auth_urls = [
     path(r'api-auth-token/', CustomAuthToken.as_view(), name="api-auth-token"),
 ]
 
-app_urls = [
+versioned_urls = [
     path(r'users/', include('api.users.urls')),
-    path(r'assets/', include('api.assets.urls')),
+    path(r'', include('api.assets.urls')),
 ]
-
-versioned_urls = DefaultRouter.urls
 non_versioned_urls = sum([
     default_urls,
     auth_urls
 ], list())
 
 urlpatterns = [
-    url(r'^', include(DefaultRouter(trailing_slash=True).urls)),
-    url(r'^v1/', include((app_urls, 'v1'), namespace='v1')),
+    url(r'^v1/', include((versioned_urls, 'v1'), namespace='v1')),
 ] + non_versioned_urls

@@ -99,7 +99,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env("POSTGRES_NAME", default="tradingbot"),
-        "HOST": env("POSTGRES_HOST", default="localhost"),
+        "HOST": env("POSTGRES_HOST", default="postgres"),
         "PORT": env.int("POSTGRES_PORT", default=5432),
         "USER": env("POSTGRES_USER", default="tradingbot"),
         "PASSWORD": env("POSTGRES_PASSWORD", default=""),

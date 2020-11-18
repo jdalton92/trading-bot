@@ -22,7 +22,7 @@ def update_asset_models():
     assets = api._list_assets()
 
     # Get unique entries
-    assets = list(map(lambda asset: asset.__dict__['_raw'], assets[:3]))
+    assets = list(map(lambda asset: asset.__dict__['_raw'], assets))
     exchanges = set(map(lambda asset: asset['exchange'], assets))
     asset_classes = set(map(lambda asset: asset['class'], assets))
 

@@ -8,9 +8,10 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: tradingbot
-      POSTGRES_USER: tradingbot
-      POSTGRES_HOST_AUTH_METHOD: trust
+      - POSTGRES_DB=tradingbot
+      - POSTGRES_USER=tradingbot
+      - POSTGRES_PASSWORD=
+      - POSTGRES_HOST_AUTH_METHOD=trust
 
   redis:
     image: redis:alpine

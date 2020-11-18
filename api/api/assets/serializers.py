@@ -68,5 +68,10 @@ class AssetBulkCreateSerializer(serializers.Serializer):
     easy_to_borrow = serializers.BooleanField()
     symbol = serializers.CharField()
 
-    def create(self, *args, **kwargs):
-        return bulk_add_assets(self.validated_data)
+    def create(self, validated_data):
+        assets = [Asset(**item) for item in validated_data]
+        return Asset.objects.bulk_create(
+            objs=assets,
+            batch_size=1000,
+            ignore_conflicts=True
+        )
