@@ -16,6 +16,7 @@ django-debug-toolbar = "*"
 django-celery-beat = "*"
 psycopg2 = "*"
 alpaca-trade-api = "*"
+redis = "*"
 
 [requires]
 python_version = "3.8"
