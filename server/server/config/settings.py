@@ -97,12 +97,29 @@ WSGI_APPLICATION = 'server.config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "HOST": env("POSTGRES_HOST", default="postgres"),
         'NAME': env("POSTGRES_NAME", default="tradingbot"),
-        "HOST": env("POSTGRES_HOST", default="db"),
         "PORT": env.int("POSTGRES_PORT", default=5432),
         "USER": env("POSTGRES_USER", default="tradingbot"),
         "PASSWORD": env("POSTGRES_PASSWORD", default=""),
+    }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                {
+                    "address": (
+                        env("REDIS_HOST", default="localhost"),
+                        env.int("REDIS_PORT", default=6379),
+                    ),
+                    "timeout": 10,
+                }
+            ],
+        },
     }
 }
 

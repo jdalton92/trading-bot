@@ -1,22 +1,21 @@
 version: "3"
 
 services:
-  db:
+  postgres:
     image: postgres:9.6
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - database_data:/var/lib/postgresql/data/
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_DB=tradingbot
-      - POSTGRES_USER=tradingbot
-      - POSTGRES_PASSWORD=
-      - POSTGRES_HOST_AUTH_METHOD=trust
+    env_file:
+      - .env
 
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
+    depends_on:
+      - postgres
 
   celery:
     build: .
@@ -40,4 +39,4 @@ services:
       - celery
 
 volumes:
-  postgres_data:
+  database_data:

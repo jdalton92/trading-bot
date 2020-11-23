@@ -20,15 +20,15 @@ if __name__ == "__main__":
     # api = TradeApiRest()
     # assets = api._list_assets()
     # assets = list(map(lambda asset: asset.__dict__['_raw'], assets[:3]))
-    # with open('test_asset_data.json') as f:
-    #     data = json.load(f)
-    # serializer = AssetBulkCreateSerializer(data=data, many=True)
-    # serializer.is_valid()
-    # print('\n')
-    # print('isValid', serializer.is_valid())
-    # print('errors', serializer.errors)
-    # print('data', serializer.data)
-    # print('\n')
+    with open('test_asset_data.json') as f:
+        data = json.load(f)
+    serializer = AssetBulkCreateSerializer(data=data, many=True)
+    serializer.is_valid()
+    print('\n')
+    print('isValid', serializer.is_valid())
+    print('errors', serializer.errors)
+    print('data', serializer.data)
+    print('\n')
     # os.environ['NO_PROXY'] = '127.0.0.1'
     # headers = {
     #     "Authorization": "Token c35a9b6370ac4b0181f56902fbbe02bcf8e6ed67"
