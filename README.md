@@ -24,6 +24,10 @@ Alpaca Data API provides the market data available to the client user through th
 
 ```sh
 DJANGO_SECRET_KEY=<your-django-secret-key>
+DJANGO_SUPERUSER_PASSWORD=password
+DJANGO_SUPERUSER_EMAIL=superuser@tradingbot.com
+DJANGO_SUPERUSER_USERNAME=superuser@tradingbot.com
+
 DEBUG=true
 LOG_LEVEL=DEBUG
 LOG_REQUESTS=true

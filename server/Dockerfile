@@ -19,3 +19,8 @@ RUN pip install pipenv && pipenv install --system --deploy --dev
 
 # Django will serve on this container port.
 EXPOSE 8000
+
+# Copy and run entrypoint command for db migration
+COPY ./docker-entrypoint.sh /trading-bot/docker-entrypoint.sh
+RUN chmod +x /trading-bot/docker-entrypoint.sh
+ENTRYPOINT ["sh", "/trading-bot/docker-entrypoint.sh"]

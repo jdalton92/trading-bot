@@ -15,6 +15,7 @@ django-filter = "*"
 django-debug-toolbar = "*"
 django-celery-beat = "*"
 psycopg2 = "*"
+psycopg2-binary = "*"
 alpaca-trade-api = "*"
 redis = "*"
 
