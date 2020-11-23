@@ -1,5 +1,5 @@
 import factory
-from api.users.models import User
+from server.users.models import User
 from factory.django import DjangoModelFactory
 
 

@@ -7,14 +7,23 @@ verify_ssl = true
 
 [packages]
 factory-boy = "*"
+django = "*"
+celery = "*"
+django-environ = "*"
+djangorestframework = "*"
+django-filter = "*"
+django-debug-toolbar = "*"
+django-celery-beat = "*"
+psycopg2 = "*"
+psycopg2-binary = "*"
+alpaca-trade-api = "*"
+redis = "*"
 
 [requires]
 python_version = "3.8"
-
 # Base Libraries
 Django = "==3.1.2"
 djangorestframework = "==3.11.1"
 requests = "==2.22.0"
-
 # Development Libraries
 django-debug-toolbar = "==2.2"

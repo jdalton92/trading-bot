@@ -20,10 +20,14 @@ Alpaca Data API provides the market data available to the client user through th
 
 ## Instructions to use
 
-1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/). Navigate to `api` directory, and update `.env` file with the following:
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/). Navigate to `server` directory, and update `.env` file with the following:
 
 ```sh
 DJANGO_SECRET_KEY=<your-django-secret-key>
+DJANGO_SUPERUSER_PASSWORD=password
+DJANGO_SUPERUSER_EMAIL=superuser@tradingbot.com
+DJANGO_SUPERUSER_USERNAME=superuser@tradingbot.com
+
 DEBUG=true
 LOG_LEVEL=DEBUG
 LOG_REQUESTS=true
@@ -32,16 +36,27 @@ APCA_API_SECRET_KEY=<your-alpaca-secret-key>
 APCA_API_KEY_ID=<your-alpaca-api-key>
 APCA_API_BASE_URL=https://paper-api.alpaca.markets
 
+POSTGRES_HOST=postgres
 POSTGRES_USER=tradingbot
 POSTGRES_NAME=tradingbot
 POSTGRES_DB=tradingbot
 POSTGRES_PASSWORD=
-POSTGRES_HOST=localhost
 POSTGRES_HOST_AUTH_METHOD=trust
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
+
 **Note:** setting `POSTGRES_HOST_AUTH_METHOD=trust` means postgresql does not require a password. This is used only in development mode, being run on localhost
 
-2. Run `docker-compose up` to initialise postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
+2. Activate your virtual environment, and install the necessary dependencies summarised in the `Pipfile`
+
+```sh
+$ pipenv shell
+$ pipenv install
+```
+
+3. Run `docker-compose up` to initialise postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
 
 ```sh
 $ docker-compose up
@@ -57,6 +72,20 @@ $ python manage.py runserver
 ## Testing
 
 > TBC
+
+## Server Dependencies
+
+```
+django
+djangorestframework
+django-environ
+alpaca-trade-api
+django-filter
+celery
+django-celery-beat
+django-debug-toolbar
+psycopg2
+```
 
 ## Built with
 

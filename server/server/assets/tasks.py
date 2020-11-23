@@ -1,8 +1,8 @@
 import json
 import logging
 
-from api.config import celery_app
-from api.core.utils import TradeApiRest
+from server.config import celery_app
+from server.core.utils import TradeApiRest
 from django.forms.models import model_to_dict
 
 from .models import Asset, AssetClass, Exchange

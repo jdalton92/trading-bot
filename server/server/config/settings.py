@@ -50,9 +50,9 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'celery',
     # My apps
-    'api.core',
-    'api.users',
-    'api.assets'
+    'server.core',
+    'server.users',
+    'server.assets'
 ]
 
 MIDDLEWARE = [
@@ -68,7 +68,7 @@ MIDDLEWARE = [
     # My middleware
 ]
 
-ROOT_URLCONF = 'api.config.urls'
+ROOT_URLCONF = 'server.config.urls'
 
 TEMPLATES = [
     {
@@ -86,7 +86,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.config.wsgi.application'
+WSGI_APPLICATION = 'server.config.wsgi.application'
 
 
 # Database
@@ -97,12 +97,29 @@ WSGI_APPLICATION = 'api.config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": env("POSTGRES_HOST", default="db"),
         'NAME': env("POSTGRES_NAME", default="tradingbot"),
-        "HOST": env("POSTGRES_HOST", default="postgres"),
         "PORT": env.int("POSTGRES_PORT", default=5432),
         "USER": env("POSTGRES_USER", default="tradingbot"),
         "PASSWORD": env("POSTGRES_PASSWORD", default=""),
+    }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                {
+                    "address": (
+                        env("REDIS_HOST", default="localhost"),
+                        env.int("REDIS_PORT", default=6379),
+                    ),
+                    "timeout": 10,
+                }
+            ],
+        },
     }
 }
 

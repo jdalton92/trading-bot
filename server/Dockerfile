@@ -8,14 +8,19 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" > /etc/
     && apt-get update \
     && apt-get install -y --no-install-recommends postgresql-client-9.6
 
-# Copy and install requirements.txt
-COPY ./requirements.txt ./trading-bot/requirements.txt
-RUN pip install --no-cache-dir -r ./trading-bot/requirements.txt
-
 # Copy trading-bot code into docker build
 RUN mkdir -p /trading-bot
 COPY . /trading-bot
 WORKDIR /trading-bot
 
+# Copy and install requirements.txt
+COPY ./Pipfile ./trading-bot/Pipfile
+RUN pip install pipenv && pipenv install --system --deploy --dev
+
 # Django will serve on this container port.
 EXPOSE 8000
+
+# Copy and run entrypoint command for db migration
+COPY ./docker-entrypoint.sh /trading-bot/docker-entrypoint.sh
+RUN chmod +x /trading-bot/docker-entrypoint.sh
+ENTRYPOINT ["sh", "/trading-bot/docker-entrypoint.sh"]

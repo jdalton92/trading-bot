@@ -55,7 +55,7 @@ def create_periodic_tasks(app_config, verbosity=2, interactive=True, using=DEFAU
     tasks = [
         {
             'name': 'Update Assets',
-            'task': 'api.assets.tasks.update_asset_models',
+            'task': 'server.assets.tasks.update_asset_models',
             'crontab': on_the_hour
         },
         # {
