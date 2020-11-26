@@ -10,25 +10,12 @@ services:
     env_file:
       - .env
 
-  web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/trading-bot
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
-    depends_on:
-      - db
-
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
     depends_on:
       - db
-      - web
 
   celery:
     build: .

@@ -36,7 +36,7 @@ APCA_API_SECRET_KEY=<your-alpaca-secret-key>
 APCA_API_KEY_ID=<your-alpaca-api-key>
 APCA_API_BASE_URL=https://paper-api.alpaca.markets
 
-POSTGRES_HOST=postgres
+POSTGRES_HOST=localhost
 POSTGRES_USER=tradingbot
 POSTGRES_NAME=tradingbot
 POSTGRES_DB=tradingbot

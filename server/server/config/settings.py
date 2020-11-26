@@ -98,11 +98,11 @@ WSGI_APPLICATION = 'server.config.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql",
-        "HOST": env("POSTGRES_HOST", default="db"),
         'NAME': env("POSTGRES_NAME", default="tradingbot"),
-        "PORT": env.int("POSTGRES_PORT", default=5432),
         "USER": env("POSTGRES_USER", default="tradingbot"),
         "PASSWORD": env("POSTGRES_PASSWORD", default=""),
+        "HOST": env("POSTGRES_HOST", default="localhost"),
+        "PORT": env("POSTGRES_PORT", default=5432),
     }
 }
 
