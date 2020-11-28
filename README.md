@@ -20,32 +20,12 @@ Alpaca Data API provides the market data available to the client user through th
 
 ## Instructions to use
 
-1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/). Navigate to `server` directory, and update `.env` file with the following:
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/). Create your own [Alpaca Api Account](https://app.alpaca.markets/signup).
+
+2. Create a `.env` file in your `server` directory. Copy the include `.env.example` in this repo for a starter file;
 
 ```sh
-DJANGO_SECRET_KEY=<your-django-secret-key>
-DJANGO_SUPERUSER_PASSWORD=password
-DJANGO_SUPERUSER_EMAIL=superuser@tradingbot.com
-DJANGO_SUPERUSER_USERNAME=superuser@tradingbot.com
-DJANGO_SUPERUSER_NAME=Superuser
-
-DEBUG=true
-LOG_LEVEL=DEBUG
-LOG_REQUESTS=true
-
-APCA_API_SECRET_KEY=<your-alpaca-secret-key>
-APCA_API_KEY_ID=<your-alpaca-api-key>
-APCA_API_BASE_URL=https://paper-api.alpaca.markets
-
-POSTGRES_HOST=localhost
-POSTGRES_USER=tradingbot
-POSTGRES_NAME=tradingbot
-POSTGRES_DB=tradingbot
-POSTGRES_PASSWORD=
-POSTGRES_HOST_AUTH_METHOD=trust
-
-REDIS_HOST=localhost
-REDIS_PORT=6379
+$ cp .env.example .env
 ```
 
 **Note:** setting `POSTGRES_HOST_AUTH_METHOD=trust` means postgresql does not require a password. This is used only in development mode, being run on localhost
