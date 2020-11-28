@@ -27,6 +27,7 @@ DJANGO_SECRET_KEY=<your-django-secret-key>
 DJANGO_SUPERUSER_PASSWORD=password
 DJANGO_SUPERUSER_EMAIL=superuser@tradingbot.com
 DJANGO_SUPERUSER_USERNAME=superuser@tradingbot.com
+DJANGO_SUPERUSER_NAME=Superuser
 
 DEBUG=true
 LOG_LEVEL=DEBUG
@@ -62,16 +63,20 @@ $ pipenv install
 $ docker-compose up
 ```
 
-3. Run the api on localhost a separte terminal
+3. Run the server on localhost a separte terminal and run database migrations, create a superuser (I use the `.env` file for superuser details, and include `--no-input` command)
 
 ```sh
 $ pipenv shell
+$ python manage.py migrate
+$ python manage.py createsuperuser --no-input
 $ python manage.py runserver
 ```
 
 ## Testing
 
-> TBC
+```sh
+$ python manage.py test server
+```
 
 ## Server Dependencies
 
@@ -85,6 +90,7 @@ celery
 django-celery-beat
 django-debug-toolbar
 psycopg2
+psycopg2-binary
 ```
 
 ## Built with
