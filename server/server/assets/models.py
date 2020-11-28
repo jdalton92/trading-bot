@@ -55,8 +55,8 @@ class AssetClass(models.Model):
 class Asset(models.Model):
     """A tradeable asset via Alpaca."""
 
-    ACTIVE = 'ACTIVE'
-    INACTIVE = 'INACTIVE'
+    ACTIVE = 'active'
+    INACTIVE = 'inactive'
     STATUS_CHOICES = [
         (ACTIVE, _('active')),
         (INACTIVE, _('inactive')),
@@ -70,7 +70,9 @@ class Asset(models.Model):
     )
     name = models.CharField(
         verbose_name=_('name'),
-        max_length=256
+        max_length=256,
+        blank=True,
+        null=True,
     )
     asset_class = models.ForeignKey(
         AssetClass,

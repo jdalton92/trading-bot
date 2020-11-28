@@ -17,12 +17,13 @@ class AssetAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Asset', {
             'fields': (
-                'status', 'name', 'symbol', 'asset_class', 'exchange',
+                'id', 'status', 'name', 'symbol', 'asset_class', 'exchange',
                 'tradable', 'shortable', 'marginable', 'easy_to_borrow'
             )
         }),
     )
     list_display = ('symbol', 'name', 'asset_class', 'exchange')
+    readonly_fields = ['id', ]
 
 
 admin.site.register(Exchange, ExchangeAdmin)

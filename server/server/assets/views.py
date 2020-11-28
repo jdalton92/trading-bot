@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Asset, AssetClass, Exchange
-from .serializers import (AssetBulkCreateSerializer, AssetClassSerializer,
-                          AssetSerializer, ExchangeSerializer)
+from .serializers import (AssetClassSerializer, AssetSerializer,
+                          ExchangeSerializer)
 
 
 class AssetView(viewsets.ModelViewSet):
@@ -15,10 +15,7 @@ class AssetView(viewsets.ModelViewSet):
         return Asset.objects.all()
 
     def get_serializer_class(self):
-        if self.action in ['bulkadd']:
-            return AssetBulkCreateSerializer
-        else:
-            return AssetSerializer
+        return AssetSerializer
 
     def get_permissions(self):
         """
@@ -30,23 +27,6 @@ class AssetView(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
-
-    @action(
-        detail=False,
-        methods=['post']
-    )
-    def bulkadd(self, *args, **kwargs):
-        """
-        Bulk create assets from response list in form of response from Alpaca
-        api.
-        """
-        data = self.request.data
-        if not isinstance(data, list):
-            data = [data]
-        serializer = self.get_serializer(data=data, many=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(status=status.HTTP_201_CREATED)
 
 
 class AssetClassView(viewsets.ModelViewSet):
