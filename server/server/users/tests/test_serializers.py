@@ -3,7 +3,6 @@ from datetime import datetime
 import pytz
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.utils import timezone
 from freezegun import freeze_time
 from server.users.models import User
 from server.users.serializers import UserSerializer
@@ -32,12 +31,12 @@ class UserSerializerTests(TestCase):
             )
             data = UserSerializer(user, context={'request': self.request}).data
 
-            self.assertEqual(data['first_name'], 'Test')
-            self.assertEqual(data['last_name'], 'User')
-            self.assertEqual(data['email'], 'testuser@email.com')
-            self.assertEqual(data['is_active'], True)
-            self.assertEqual(data['is_staff'], False)
-            self.assertEqual(data['is_superuser'], False)
+            self.assertEqual(data['first_name'], user.first_name)
+            self.assertEqual(data['last_name'], user.last_name)
+            self.assertEqual(data['email'], user.email)
+            self.assetTrue(data['is_active'])
+            self.assertFalse(data['is_staff'])
+            self.assertFalse(data['is_superuser'])
             self.assertEqual(
                 data['last_login'],
                 self.datetime
@@ -47,7 +46,7 @@ class UserSerializerTests(TestCase):
                 self.datetime
             )
 
-    def test_user_profile_save(self):
+    def test_user_save(self):
         """Test user data is saved correctly."""
         with freeze_time(self.datetime):
             data = {

@@ -1,7 +1,5 @@
-import json
 import logging
 
-from django.forms.models import model_to_dict
 from server.config import celery_app
 from server.core.utils import TradeApiRest
 

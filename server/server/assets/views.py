@@ -1,8 +1,5 @@
-from django.shortcuts import render
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
+from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from rest_framework.response import Response
 
 from .models import Asset, AssetClass, Exchange
 from .serializers import (AssetClassSerializer, AssetSerializer,

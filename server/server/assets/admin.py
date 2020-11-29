@@ -5,12 +5,12 @@ from .models import Asset, AssetClass, Exchange
 
 class AssetClassAdmin(admin.ModelAdmin):
     search_fields = ['name', 'alt_name']
-    list_display = ['name', 'alt_name', 'is_current']
+    list_display = ['name', 'alt_name', 'is_active']
 
 
 class ExchangeAdmin(admin.ModelAdmin):
     search_fields = ['name', 'alt_name']
-    list_display = ['name', 'alt_name', 'is_current']
+    list_display = ['name', 'alt_name', 'is_active']
 
 
 class AssetAdmin(admin.ModelAdmin):

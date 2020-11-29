@@ -1,5 +1,5 @@
 from django.contrib.auth.models import (AbstractBaseUser, Group,
-                                        PermissionsMixin, UserManager)
+                                        PermissionsMixin)
 from django.contrib.postgres.fields import CIEmailField
 from django.db import models
 from django.utils import timezone

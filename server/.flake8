@@ -1,5 +1,6 @@
 [flake8]
 ignore = D203
+max-line-length = 80
 exclude =
     .git,
     __pycache__,
@@ -7,5 +8,6 @@ exclude =
     old,
     build,
     dist,
-    */migrations/
+    */migrations/,
+    */settings.py
 max-complexity = 10

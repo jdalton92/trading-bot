@@ -4,7 +4,7 @@ from freezegun import freeze_time
 from rest_framework.test import APIClient
 from server.users.models import User
 
-from .factories import AdminFactory, UserFactory
+from .factories import UserFactory
 
 time_now = timezone.now()
 

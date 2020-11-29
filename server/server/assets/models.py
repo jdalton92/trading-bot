@@ -15,7 +15,7 @@ class Exchange(models.Model):
         blank=True,
         null=True,
     )
-    is_current = models.BooleanField(
+    is_active = models.BooleanField(
         default=True
     )
 
@@ -40,7 +40,7 @@ class AssetClass(models.Model):
         blank=True,
         null=True,
     )
-    is_current = models.BooleanField(
+    is_active = models.BooleanField(
         default=True
     )
 
