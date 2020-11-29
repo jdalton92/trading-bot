@@ -1,12 +1,13 @@
 import factory
-from server.users.models import User
 from factory.django import DjangoModelFactory
+from server.users.models import User
 
 
 class UserFactory(DjangoModelFactory):
     """Construct a user of the system."""
 
-    name = factory.Faker('name')
+    first_name = factory.Faker('name')
+    last_name = factory.Faker('name')
     email = factory.Sequence(lambda n: 'user_{0}@tradingbot.com'.format(n))
     password = factory.PostGenerationMethodCall('set_password', None)
 

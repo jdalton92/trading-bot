@@ -18,6 +18,7 @@ psycopg2 = "*"
 psycopg2-binary = "*"
 alpaca-trade-api = "*"
 redis = "*"
+freezegun = "*"
 
 [requires]
 python_version = "3.8"

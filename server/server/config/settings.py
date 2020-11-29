@@ -30,7 +30,7 @@ DEBUG = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS = ['*']
 
 INTERNAL_IPS = [
-    '127.0.0.1',  # Required for Django Debug Toolbar
+    '127.0.0.1',  # Required for Django Debug Toolbar (development)
 ]
 
 # Application definition
@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     # My apps
     'server.core',
     'server.users',
-    'server.assets'
+    'server.assets',
+    'server.account'
 ]
 
 MIDDLEWARE = [

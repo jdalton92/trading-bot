@@ -61,5 +61,5 @@ def bulk_add_assets(assets):
         asset['asset_class'] = asset['class']
         del asset['class']
         serializer = AssetSerializer(data=asset)
-        if serializer.is_valid():  # Fail silently for bulk download
+        if serializer.is_valid():  # Fail silently for bulk add
             serializer.save()
