@@ -58,31 +58,6 @@ def create_periodic_tasks(app_config, verbosity=2, interactive=True, using=DEFAU
             'task': 'server.assets.tasks.update_asset_models',
             'crontab': on_the_hour
         },
-        # {
-        #     'name': 'Event Reminders',
-        #     'task': 'api.events.tasks.send_event_reminders',
-        #     'crontab': on_the_hour
-        # },
-        # {
-        #     'name': 'Update Group Members',
-        #     'task': 'api.customgroups.tasks.update_filter_group_members',
-        #     'crontab': on_45_minute
-        # },
-        # {
-        #     'name': 'Update Role Members',
-        #     'task': 'api.users.tasks.sync_role_members',
-        #     'crontab': on_30_minute
-        # },
-        # {
-        #     'name': 'Update Notice Audience Follows',
-        #     'task': 'api.notices.tasks.update_notice_follows',
-        #     'crontab': six_hourly
-        # },
-        # {
-        #     'name': 'Update Calendar Feeds',
-        #     'task': 'api.calendars.tasks.update_calendar_feeds',
-        #     'crontab': six_hourly
-        # },
     ]
 
     for task in tasks:

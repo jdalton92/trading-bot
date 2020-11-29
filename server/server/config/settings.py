@@ -114,7 +114,7 @@ CHANNEL_LAYERS = {
             "hosts": [
                 {
                     "address": (
-                        env("REDIS_HOST", default="localhost"),
+                        env("REDIS_HOST", default="redis"),
                         env.int("REDIS_PORT", default=6379),
                     ),
                     "timeout": 10,
@@ -219,8 +219,13 @@ LOGGING = {
 }
 
 # Celery settings
-CELERY_BROKER_URL = "redis://redis:6379"
-CELERY_RESULT_BACKEND = "redis://redis:6379"
+
+CELERY_BROKER_URL = "redis://{}:{}".format(
+    env("REDIS_HOST", default="redis"), env.int("REDIS_PORT", default=6379)
+)
+CELERY_RESULT_BACKEND = "redis://{}:{}".format(
+    env("REDIS_HOST", default="redis"), env.int("REDIS_PORT", default=6379)
+)
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'

@@ -14,11 +14,11 @@ Alpaca Data API provides the market data available to the client user through th
 - Nasdaq PSX
 - NYSE Chicago, Inc.
 
-## Authors
+# Author
 
-- **James Dalton**
+- [James Dalton](https://jamesdalton.io)
 
-## Built with
+# Built with
 
 - [Django](https://nodejs.org/en/) - Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design.
 - [Django-Rest-Framework](https://www.django-rest-framework.org/) - Django REST framework is a powerful and flexible toolkit for building Web APIs.
@@ -28,9 +28,15 @@ Alpaca Data API provides the market data available to the client user through th
 - [React](https://create-react-app.dev/docs/adding-typescript/) - Bootstrapped using Create React App, and using TypeScript template.
 - [Visual Studio Code](https://code.visualstudio.com/) - IDE
 
-## Instructions
+# Instructions
 
-1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/). Create your own [Alpaca Api Account](https://app.alpaca.markets/signup).
+## Client
+
+1. TBC
+
+## Server
+
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/). Create your own [Alpaca API Account](https://app.alpaca.markets/signup).
 
 2. Navigate to your `server` directory, and create a `.env` file. Copy the included `.env.example` in this repo for a starter file;
 
@@ -54,7 +60,7 @@ $ pipenv install
 $ docker-compose up
 ```
 
-3. Run the server on localhost a separte terminal and run database migrations, create a superuser (I use the `.env` file for superuser details, and include `--no-input` command)
+3. Run the server on localhost a separte terminal and run database migrations, create a superuser (refer `.env.example` file for default superuser account details, and include `--no-input` command)
 
 ```sh
 $ pipenv shell
@@ -63,15 +69,30 @@ $ python manage.py createsuperuser --no-input
 $ python manage.py runserver
 ```
 
-## Testing
+# Testing
+
+## Server
 
 ```sh
 $ python manage.py test server
 ```
 
-## Server Dependencies
+- Optionally add `--keepdb` to persist database between tests, and `--verbosity=2` to recieve verbose output of tests
+
+```sh
+$ python manage.py test server --keepdb --verbosity=2
+```
+
+## Client
+
+```sh
+$ TBC
+```
+
+# Server Dependencies
 
 ```
+[packages]
 django
 djangorestframework
 django-environ
@@ -79,11 +100,14 @@ alpaca-trade-api
 django-filter
 celery
 django-celery-beat
-django-debug-toolbar
 psycopg2
 psycopg2-binary
+
+[dev-packages]
+django-debug-toolbar
+freezegun
 ```
 
-## Licence
+# Licence
 
 This project is licensed under the terms of the MIT license
