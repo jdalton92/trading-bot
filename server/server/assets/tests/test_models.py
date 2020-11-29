@@ -1,3 +1,4 @@
+import uuid
 from django.test import TestCase
 from server.assets.models import Asset, AssetClass, Exchange
 
@@ -47,8 +48,9 @@ class AssetTests(TestCase):
 
     def test_create_asset(self):
         """Asset object can be created."""
+        uuid = uuid.uuid4()
         asset = Asset(
-            id='586e52b5-ee33-4e1c-8f31-1f6f53430f29',
+            id=uuid,
             name='Asset Name',
             asset_class=self.asset_class,
             easy_to_borrow=True,
@@ -62,7 +64,7 @@ class AssetTests(TestCase):
         asset.save()
 
         self.assertIn(asset, Asset.objects.all())
-        self.assertEqual(asset.id, '586e52b5-ee33-4e1c-8f31-1f6f53430f29')
+        self.assertEqual(asset.id, str(uuid))
         self.assertEqual(asset.name, 'Asset Name')
         self.assertEqual(asset.asset_class, self.asset_class.pk)
         self.assertTrue(asset.easy_to_borrow)
