@@ -2,7 +2,6 @@ import uuid
 
 from django.test import TestCase
 from django.test.client import RequestFactory
-from server.users.serializers import UserSerializer
 from server.users.tests.factories import AdminFactory
 
 from .factories import AssetClassFactory, AssetFactory, ExchangeFactory

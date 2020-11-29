@@ -48,4 +48,7 @@ class LoginView(APIView):
                 status=200
             )
         else:
-            return Response({"error": "User does not exist, or is inactive"}, status=400)
+            return Response(
+                {"error": "User does not exist, or is inactive"},
+                status=400
+            )

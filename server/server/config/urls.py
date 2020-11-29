@@ -2,7 +2,6 @@ import debug_toolbar
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.urls import path
-from rest_framework.routers import DefaultRouter
 
 from .auth.views import CustomAuthToken, LoginView
 
