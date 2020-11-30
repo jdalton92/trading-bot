@@ -29,7 +29,7 @@ class ExchangeSerializerTests(TestCase):
         self.assertEqual(data['alt_name'], exchange.alt_name)
         self.assertEqual(data['is_active'], True)
 
-    def test_save_exchange(self):
+    def test_create_exchange(self):
         """Exchange data is saved correctly."""
         data = {
             "name": "Exchange",
@@ -47,6 +47,22 @@ class ExchangeSerializerTests(TestCase):
         self.assertEqual(exchange.name, data['name'])
         self.assertEqual(exchange.alt_name, data['alt_name'])
         self.assertTrue(exchange.is_active)
+
+    def test_update_exchange(self):
+        """Exchange data is updated correctly."""
+        exchange = ExchangeFactory(name='Old Exchange Name')
+        serializer = ExchangeSerializer(
+            exchange,
+            data={'name': 'New Exchange Name'},
+            partial=True,
+            context={'request': self.request}
+        )
+
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+
+        exchange.refresh_from_db()
+        self.assertEqual(exchange.name, 'New Exchange Name')
 
 
 class AssetClassSerializerTests(TestCase):
@@ -68,7 +84,7 @@ class AssetClassSerializerTests(TestCase):
         self.assertEqual(data['alt_name'], asset_class.alt_name)
         self.assertTrue(data['is_active'])
 
-    def test_save_asset_class(self):
+    def test_create_asset_class(self):
         """Asset class data is saved correctly."""
         data = {
             "name": "Asset Class",
@@ -86,6 +102,22 @@ class AssetClassSerializerTests(TestCase):
         self.assertEqual(asset_class.name, data['name'])
         self.assertEqual(asset_class.alt_name, data['alt_name'])
         self.assertTrue(asset_class.is_active)
+
+    def test_update_asset_class(self):
+        """Asset class data is updated correctly."""
+        asset_class = AssetClassFactory(name='Old Asset Class Name')
+        serializer = AssetClassSerializer(
+            asset_class,
+            data={'name': 'New Asset Class Name'},
+            partial=True,
+            context={'request': self.request}
+        )
+
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+
+        asset_class.refresh_from_db()
+        self.assertEqual(asset_class.name, 'New Asset Class Name')
 
 
 class AssetSerializerTests(TestCase):
@@ -114,7 +146,7 @@ class AssetSerializerTests(TestCase):
         self.assertEqual(data['symbol'], asset.symbol)
         self.assertTrue(data['tradable'])
 
-    def test_save_asset(self):
+    def test_create_asset(self):
         """Asset data is saved correctly."""
         asset_uuid = uuid.uuid4()
         data = {
@@ -146,3 +178,19 @@ class AssetSerializerTests(TestCase):
         self.assertEqual(asset.status, data['status'])
         self.assertEqual(asset.symbol, data['symbol'])
         self.assertTrue(asset.tradable)
+
+    def test_update_asset(self):
+        """Asset data is updated correctly."""
+        asset = AssetFactory(name='Old Asset Name')
+        serializer = AssetSerializer(
+            asset,
+            data={'name': 'New Asset Name'},
+            partial=True,
+            context={'request': self.request}
+        )
+
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+
+        asset.refresh_from_db()
+        self.assertEqual(asset.name, 'New Asset Name')

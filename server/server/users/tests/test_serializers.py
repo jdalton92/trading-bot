@@ -19,7 +19,7 @@ class UserSerializerTests(TestCase):
         cls.datetime = '2020-11-29T00:00:00Z'
 
     def test_view_user(self):
-        """Test user data is serialized correctly."""
+        """User data is serialized correctly."""
         with freeze_time(self.datetime):
             user = UserFactory(
                 first_name='Test',
@@ -46,8 +46,8 @@ class UserSerializerTests(TestCase):
                 self.datetime
             )
 
-    def test_user_save(self):
-        """Test user data is saved correctly."""
+    def test_create_user(self):
+        """User data is saved correctly."""
         with freeze_time(self.datetime):
             data = {
                 "first_name": "Test",
@@ -76,3 +76,19 @@ class UserSerializerTests(TestCase):
                 user.date_joined,
                 datetime(2020, 11, 29, 0, 0, 0, 0, tzinfo=pytz.UTC)
             )
+
+    def test_update_user(self):
+        """User data is updated correctly."""
+        user = UserFactory(first_name='Old Name')
+        serializer = UserSerializer(
+            user,
+            data={'first_name': 'New Name'},
+            partial=True,
+            context={'request': self.request}
+        )
+
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+
+        user.refresh_from_db()
+        self.assertEqual(user.first_name, 'New Name')

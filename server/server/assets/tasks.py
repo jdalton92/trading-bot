@@ -14,11 +14,20 @@ def update_asset_models():
     Update list of tradeable assets in database depending on what is available
     from Alpaca api.
     """
-    logger.info('Updating asset, asset class, and exchange models...')
-
     api = TradeApiRest()
     assets = api._list_assets()
+    update_asset_models(assets)
 
+
+def update_asset_models(assets):
+    """
+    Update assets, asset classes, and exchange models from list of assets
+
+    :param assets(list): list of assets
+    """
+    logger.info('Updating asset, asset class, and exchange models...')
+
+    # Transform Alpaca response into asset model format
     assets = list(map(lambda asset: asset.__dict__['_raw'], assets))
     exchanges = set(map(lambda asset: asset['exchange'], assets))
     asset_classes = set(map(lambda asset: asset['class'], assets))
