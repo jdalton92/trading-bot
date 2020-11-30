@@ -47,20 +47,20 @@ $ cp .env.example .env
 
 **Note:** setting `POSTGRES_HOST_AUTH_METHOD=trust` means Postgresql does not require a password. This is used only in development mode, being run on localhost
 
-2. Activate your virtual environment, and install the necessary dependencies summarised in the `Pipfile`
+3. Activate your virtual environment, and install the necessary dependencies summarised in the `Pipfile`
 
 ```sh
 $ pipenv shell
 $ pipenv install
 ```
 
-3. Run `docker-compose up` to initialise postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
+4. Run `docker-compose up` to initialise postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
 
 ```sh
 $ docker-compose up
 ```
 
-3. Run the server on localhost a separte terminal and run database migrations, create a superuser (refer `.env.example` file for default superuser account details, and include `--no-input` command)
+5. Run the server on localhost a separte terminal and run database migrations, create a superuser (refer `.env.example` file for default superuser account details, and include `--no-input` command)
 
 ```sh
 $ pipenv shell
