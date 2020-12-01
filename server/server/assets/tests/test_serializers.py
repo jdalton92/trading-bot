@@ -2,12 +2,12 @@ import uuid
 
 from django.test import TestCase
 from django.test.client import RequestFactory
+from server.assets.models import Asset, AssetClass, Exchange
+from server.assets.serializers import (AssetClassSerializer, AssetSerializer,
+                                       ExchangeSerializer)
 from server.users.tests.factories import AdminFactory
 
 from .factories import AssetClassFactory, AssetFactory, ExchangeFactory
-from .models import Asset, AssetClass, Exchange
-from .serializers import (AssetClassSerializer, AssetSerializer,
-                          ExchangeSerializer)
 
 
 class ExchangeSerializerTests(TestCase):
@@ -127,19 +127,24 @@ class AssetSerializerTests(TestCase):
         cls.admin = AdminFactory()
         cls.request = RequestFactory().get('/')
         cls.request.user = cls.admin
-        cls.asset_class = AssetClassFactory()
-        cls.exchange = ExchangeFactory()
+
+    def setUp(self):
+        self.asset_class = AssetClassFactory()
+        self.exchange = ExchangeFactory()
 
     def test_view_asset(self):
         """Asset data is serialized correctly."""
-        asset = AssetFactory()
+        asset = AssetFactory(
+            asset_class=self.asset_class,
+            exchange=self.exchange
+        )
         data = AssetSerializer(asset, context={'request': self.request}).data
 
         self.assertEqual(Asset.objects.count(), 1)
-        self.assertEqual(data['id'], asset.id)
-        self.assertEqual(data['asset_class'], asset.asset_class)
+        self.assertEqual(data['id'], str(asset.id))
+        self.assertEqual(data['asset_class'], asset.asset_class.name)
         self.assertTrue(data['easy_to_borrow'])
-        self.assertEqual(data['exchange'], asset.exchange)
+        self.assertEqual(data['exchange'], asset.exchange.name)
         self.assertTrue(data['marginable'])
         self.assertTrue(data['shortable'])
         self.assertEqual(data['status'], asset.status)
@@ -169,10 +174,10 @@ class AssetSerializerTests(TestCase):
         asset = serializer.save()
 
         self.assertEqual(Asset.objects.count(), 1)
-        self.assertEqual(asset.id, data['id'])
-        self.assertEqual(asset.asset_class, data['asset_class'])
+        self.assertEqual(str(asset.id), data['id'])
+        self.assertEqual(asset.asset_class.name, data['asset_class'])
         self.assertTrue(asset.easy_to_borrow)
-        self.assertEqual(asset.exchange, data['exchange'])
+        self.assertEqual(asset.exchange.name, data['exchange'])
         self.assertTrue(asset.marginable)
         self.assertTrue(asset.shortable)
         self.assertEqual(asset.status, data['status'])
@@ -181,7 +186,11 @@ class AssetSerializerTests(TestCase):
 
     def test_update_asset(self):
         """Asset data is updated correctly."""
-        asset = AssetFactory(name='Old Asset Name')
+        asset = AssetFactory(
+            name='Old Asset Name',
+            asset_class=self.asset_class,
+            exchange=self.exchange
+        )
         serializer = AssetSerializer(
             asset,
             data={'name': 'New Asset Name'},

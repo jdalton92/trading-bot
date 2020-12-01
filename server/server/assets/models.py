@@ -8,6 +8,7 @@ class Exchange(models.Model):
 
     name = models.CharField(
         verbose_name=_('name'),
+        unique=True,
         max_length=256
     )
     alt_name = models.CharField(
@@ -33,6 +34,7 @@ class AssetClass(models.Model):
 
     name = models.CharField(
         verbose_name=_('name'),
+        unique=True,
         max_length=256
     )
     alt_name = models.CharField(

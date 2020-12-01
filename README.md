@@ -51,7 +51,7 @@ $ cp .env.example .env
 
 ```sh
 $ pipenv shell
-$ pipenv install
+$ (sever) pipenv install
 ```
 
 4. Run `docker-compose up` to initialise postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
@@ -63,10 +63,9 @@ $ docker-compose up
 5. Run the server on localhost a separte terminal and run database migrations, create a superuser (refer `.env.example` file for default superuser account details, and include `--no-input` command)
 
 ```sh
-$ pipenv shell
-$ python manage.py migrate
-$ python manage.py createsuperuser --no-input
-$ python manage.py runserver
+$ (server) python manage.py migrate
+$ (server) python manage.py createsuperuser --no-input
+$ (server) python manage.py runserver
 ```
 
 # Testing
@@ -74,13 +73,13 @@ $ python manage.py runserver
 ## Server
 
 ```sh
-$ python manage.py test server
+$ (server) python manage.py test server
 ```
 
 - Optionally add `--keepdb` to persist database between tests, and `--verbosity=2` to recieve verbose output of tests
 
 ```sh
-$ python manage.py test server --keepdb --verbosity=2
+$ (server) python manage.py test server --keepdb --verbosity=2
 ```
 
 ## Client

@@ -1,5 +1,6 @@
 import logging
 
+from alpaca_trade_api.entity import Asset as AlpacaAsset
 from server.config import celery_app
 from server.core.utils import TradeApiRest
 
@@ -9,7 +10,7 @@ from .serializers import AssetSerializer
 logger = logging.getLogger(__name__)
 
 
-def update_asset_models():
+def update_assets():
     """
     Update list of tradeable assets in database depending on what is available
     from Alpaca api.
@@ -28,9 +29,13 @@ def update_asset_models(assets):
     logger.info('Updating asset, asset class, and exchange models...')
 
     # Transform Alpaca response into asset model format
-    assets = list(map(lambda asset: asset.__dict__['_raw'], assets))
-    exchanges = set(map(lambda asset: asset['exchange'], assets))
-    asset_classes = set(map(lambda asset: asset['class'], assets))
+    if isinstance(assets[0], AlpacaAsset):
+        assets = list(map(lambda asset: asset.__dict__['_raw'], assets))
+        exchanges = set(map(lambda asset: asset['exchange'], assets))
+        asset_classes = set(map(lambda asset: asset['class'], assets))
+    else:
+        exchanges = set(map(lambda asset: asset['exchange'], assets))
+        asset_classes = set(map(lambda asset: asset['class'], assets))
 
     additions_to_db = 0
 

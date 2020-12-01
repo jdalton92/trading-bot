@@ -34,7 +34,7 @@ class UserSerializerTests(TestCase):
             self.assertEqual(data['first_name'], user.first_name)
             self.assertEqual(data['last_name'], user.last_name)
             self.assertEqual(data['email'], user.email)
-            self.assetTrue(data['is_active'])
+            self.assertTrue(data['is_active'])
             self.assertFalse(data['is_staff'])
             self.assertFalse(data['is_superuser'])
             self.assertEqual(

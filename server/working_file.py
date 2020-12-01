@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     from server.assets.models import Asset
     from server.assets.serializers import AssetSerializer
-    from server.assets.tasks import bulk_add_assets, update_asset_models
+    from server.assets.tasks import update_assets
     from server.core.utils import TradeApiRest
 
-    update_asset_models()
+    update_assets()

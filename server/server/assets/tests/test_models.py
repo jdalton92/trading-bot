@@ -3,6 +3,8 @@ import uuid
 from django.test import TestCase
 from server.assets.models import Asset, AssetClass, Exchange
 
+from .factories import AssetClassFactory, ExchangeFactory
+
 
 class ExchangeTests(TestCase):
 
@@ -12,6 +14,7 @@ class ExchangeTests(TestCase):
             name='Exchange',
             alt_name='Alt Exchange Name',
         )
+        exchange.save()
 
         self.assertIn(exchange, Exchange.objects.all())
         self.assertEqual(exchange.name, 'Exchange')
@@ -27,6 +30,7 @@ class AssetClassTests(TestCase):
             name='Asset Class',
             alt_name='Alt Asset Class Name',
         )
+        asset_class.save()
 
         self.assertIn(asset_class, AssetClass.objects.all())
         self.assertEqual(asset_class.name, 'Asset Class')
@@ -36,16 +40,9 @@ class AssetClassTests(TestCase):
 
 class AssetTests(TestCase):
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.asset_class = AssetClass(
-            name='Asset Class',
-            alt_name='Alt Asset Class Name',
-        )
-        cls.exchange = Exchange(
-            name='Exchange',
-            alt_name='Alt Exchange Name',
-        )
+    def setUp(self):
+        self.asset_class = AssetClassFactory()
+        self.exchange = ExchangeFactory()
 
     def test_create_asset(self):
         """Asset object can be created."""
@@ -65,11 +62,11 @@ class AssetTests(TestCase):
         asset.save()
 
         self.assertIn(asset, Asset.objects.all())
-        self.assertEqual(asset.id, str(asset_uuid))
+        self.assertEqual(str(asset.id), str(asset_uuid))
         self.assertEqual(asset.name, 'Asset Name')
-        self.assertEqual(asset.asset_class, self.asset_class.pk)
+        self.assertEqual(asset.asset_class.pk, self.asset_class.pk)
         self.assertTrue(asset.easy_to_borrow)
-        self.assertEqual(asset.exchange, self.exchange.pk)
+        self.assertEqual(asset.exchange.pk, self.exchange.pk)
         self.assertTrue(asset.marginable)
         self.assertTrue(asset.shortable)
         self.assertEqual(asset.status, Asset.ACTIVE)
