@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from server.users.models import User
 from server.users.tests.factories import AdminFactory, UserFactory
 
 
@@ -34,9 +35,16 @@ class UserViewTests(APITestCase):
         """Admins can create new users."""
         self.login(self.admin)
         response = self.client.post(reverse("v1:users-list"), self.data)
+        user = User.objects.filter(email=self.data["email"])
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(User.objects.filter(email=self.data["email"]).exists())
+        self.assertTrue(user.exists())
+        self.assertEqual(user.first_name, self.data['first_name'])
+        self.assertEqual(user.last_name, self.data['last_name'])
+        self.assertEqual(user.email, self.data['email'])
+        self.assertEqual(user.is_active, self.data['is_active'])
+        self.assertEqual(user.is_staff, self.data['is_staff'])
+        self.assertEqual(user.is_superuser, self.data['is_superuser'])
 
     def test_user_partial_update(self):
         """Admins can patch user data."""

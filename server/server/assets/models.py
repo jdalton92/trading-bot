@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import CICharField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -94,7 +95,7 @@ class Asset(models.Model):
         choices=STATUS_CHOICES,
         max_length=56,
     )
-    symbol = models.CharField(
+    symbol = CICharField(
         verbose_name=_('symbol'),
         unique=True,
         max_length=56,
