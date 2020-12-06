@@ -166,14 +166,12 @@ class TradeApiRest:
             - opg: use with a market/limit order type to submit 'market on open'
             (MOO) and 'limit on open' (LOO) orders
             - cls: use with a market/limit order type to submit 'market on
-            close'
-            (MOC) and 'limit on close' (LOC) orders
+            close' (MOC) and 'limit on close' (LOC) orders
             - ioc: immediate or cancel requires all or part of the order to be
-            executed immediately. Any unfilled portion
-                of the order is canceled (v2 API only)
+            executed immediately. Any unfilled portion of the order is canceled
+            (v2 API only)
             - fok: fill or kill is only executed if the entire order quantity
-            can be filled, otherwise the order is
-                canceled (v2 API only)
+            can be filled, otherwise the order is canceled (v2 API only)
         :param limit_price(float): required if type is 'limit' or 'stop_limit'
         :param stop_price(float): required if type is 'stop' or 'stop_limit'
         :param tail_price(float): this or 'trail_percent' is required if type is
