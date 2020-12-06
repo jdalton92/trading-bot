@@ -72,7 +72,6 @@ class Asset(models.Model):
         primary_key=True,
         editable=False,
         unique=True,
-        default=uuid.uuid4()
     )
     name = models.CharField(
         verbose_name=_('name'),

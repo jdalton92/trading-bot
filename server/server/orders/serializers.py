@@ -4,6 +4,26 @@ from server.assets.models import Asset
 from .models import Order, StopLoss, TakeProfit
 
 
+class TakeProfitSerializer(serializers.ModelSerializer):
+    """
+    Serializer for take profit orders via Alpaca api.
+    """
+
+    class Meta:
+        model = TakeProfit
+        fields = '__all__'
+
+
+class StopLossSerializer(serializers.ModelSerializer):
+    """
+    Serializer for stop loss orders via Alpaca api.
+    """
+
+    class Meta:
+        model = StopLoss
+        fields = '__all__'
+
+
 class OrderSerializer(serializers.ModelSerializer):
     """Serializer for an order placed by a user of Alpaca."""
 
@@ -48,23 +68,3 @@ class OrderSerializer(serializers.ModelSerializer):
                 'Either `trail_price` or `trail_percentage` is required if `type` is `trailing_stop`'
             )
         return data
-
-
-class TakeProfitSerializer(serializers.ModelSerializer):
-    """
-    Serializer for take profit orders via Alpaca api.
-    """
-
-    class Meta:
-        model = TakeProfit
-        fields = '__all__'
-
-
-class StopLossSerializer(serializers.ModelSerializer):
-    """
-    Serializer for stop loss orders via Alpaca api.
-    """
-
-    class Meta:
-        model = StopLoss
-        fields = '__all__'

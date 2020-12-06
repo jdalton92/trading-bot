@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'server.core',
     'server.users',
     'server.assets',
-    'server.account'
+    'server.orders'
 ]
 
 MIDDLEWARE = [
@@ -191,7 +191,7 @@ LOGGING = {
             'level': LOG_LEVEL,
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(os.path.dirname(BASE_DIR), 'debug.log'),
-            'maxBytes': 1024*1024*10,  # 10 MB
+            'maxBytes': 1024 * 1024 * 10,  # 10 MB
             'backupCount': 5,
             'formatter': 'standard',
         },

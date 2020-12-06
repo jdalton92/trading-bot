@@ -1,5 +1,6 @@
 from django.db import models
-from model_utils.models import TimeStampedModel
+from django.utils.translation import gettext_lazy as _
+from server.assets.models import Asset
 
 
 class StopLoss(models.Model):
@@ -10,10 +11,10 @@ class StopLoss(models.Model):
         max_digits=12,
         decimal_places=5
     )
-   limit_price = models.DecimalField(
+    limit_price = models.DecimalField(
         verbose_name=_('limit price'),
         max_digits=12,
-        decimal_places=5
+        decimal_places=5,
         blank=True,
         null=True
     )
@@ -43,7 +44,7 @@ class TakeProfit(models.Model):
         return f"{self.limit_price}"
 
 
-class Order(TimeStampedModel):
+class Order(models.Model):
     """An order placed by a user."""
 
     OPEN = 'open'
@@ -65,7 +66,7 @@ class Order(TimeStampedModel):
     STOP = 'stop'
     STOP_LIMIT = 'stop_limit'
     TRAILING_STOP = 'trailing_stop'
-    TYPE_CHOICES =[
+    TYPE_CHOICES = [
         (MARKET, _('market')),
         (LIMIT, _('limit')),
         (STOP, _('stop')),
@@ -99,6 +100,8 @@ class Order(TimeStampedModel):
         (OTO, _('one triggers other')),
     ]
 
+    created = models.DateTimeField(_('created'), auto_now_add=True)
+    modified = models.DateTimeField(_('modified'), auto_now=True)
     status = models.CharField(
         verbose_name=_('status'),
         choices=STATUS_CHOICES,
