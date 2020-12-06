@@ -62,17 +62,12 @@ class AssetTaskTests(TestCase):
         Duplicate asset, asset class, and exchange data is not created if it
         already exists.
         """
+
         self.assertEqual(Exchange.objects.all().count(), 0)
         self.assertEqual(AssetClass.objects.all().count(), 0)
         self.assertEqual(Asset.objects.all().count(), 0)
 
-        update_asset_models(self.asset_data)
-
-        self.assertEqual(Exchange.objects.all().count(), 2)
-        self.assertEqual(AssetClass.objects.all().count(), 1)
-        self.assertEqual(Asset.objects.all().count(), 3)
-
-        update_asset_models(self.asset_data)
+        update_asset_models(self.asset_data + self.asset_data)
 
         self.assertEqual(Exchange.objects.all().count(), 2)
         self.assertEqual(AssetClass.objects.all().count(), 1)

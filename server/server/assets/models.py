@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.postgres.fields import CICharField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -69,7 +71,8 @@ class Asset(models.Model):
     id = models.UUIDField(
         primary_key=True,
         editable=False,
-        unique=True
+        unique=True,
+        default=uuid.uuid4()
     )
     name = models.CharField(
         verbose_name=_('name'),
@@ -86,8 +89,8 @@ class Asset(models.Model):
     easy_to_borrow = models.BooleanField()
     exchange = models.ForeignKey(
         Exchange,
-        related_name='assets',
         verbose_name=_('exchange'),
+        related_name='assets',
         on_delete=models.CASCADE,
     )
     marginable = models.BooleanField()

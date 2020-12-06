@@ -32,9 +32,9 @@ class AssetFactory(DjangoModelFactory):
 
     id = uuid.uuid4()
     name = factory.Faker('catch_phrase')
-    asset_class = AssetClassFactory()
+    asset_class = factory.SubFactory(AssetClassFactory)
     easy_to_borrow = True
-    exchange = ExchangeFactory()
+    exchange = factory.SubFactory(ExchangeFactory)
     marginable = True
     shortable = True
     status = Asset.ACTIVE

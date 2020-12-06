@@ -70,8 +70,9 @@ def bulk_add_assets(assets):
     :param assets(list): list of serialized assets to be created
     """
     for asset in assets:
-        asset['asset_class'] = asset['class']
-        del asset['class']
+        if asset.get('class'):
+            asset['asset_class'] = asset['class']
+            del asset['class']
         serializer = AssetSerializer(data=asset)
         if serializer.is_valid():  # Fail silently for bulk add
             serializer.save()
