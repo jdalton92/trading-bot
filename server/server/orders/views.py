@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from .models import Order
-from .serializers import OrderSerializer
+from .serializers import OrderCreateSerializer, OrderSerializer
 
 
 class OrderView(viewsets.ModelViewSet):
@@ -11,7 +11,14 @@ class OrderView(viewsets.ModelViewSet):
         return Order.objects.all()
 
     def get_serializer_class(self):
-        return OrderSerializer
+        """
+        Instantiates and returns the serializer that the order view requires.
+        """
+        if self.action in ['list', 'retrieve']:
+            print('\nOrderSerializer')
+            return OrderSerializer
+        print('\nOrderCreateSerializer')
+        return OrderCreateSerializer
 
     def get_permissions(self):
         """

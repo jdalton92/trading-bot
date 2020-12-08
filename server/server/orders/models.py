@@ -165,13 +165,17 @@ class Order(models.Model):
     client_order_id = models.UUIDField(
         editable=False,
         unique=True,
+        blank=True,
+        null=True
     )
     order_class = models.CharField(
         verbose_name=_('order class'),
         choices=ORDER_CLASS_CHOICES,
         max_length=56,
+        blank=True,
+        null=True
     )
-    take_profit = models.ForeignKey(
+    take_profit = models.OneToOneField(
         TakeProfit,
         verbose_name=_('take profit'),
         related_name='+',
@@ -179,7 +183,7 @@ class Order(models.Model):
         blank=True,
         null=True
     )
-    stop_loss = models.ForeignKey(
+    stop_loss = models.OneToOneField(
         StopLoss,
         verbose_name=_('stop loss'),
         related_name='+',
