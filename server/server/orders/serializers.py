@@ -41,26 +41,8 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in Order._meta.get_fields()]
 
 
-class OrderCreateSerializer(serializers.ModelSerializer):
+class OrderCreateSerializer(OrderSerializer):
     """Serializer for creating/updating an order placed by a user of Alpaca."""
-
-    symbol = serializers.SlugRelatedField(
-        queryset=Asset.objects.all(),
-        slug_field="symbol",
-    )
-    client_order_id = serializers.UUIDField(format='hex_verbose')
-    take_profit = serializers.SlugRelatedField(
-        queryset=TakeProfit.objects.all(),
-        slug_field="limit_price",
-        required=False,
-        allow_null=True
-    )
-    stop_loss = serializers.SlugRelatedField(
-        queryset=StopLoss.objects.all(),
-        slug_field="stop_price",
-        required=False,
-        allow_null=True
-    )
 
     class Meta:
         model = Order
@@ -78,6 +60,11 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         has_trail_percent = bool(data.get('trail_percent'))
         has_trail_price = bool(data.get('trail_price'))
 
+        if not Asset.objects.filter(symbol=data.get('symbol')).exists():
+            raise serializers.ValidationError({'symbol': [
+                'Asset matching this symbol does not exist'
+            ]})
+
         if (is_stop_limit or is_limit) and not is_limit_price:
             raise serializers.ValidationError({'limit_price': [
                 'Field is required if `type` is `stop_limit` or `limit`'
@@ -88,9 +75,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             ]})
         if is_trailing_stop and not (has_trail_percent or has_trail_price):
             raise serializers.ValidationError(
-                """
-                Either `trail_price` or `trail_percentage` is required if
-                `type` is `trailing_stop`'
-                """
+                "Either `trail_price` or `trail_percentage` is required if "
+                "`type` is `trailing_stop`"
             )
         return data

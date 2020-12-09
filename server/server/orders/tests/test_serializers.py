@@ -179,6 +179,7 @@ class OrderSerializerTests(TestCase):
 
     def test_create_order(self):
         """Order data is saved correctly for admins."""
+        asset = AssetFactory(symbol='TEST')
         client_order_id = uuid.uuid4()
         data = {
             "status": "open",
@@ -208,9 +209,6 @@ class OrderSerializerTests(TestCase):
             context={'request': self.request}
         )
 
-        print('\nis_valid()', serializer.is_valid())
-        print('\nerrors', serializer.errors)
-
         self.assertTrue(serializer.is_valid())
         order = serializer.save()
 
@@ -227,14 +225,17 @@ class OrderSerializerTests(TestCase):
         self.assertEqual(data['trail_percentage'], 50.05)
         self.assertTrue(data['extended_hours'])
         self.assertEqual(data['order_class'], Order.SIMPLE)
-        self.assertEqual(data['take_profit'], self.take_profit.pk)
-        self.assertEqual(data['stop_loss'], self.stop_loss.pk)
+        self.assertEqual(data['take_profit'], {"limit_price": 100.05})
+        self.assertEqual(
+            data['stop_loss'],
+            {"stop_price": 100.01, "limit_price": 100.05}
+        )
 
     def test_update_order(self):
         """Order data is updated correctly for admins."""
         order = OrderFactory(status='open')
         serializer = OrderCreateSerializer(
-            take_profit,
+            order,
             data={'status': 'closed'},
             partial=True,
             context={'request': self.request}

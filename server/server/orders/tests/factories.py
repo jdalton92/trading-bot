@@ -1,3 +1,4 @@
+import random
 import uuid
 
 import factory
@@ -10,8 +11,8 @@ from server.orders.models import Order, StopLoss, TakeProfit
 class StopLossFactory(DjangoModelFactory):
     """Construct a stop loss."""
 
-    stop_price = fuzzy.FuzzyDecimal(1, 5000)
-    limit_price = fuzzy.FuzzyDecimal(1, 5000)
+    stop_price = round(random.uniform(1.00, 5000.00), 2)
+    limit_price = round(random.uniform(1.00, 5000.00), 2)
 
     class Meta:  # NOQA
         model = StopLoss
@@ -20,7 +21,7 @@ class StopLossFactory(DjangoModelFactory):
 class TakeProfitFactory(DjangoModelFactory):
     """Construct a take profit."""
 
-    limit_price = fuzzy.FuzzyDecimal(1, 5000)
+    limit_price = round(random.uniform(1.00, 5000.00), 2)
 
     class Meta:  # NOQA
         model = TakeProfit
@@ -30,7 +31,7 @@ class OrderFactory(DjangoModelFactory):
     """Construct an order."""
 
     symbol = factory.SubFactory(AssetFactory)
-    quantity = fuzzy.FuzzyDecimal(1, 100000),
+    quantity = round(random.uniform(1.00, 100000.00), 2)
     side = Order.BUY,
     type = Order.MARKET,
     time_in_force = Order.DAY,
