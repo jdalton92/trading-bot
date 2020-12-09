@@ -106,6 +106,7 @@ class Order(models.Model):
         verbose_name=_('status'),
         choices=STATUS_CHOICES,
         max_length=56,
+        default=OPEN
     )
     symbol = models.ForeignKey(
         Asset,

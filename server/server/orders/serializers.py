@@ -34,6 +34,11 @@ class OrderSerializer(serializers.ModelSerializer):
     client_order_id = serializers.UUIDField(format='hex_verbose')
     take_profit = TakeProfitSerializer(read_only=True)
     stop_loss = StopLossSerializer(read_only=True)
+    status = serializers.CharField(source='get_status_display')
+    side = serializers.CharField(source='get_side_display')
+    type = serializers.CharField(source='get_type_display')
+    time_in_force = serializers.CharField(source='get_time_in_force_display')
+    order_class = serializers.CharField(source='get_order_class_display')
 
     class Meta:
         model = Order
@@ -41,8 +46,16 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in Order._meta.get_fields()]
 
 
-class OrderCreateSerializer(OrderSerializer):
+class OrderCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating/updating an order placed by a user of Alpaca."""
+
+    symbol = serializers.SlugRelatedField(
+        queryset=Asset.objects.all(),
+        slug_field="symbol",
+    )
+    client_order_id = serializers.UUIDField(format='hex_verbose')
+    take_profit = TakeProfitSerializer(read_only=True)
+    stop_loss = StopLossSerializer(read_only=True)
 
     class Meta:
         model = Order
@@ -59,11 +72,6 @@ class OrderCreateSerializer(OrderSerializer):
         has_stop_price = bool(data.get('stop_price'))
         has_trail_percent = bool(data.get('trail_percent'))
         has_trail_price = bool(data.get('trail_price'))
-
-        if not Asset.objects.filter(symbol=data.get('symbol')).exists():
-            raise serializers.ValidationError({'symbol': [
-                'Asset matching this symbol does not exist'
-            ]})
 
         if (is_stop_limit or is_limit) and not is_limit_price:
             raise serializers.ValidationError({'limit_price': [

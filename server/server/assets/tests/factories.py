@@ -30,7 +30,7 @@ class AssetClassFactory(DjangoModelFactory):
 class AssetFactory(DjangoModelFactory):
     """Construct an asset."""
 
-    id = uuid.uuid4()
+    id = factory.Faker('uuid4')
     name = factory.Faker('catch_phrase')
     asset_class = factory.SubFactory(AssetClassFactory)
     easy_to_borrow = True

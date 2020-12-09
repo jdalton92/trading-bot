@@ -15,9 +15,7 @@ class OrderView(viewsets.ModelViewSet):
         Instantiates and returns the serializer that the order view requires.
         """
         if self.action in ['list', 'retrieve']:
-            print('\nOrderSerializer')
             return OrderSerializer
-        print('\nOrderCreateSerializer')
         return OrderCreateSerializer
 
     def get_permissions(self):
@@ -25,7 +23,7 @@ class OrderView(viewsets.ModelViewSet):
         Instantiates and returns the list of permissions that the order view
         requires.
         """
-        if self.action == 'delete':
+        if self.action == 'destroy':
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [IsAuthenticated]
