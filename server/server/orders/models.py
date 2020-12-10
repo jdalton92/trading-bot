@@ -166,8 +166,6 @@ class Order(models.Model):
     client_order_id = models.UUIDField(
         editable=False,
         unique=True,
-        blank=True,
-        null=True
     )
     order_class = models.CharField(
         verbose_name=_('order class'),

@@ -16,4 +16,7 @@ if __name__ == "__main__":
     from server.assets.tasks import update_assets
     from server.core.utils import TradeApiRest
 
-    update_assets()
+    api = TradeApiRest()
+    info = api._account_info()
+
+    print('\ninfo', info)

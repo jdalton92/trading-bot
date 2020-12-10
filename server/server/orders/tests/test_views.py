@@ -74,10 +74,83 @@ class OrderViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(order.exists())
 
-    def test_create_order_invalid(self):
-        """Incorrect orders raise validations errors."""
-        # TO DO
-        self.assertTrue(False)
+    def test_create_limit_order_invalid(self):
+        """Incorrect limit orders raise validations errors."""
+        AssetFactory(symbol="AAPL")
+        limit_order = {
+            "status": "open",
+            "symbol": "AAPL",
+            "quantity": 100.05,
+            "side": "buy",
+            "type": "limit",
+            "time_in_force": "day",
+            "client_order_id": str(uuid.uuid4())
+        }
+        response = self.client.post(reverse("v1:orders-list"), limit_order)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            str(response.data['limit_price'][0]),
+            'Field is required if `type` is `stop_limit` or `limit`'
+        )
+
+        limit_order['limit_price'] = 100
+        response = self.client.post(reverse("v1:orders-list"), limit_order)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_stop_order_invalid(self):
+        """Incorrect stop orders raise validations errors."""
+        AssetFactory(symbol="AAPL")
+        limit_order = {
+            "status": "open",
+            "symbol": "AAPL",
+            "quantity": 100.05,
+            "side": "buy",
+            "type": "stop",
+            "time_in_force": "day",
+            "client_order_id": str(uuid.uuid4())
+        }
+        response = self.client.post(reverse("v1:orders-list"), limit_order)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            str(response.data['stop_price'][0]),
+            'Field is required if `type` is `stop` or `stop_limit`'
+        )
+
+        limit_order['stop_price'] = 100
+        response = self.client.post(reverse("v1:orders-list"), limit_order)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_trailing_stop_order_invalid(self):
+        """Incorrect trailing stop orders raise validations errors."""
+        AssetFactory(symbol="AAPL")
+        limit_order = {
+            "status": "open",
+            "symbol": "AAPL",
+            "quantity": 100.05,
+            "side": "buy",
+            "type": "trailing_stop",
+            "time_in_force": "day",
+            "client_order_id": str(uuid.uuid4())
+        }
+        response = self.client.post(reverse("v1:orders-list"), limit_order)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            str(response.data['trail_price'][0]),
+            'Either `trail_price` or `trail_percentage` is required if `type` '
+            'is `trailing_stop`'
+        )
+        self.assertEqual(
+            str(response.data['trail_percent'][0]),
+            'Either `trail_price` or `trail_percentage` is required if `type` '
+            'is `trailing_stop`'
+        )
+
+        limit_order['trail_price'] = 100
+        response = self.client.post(reverse("v1:orders-list"), limit_order)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_partial_update_order(self):
         """Admins and users can partially update orders."""

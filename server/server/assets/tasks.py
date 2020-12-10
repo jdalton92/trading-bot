@@ -10,23 +10,18 @@ from .serializers import AssetSerializer
 logger = logging.getLogger(__name__)
 
 
-def update_assets():
+def update_assets(assets=None):
     """
     Update list of tradeable assets in database depending on what is available
     from Alpaca api.
-    """
-    api = TradeApiRest()
-    assets = api._list_assets()
-    update_asset_models(assets)
-
-
-def update_asset_models(assets):
-    """
-    Update assets, asset classes, and exchange models from list of assets
 
     :param assets(list): list of assets
     """
     logger.info('Updating asset, asset class, and exchange models...')
+
+    if not assets:
+        api = TradeApiRest()
+        assets = api._list_assets()
 
     # Transform Alpaca response into asset model format
     if isinstance(assets[0], AlpacaAsset):
@@ -50,7 +45,10 @@ def update_asset_models(assets):
             additions_to_db += 1
 
     existing_assets = [
-        str(asset) for asset in Asset.objects.all().values_list('id', flat=True)
+        str(asset_id) for asset_id in Asset.objects.all().values_list(
+            'id',
+            flat=True
+        )
     ]
     new_assets = [
         asset for asset in assets if asset['id'] not in existing_assets
@@ -67,7 +65,7 @@ def bulk_add_assets(assets):
     """
     Bulk create assets.
 
-    :param assets(list): list of serialized assets to be created
+    :param assets(list): list of assets to be created
     """
     for asset in assets:
         if asset.get('class'):

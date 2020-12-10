@@ -73,17 +73,21 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         has_trail_percent = bool(data.get('trail_percent'))
         has_trail_price = bool(data.get('trail_price'))
 
-        if (is_stop_limit or is_limit) and not is_limit_price:
+        if (is_stop_limit or is_limit) and not has_limit_price:
             raise serializers.ValidationError({'limit_price': [
                 'Field is required if `type` is `stop_limit` or `limit`'
             ]})
-        if (is_stop or is_stop_limit) and not is_stop_price:
+        if (is_stop or is_stop_limit) and not has_stop_price:
             raise serializers.ValidationError({'stop_price': [
                 'Field is required if `type` is `stop` or `stop_limit`'
             ]})
         if is_trailing_stop and not (has_trail_percent or has_trail_price):
-            raise serializers.ValidationError(
+            error_message = [
                 "Either `trail_price` or `trail_percentage` is required if "
                 "`type` is `trailing_stop`"
-            )
+            ]
+            raise serializers.ValidationError({
+                'trail_percent': error_message,
+                'trail_price': error_message
+            })
         return data

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from server.assets.models import Asset, AssetClass, Exchange
-from server.assets.tasks import update_asset_models
+from server.assets.tasks import update_assets
 
 
 class AssetTaskTests(TestCase):
@@ -51,7 +51,7 @@ class AssetTaskTests(TestCase):
         self.assertEqual(AssetClass.objects.all().count(), 0)
         self.assertEqual(Asset.objects.all().count(), 0)
 
-        update_asset_models(self.asset_data)
+        update_assets(self.asset_data)
 
         self.assertEqual(Exchange.objects.all().count(), 2)
         self.assertEqual(AssetClass.objects.all().count(), 1)
@@ -67,7 +67,7 @@ class AssetTaskTests(TestCase):
         self.assertEqual(AssetClass.objects.all().count(), 0)
         self.assertEqual(Asset.objects.all().count(), 0)
 
-        update_asset_models(self.asset_data + self.asset_data)
+        update_assets(self.asset_data + self.asset_data)
 
         self.assertEqual(Exchange.objects.all().count(), 2)
         self.assertEqual(AssetClass.objects.all().count(), 1)

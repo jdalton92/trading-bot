@@ -35,6 +35,7 @@ class OrderFactory(DjangoModelFactory):
     side = Order.BUY,
     type = Order.MARKET,
     time_in_force = Order.DAY,
+    client_order_id = factory.Faker('uuid4')
 
     class Meta:  # NOQA
         model = Order
