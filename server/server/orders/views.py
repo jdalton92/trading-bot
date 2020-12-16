@@ -8,7 +8,8 @@ from .serializers import OrderCreateSerializer, OrderSerializer
 class OrderView(viewsets.ModelViewSet):
 
     def get_queryset(self, *args, **kwargs):
-        return Order.objects.all()
+        """Return orders to requesting user."""
+        return Order.objects.visible(self.request.user)
 
     def get_serializer_class(self):
         """

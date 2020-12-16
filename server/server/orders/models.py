@@ -1,6 +1,9 @@
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from server.assets.models import Asset
+
+from .managers import OrderQuerySet
 
 
 class Order(models.Model):
@@ -61,6 +64,12 @@ class Order(models.Model):
 
     created = models.DateTimeField(_('created'), auto_now_add=True)
     modified = models.DateTimeField(_('modified'), auto_now=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_('user'),
+        related_name='+',
+        on_delete=models.CASCADE,
+    )
     status = models.CharField(
         verbose_name=_('status'),
         choices=STATUS_CHOICES,
@@ -143,6 +152,8 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+
+    objects = OrderQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'order'

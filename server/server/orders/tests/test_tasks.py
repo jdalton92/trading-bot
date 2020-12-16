@@ -2,16 +2,19 @@ from django.test import TestCase
 from server.assets.tests.factories import AssetFactory
 from server.orders.models import Order
 from server.orders.tasks import update_orders
+from server.users.tests.factories import UserFactory
 
 
 class OrderTaskTests(TestCase):
 
     def setUp(self):
+        self.user = UserFactory()
         self.asset_1 = AssetFactory(symbol="AAPL")
         self.asset_2 = AssetFactory(symbol="TLSA")
         self.asset_3 = AssetFactory(symbol="MFST")
         self.order_data = [
             {
+                "user": self.user.pk,
                 "status": "open",
                 "symbol": "AAPL",
                 "quantity": 10.01,
@@ -21,6 +24,7 @@ class OrderTaskTests(TestCase):
                 "client_order_id": "a8d52afb-b645-4d69-abfb-5e4810bd8c05"
             },
             {
+                "user": self.user.pk,
                 "status": "open",
                 "symbol": "TLSA",
                 "quantity": 101.05,
@@ -30,6 +34,7 @@ class OrderTaskTests(TestCase):
                 "client_order_id": "5bd31df8-802a-47c5-b385-49425b57f9da"
             },
             {
+                "user": self.user.pk,
                 "status": "open",
                 "symbol": "MFST",
                 "quantity": 105.08,

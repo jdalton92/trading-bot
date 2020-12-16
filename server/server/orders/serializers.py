@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from server.assets.models import Asset
+from server.users.models import User
+from server.users.serializers import UserSerializer
 
 from .models import Order
 
@@ -7,6 +9,7 @@ from .models import Order
 class OrderSerializer(serializers.ModelSerializer):
     """Serializer for listing/retrieving an order placed by a user of Alpaca."""
 
+    user = UserSerializer(fields=("id", "first_name", "last_name"))
     symbol = serializers.SlugRelatedField(
         queryset=Asset.objects.all(),
         slug_field="symbol",
@@ -27,6 +30,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating/updating an order placed by a user of Alpaca."""
 
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     symbol = serializers.SlugRelatedField(
         queryset=Asset.objects.all(),
         slug_field="symbol",

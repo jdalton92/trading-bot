@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.test import TestCase
 from server.assets.tests.factories import AssetFactory
 from server.orders.models import Order
+from server.users.tests.factories import UserFactory
 
 from .factories import OrderFactory
 
@@ -11,6 +12,7 @@ from .factories import OrderFactory
 class OrderTests(TestCase):
 
     def setUp(self):
+        self.user = UserFactory()
         self.asset = AssetFactory(
             symbol='TEST'
         )
@@ -26,6 +28,7 @@ class OrderTests(TestCase):
         """A order object can be created."""
         client_order_id = uuid.uuid4()
         order = Order(
+            user=self.user,
             status=Order.OPEN,
             symbol=self.asset,
             quantity=100.05,
@@ -45,6 +48,7 @@ class OrderTests(TestCase):
         order.save()
 
         self.assertIn(order, Order.objects.all())
+        self.assertEqual(order.user, self.user)
         self.assertEqual(order.status, Order.OPEN)
         self.assertEqual(order.symbol.symbol, 'TEST')
         self.assertEqual(order.quantity, 100.05)

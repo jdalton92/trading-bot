@@ -5,11 +5,13 @@ import factory
 from factory.django import DjangoModelFactory
 from server.assets.tests.factories import AssetFactory
 from server.orders.models import Order
+from server.users.tests.factories import UserFactory
 
 
 class OrderFactory(DjangoModelFactory):
     """Construct an order."""
 
+    user = factory.SubFactory(UserFactory)
     symbol = factory.SubFactory(AssetFactory)
     quantity = round(random.uniform(1.00, 100000.00), 2)
     side = Order.BUY,

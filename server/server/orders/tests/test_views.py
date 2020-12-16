@@ -39,6 +39,7 @@ class OrderViewTests(APITestCase):
         """Admins and users can create orders."""
         AssetFactory(symbol="AAPL")
         order_1 = {
+            "user": self.user.pk,
             "status": "open",
             "symbol": "AAPL",
             "quantity": 100.05,
@@ -48,6 +49,7 @@ class OrderViewTests(APITestCase):
             "client_order_id": str(uuid.uuid4())
         }
         order_2 = {
+            "user": self.user.pk,
             "status": "open",
             "symbol": "AAPL",
             "quantity": 100.05,
@@ -78,6 +80,7 @@ class OrderViewTests(APITestCase):
         """Incorrect limit orders raise validations errors."""
         AssetFactory(symbol="AAPL")
         limit_order = {
+            "user": self.user.pk,
             "status": "open",
             "symbol": "AAPL",
             "quantity": 100.05,
@@ -102,6 +105,7 @@ class OrderViewTests(APITestCase):
         """Incorrect stop orders raise validations errors."""
         AssetFactory(symbol="AAPL")
         limit_order = {
+            "user": self.user.pk,
             "status": "open",
             "symbol": "AAPL",
             "quantity": 100.05,
@@ -126,6 +130,7 @@ class OrderViewTests(APITestCase):
         """Incorrect trailing stop orders raise validations errors."""
         AssetFactory(symbol="AAPL")
         limit_order = {
+            "user": self.user.pk,
             "status": "open",
             "symbol": "AAPL",
             "quantity": 100.05,

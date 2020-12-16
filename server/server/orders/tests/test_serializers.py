@@ -6,7 +6,8 @@ from django.test.client import RequestFactory
 from server.assets.tests.factories import AssetFactory
 from server.orders.models import Order
 from server.orders.serializers import OrderCreateSerializer, OrderSerializer
-from server.users.tests.factories import AdminFactory
+from server.users.serializers import UserSerializer
+from server.users.tests.factories import AdminFactory, UserFactory
 
 from .factories import OrderFactory
 
@@ -19,10 +20,14 @@ class OrderSerializerTests(TestCase):
         cls.request = RequestFactory().get('/')
         cls.request.user = cls.admin
 
+    def setUp(self):
+        self.user = UserFactory()
+
     def test_view_order(self):
         """Order data is serialized correctly."""
         asset = AssetFactory(symbol='TEST')
-        order = OrderFactory(
+        order = Order(
+            user=self.user,
             status=Order.OPEN,
             symbol=asset,
             quantity=100.05,
@@ -34,6 +39,13 @@ class OrderSerializerTests(TestCase):
             order, context={'request': self.request}
         ).data
 
+        self.assertEqual(
+            data['user'],
+            UserSerializer(
+                self.user,
+                fields=("id", "first_name", "last_name")
+            ).data
+        )
         self.assertEqual(data['status'], Order.OPEN)
         self.assertEqual(data['symbol'], 'TEST')
         self.assertEqual(float(data['quantity']), 100.05)
@@ -46,6 +58,7 @@ class OrderSerializerTests(TestCase):
         AssetFactory(symbol='TEST')
         client_order_id = uuid.uuid4()
         data = {
+            "user": self.user.pk,
             "status": "open",
             "symbol": "TEST",
             "quantity": 100.05,
@@ -76,6 +89,7 @@ class OrderSerializerTests(TestCase):
         self.assertTrue(serializer.is_valid())
         order = serializer.save()
 
+        self.assertEqual(self.user, order.user)
         self.assertEqual(data['status'], order.status)
         self.assertEqual(data['symbol'], order.symbol.symbol)
         self.assertEqual(data['quantity'], float(order.quantity))
