@@ -1,8 +1,8 @@
 # **Trading Bot**
 
-Algorithmic trading bot using market data from [Alpaca API](https://alpaca.markets/docs/api-documentation/) for a real time data subscription, and paper trading account
+Algorithmic trading bot using market data from [Alpaca API](https://alpaca.markets/docs/api-documentation/) for real time data subscription/a paper trading account, and implemented using a bespoke Django wrapper for Alpaca's Python client.
 
-Trades are placed with Alpaca Paper trading platform, with market data periodically sourced using Docker containers with Celery and Redis, and stored using a Postgresql database.
+Trades are placed with Alpaca Paper trading platform, with market data periodically sourced using Docker containers running Celery and Redis, and stored using a Postgresql database.
 
 # **Alpaca API**
 
