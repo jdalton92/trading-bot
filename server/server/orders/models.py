@@ -3,47 +3,6 @@ from django.utils.translation import gettext_lazy as _
 from server.assets.models import Asset
 
 
-class StopLoss(models.Model):
-    """Stop loss model for advanced orders."""
-
-    stop_price = models.DecimalField(
-        verbose_name=_('stop price'),
-        max_digits=12,
-        decimal_places=5
-    )
-    limit_price = models.DecimalField(
-        verbose_name=_('limit price'),
-        max_digits=12,
-        decimal_places=5,
-        blank=True,
-        null=True
-    )
-
-    class Meta:
-        verbose_name = 'stop loss'
-        verbose_name_plural = 'stop losses'
-
-    def __str__(self):
-        return f"{self.stop_price}"
-
-
-class TakeProfit(models.Model):
-    """Take profit model for advanced orders."""
-
-    limit_price = models.DecimalField(
-        verbose_name=_('limit price'),
-        max_digits=12,
-        decimal_places=5
-    )
-
-    class Meta:
-        verbose_name = 'take profit'
-        verbose_name_plural = 'take profits'
-
-    def __str__(self):
-        return f"{self.limit_price}"
-
-
 class Order(models.Model):
     """An order placed by a user."""
 
@@ -174,21 +133,15 @@ class Order(models.Model):
         blank=True,
         null=True
     )
-    take_profit = models.OneToOneField(
-        TakeProfit,
-        verbose_name=_('take profit'),
-        related_name='+',
-        on_delete=models.CASCADE,
+    take_profit = models.JSONField(
+        _("take profit"),
         blank=True,
-        null=True
+        null=True,
     )
-    stop_loss = models.OneToOneField(
-        StopLoss,
-        verbose_name=_('stop loss'),
-        related_name='+',
-        on_delete=models.CASCADE,
+    stop_loss = models.JSONField(
+        _("stop loss"),
         blank=True,
-        null=True
+        null=True,
     )
 
     class Meta:

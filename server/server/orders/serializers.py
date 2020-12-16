@@ -1,27 +1,7 @@
 from rest_framework import serializers
 from server.assets.models import Asset
 
-from .models import Order, StopLoss, TakeProfit
-
-
-class TakeProfitSerializer(serializers.ModelSerializer):
-    """
-    Serializer for take profit orders via Alpaca api.
-    """
-
-    class Meta:
-        model = TakeProfit
-        fields = '__all__'
-
-
-class StopLossSerializer(serializers.ModelSerializer):
-    """
-    Serializer for stop loss orders via Alpaca api.
-    """
-
-    class Meta:
-        model = StopLoss
-        fields = '__all__'
+from .models import Order
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -32,8 +12,6 @@ class OrderSerializer(serializers.ModelSerializer):
         slug_field="symbol",
     )
     client_order_id = serializers.UUIDField(format='hex_verbose')
-    take_profit = TakeProfitSerializer(read_only=True)
-    stop_loss = StopLossSerializer(read_only=True)
     status = serializers.CharField(source='get_status_display')
     side = serializers.CharField(source='get_side_display')
     type = serializers.CharField(source='get_type_display')
@@ -54,8 +32,6 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         slug_field="symbol",
     )
     client_order_id = serializers.UUIDField(format='hex_verbose')
-    take_profit = TakeProfitSerializer(read_only=True)
-    stop_loss = StopLossSerializer(read_only=True)
 
     class Meta:
         model = Order

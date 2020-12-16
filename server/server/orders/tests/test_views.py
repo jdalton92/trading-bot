@@ -8,7 +8,7 @@ from server.assets.tests.factories import AssetFactory
 from server.orders.models import Order
 from server.users.tests.factories import AdminFactory, UserFactory
 
-from .factories import OrderFactory, StopLossFactory, TakeProfitFactory
+from .factories import OrderFactory
 
 
 class OrderViewTests(APITestCase):
@@ -19,13 +19,13 @@ class OrderViewTests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
         )
-        self.stop_loss = StopLossFactory(
-            stop_price=100.50,
-            limit_price=110.30
-        )
-        self.take_profit = TakeProfitFactory(
-            limit_price=110.30
-        )
+        self.stop_loss = {
+            "stop_price": 100.50,
+            "limit_price": 110.30
+        }
+        self.take_profit = {
+            "limit_price": 110.30
+        }
         self.order = OrderFactory()
 
     def test_list_orders(self):
@@ -37,7 +37,7 @@ class OrderViewTests(APITestCase):
 
     def test_create_order(self):
         """Admins and users can create orders."""
-        asset = AssetFactory(symbol="AAPL")
+        AssetFactory(symbol="AAPL")
         order_1 = {
             "status": "open",
             "symbol": "AAPL",

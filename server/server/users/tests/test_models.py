@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
 from freezegun import freeze_time
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from server.users.models import User
 
@@ -43,3 +44,11 @@ class UserModelTests(TestCase):
         self.assertEqual(user.is_superuser, False)
         self.assertEqual(user.last_login, time_now)
         self.assertEqual(user.date_joined, time_now)
+
+    def test_create_user_token(self):
+        """Creating a user instance also creates a token."""
+        self.assertEqual(Token.objects.all().count(), 1)
+        user = UserFactory()
+        token = Token.objects.filter(user=user)
+        self.assertTrue(token.exists())
+        self.assertEqual(Token.objects.all().count(), 2)
