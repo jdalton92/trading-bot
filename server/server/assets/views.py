@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from .models import Asset, AssetClass, Exchange
@@ -24,6 +25,16 @@ class AssetView(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
+
+    # @action(detail=True, methods=['post'])
+    # def buy(self, request, *args, **kwargs):
+    #     """Place a buy order to Alpaca trade api."""
+    #     # TO DO
+
+    # @action(detail=True, methods=['post'])
+    # def sell(self, request, *args, **kwargs):
+    #     """Place a sell order to Alpaca trade api."""
+    #     # TO DO
 
 
 class AssetClassView(viewsets.ModelViewSet):

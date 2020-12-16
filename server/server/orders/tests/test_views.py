@@ -26,7 +26,9 @@ class OrderViewTests(APITestCase):
         self.take_profit = {
             "limit_price": 110.30
         }
-        self.order = OrderFactory()
+        self.order = OrderFactory(
+            user=self.user
+        )
 
     def test_list_orders(self):
         """Admins can list orders."""
@@ -193,7 +195,7 @@ class OrderViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(asset.symbol, order_2["symbol"])
 
-    def test_delete_order(self):
+    def test_admin_delete_order(self):
         """Admins can delete orders."""
         response = self.client.delete(
             reverse("v1:orders-detail", args=[self.order.pk])
@@ -204,8 +206,8 @@ class OrderViewTests(APITestCase):
             Order.objects.filter(pk=self.order.pk).exists()
         )
 
-    def test_delete_order_invalid(self):
-        """Users can not delete orders."""
+    def test_user_delete_order(self):
+        """Users can delete their own orders."""
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + self.user.auth_token.key
         )
@@ -213,7 +215,23 @@ class OrderViewTests(APITestCase):
             reverse("v1:orders-detail", args=[self.order.pk])
         )
 
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(
+            Order.objects.filter(pk=self.order.pk).exists()
+        )
+
+    def test_user_delete_order_invalid(self):
+        """Users can not delete other user's orders."""
+        non_order_owner = UserFactory()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + non_order_owner.auth_token.key
+        )
+        response = self.client.delete(
+            reverse("v1:orders-detail", args=[self.order.pk])
+        )
+
+        # Returns HTTP 404 as other user's orders are not visible to non admin
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertTrue(
             Order.objects.filter(pk=self.order.pk).exists()
         )

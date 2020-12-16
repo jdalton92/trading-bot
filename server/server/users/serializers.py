@@ -20,6 +20,7 @@ class UserSerializer(DynamicModelSerializer):
         queryset=Group.objects.all(),
         slug_field="name",
         many=True,
+        required=False,
         allow_null=True
     )
 
