@@ -24,6 +24,53 @@ class TradeApiRest:
         Retrieves account information.
 
         Endpoint: GET /account
+
+        Returns:
+            - id(uuid): Account id
+            - acccount_number(str): Account number
+            - status(str): Account status
+            - currency(str): 'USD'
+            - cash(str): cash balance
+            - portfolio_value(str): Depricated. Equal to 'equity' field
+            - pattern_day_trader(bool): Is account flagged as pattern day trader
+            - trade_suspended_by_user(bool): User setting
+            - trading_blocked(bool): If true, the account is not allowed to
+            place orders.
+            - transfers_blocked(bool): If true, the account is not allowed to
+            request money transfers.
+            - account_blocked(bool): If true, the account activity by user is
+            prohibited.
+            - created_at(timestamp): Timestamp this account was created at.
+            - shorting_enabled(bool): Flag to denote whether or not the account
+            is permitted to short
+            - long_market_value(str): Real-time MtM value of all long positions
+            held in the account
+            - short_market_value(str): Real-time MtM value of all short
+            positions held in the account
+            - equity(str): Cash + long_market_value + short_market_value
+            - last_equity(str): Equity as of previous trading day at 16:00:00 ET
+            - multiplier(str): Buying power multiplier that represents account
+            margin classification
+            - buying_power(str): Current available buying power; If multiplier =
+            4, this is your daytrade buying power which is calculated as
+            (last_equity - (last) maintenance_margin) * 4; If multiplier = 2,
+            buying_power = max(equity – initial_margin,0) * 2; If multiplier =
+            1, buying_power = cash
+            - initial_margin(str): Reg T initial margin requirement
+            (continuously updated value)
+            - maintenance_margin(str): Maintenance margin requirement
+            (continuously updated value)
+            - sma(str): Value of special memorandum account (will be used at a
+            later date to provide additional buying_power)
+            - daytrade_count(str): The current number of daytrades that have
+            been made in the last 5 trading days
+            - last_maintenance_margin(str): Your maintenance margin requirement
+            on the previous trading day
+            - daytrading_buying_power(str): Your buying power for day trades
+            (continuously updated value
+            - regt_buying_power(str): Your buying power under Regulation T (your
+            excess equity - equity minus margin value - times your margin
+            multiplier)
         """
         return self.api.get_account()
 

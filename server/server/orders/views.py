@@ -25,7 +25,7 @@ class OrderView(viewsets.ModelViewSet):
         Instantiates and returns the list of permissions that the order view
         requires.
         """
-        if self.action in ['update', 'destroy']:
+        if self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [IsAdminOrOwner]
         else:
             permission_classes = [IsAuthenticated]

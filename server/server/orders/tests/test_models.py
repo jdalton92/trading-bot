@@ -6,8 +6,6 @@ from server.assets.tests.factories import AssetFactory
 from server.orders.models import Order
 from server.users.tests.factories import UserFactory
 
-from .factories import OrderFactory
-
 
 class OrderTests(TestCase):
 

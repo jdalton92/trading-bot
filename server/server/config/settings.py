@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'server.core',
     'server.users',
     'server.assets',
-    'server.orders'
+    'server.orders',
+    'server.accounts'
 ]
 
 MIDDLEWARE = [
