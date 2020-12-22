@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.test import TestCase
 from server.assets.tests.factories import AssetFactory
+from server.core.tests.factories import StrategyFactory
 from server.orders.models import Order
 from server.users.tests.factories import UserFactory
 
@@ -10,6 +11,7 @@ from server.users.tests.factories import UserFactory
 class OrderTests(TestCase):
 
     def setUp(self):
+        self.strategy = StrategyFactory()
         self.user = UserFactory()
         self.asset = AssetFactory(
             symbol='TEST'
@@ -27,6 +29,7 @@ class OrderTests(TestCase):
         client_order_id = uuid.uuid4()
         order = Order(
             user=self.user,
+            strategy=self.strategy,
             status=Order.OPEN,
             symbol=self.asset,
             quantity=100.05,
@@ -47,6 +50,7 @@ class OrderTests(TestCase):
 
         self.assertIn(order, Order.objects.all())
         self.assertEqual(order.user, self.user)
+        self.assertEqual(order.strategy, self.strategy)
         self.assertEqual(order.status, Order.OPEN)
         self.assertEqual(order.symbol.symbol, 'TEST')
         self.assertEqual(order.quantity, 100.05)

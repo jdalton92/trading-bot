@@ -3,7 +3,7 @@ import os
 
 import django
 import requests
-from django.conf import settings  # NOQA
+from django.conf import settings
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'server.config.settings'
 django.setup()

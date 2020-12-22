@@ -2,7 +2,10 @@ from django.apps import apps as global_apps
 from django.db import DEFAULT_DB_ALIAS
 
 
-def create_periodic_tasks(app_config, verbosity=2, interactive=True, using=DEFAULT_DB_ALIAS, apps=global_apps, **kwargs):  # NOQA
+def create_periodic_tasks(
+    app_config, verbosity=2, interactive=True, using=DEFAULT_DB_ALIAS,
+    apps=global_apps, **kwargs
+):
     """
     Create default periodic tasks and store in the database.
     """

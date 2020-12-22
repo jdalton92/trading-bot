@@ -1,5 +1,6 @@
 from django.test import TestCase
 from server.assets.tests.factories import AssetFactory
+from server.core.tests.factories import StrategyFactory
 from server.orders.models import Order
 from server.orders.tasks import update_orders
 from server.users.tests.factories import UserFactory
@@ -9,12 +10,14 @@ class OrderTaskTests(TestCase):
 
     def setUp(self):
         self.user = UserFactory()
+        self.strategy = StrategyFactory()
         self.asset_1 = AssetFactory(symbol="AAPL")
         self.asset_2 = AssetFactory(symbol="TLSA")
         self.asset_3 = AssetFactory(symbol="MFST")
         self.order_data = [
             {
                 "user": self.user.pk,
+                "strategy": self.strategy.pk,
                 "status": "open",
                 "symbol": "AAPL",
                 "quantity": 10.01,
@@ -25,6 +28,7 @@ class OrderTaskTests(TestCase):
             },
             {
                 "user": self.user.pk,
+                "strategy": self.strategy.pk,
                 "status": "open",
                 "symbol": "TLSA",
                 "quantity": 101.05,
@@ -35,6 +39,7 @@ class OrderTaskTests(TestCase):
             },
             {
                 "user": self.user.pk,
+                "strategy": self.strategy.pk,
                 "status": "open",
                 "symbol": "MFST",
                 "quantity": 105.08,

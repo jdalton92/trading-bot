@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.test import TestCase
 from django.test.client import RequestFactory
 from server.assets.tests.factories import AssetFactory
+from server.core.tests.factories import StrategyFactory
 from server.orders.models import Order
 from server.orders.serializers import OrderCreateSerializer, OrderSerializer
 from server.users.serializers import UserSerializer
@@ -21,6 +22,7 @@ class OrderSerializerTests(TestCase):
         cls.request.user = cls.admin
 
     def setUp(self):
+        self.strategy = StrategyFactory()
         self.user = UserFactory()
 
     def test_view_order(self):
@@ -28,6 +30,7 @@ class OrderSerializerTests(TestCase):
         asset = AssetFactory(symbol='TEST')
         order = Order(
             user=self.user,
+            strategy=self.strategy,
             status=Order.OPEN,
             symbol=asset,
             quantity=100.05,
@@ -46,6 +49,7 @@ class OrderSerializerTests(TestCase):
                 fields=("id", "first_name", "last_name")
             ).data
         )
+        self.assertEqual(data['strategy'], self.strategy.type)
         self.assertEqual(data['status'], Order.OPEN)
         self.assertEqual(data['symbol'], 'TEST')
         self.assertEqual(float(data['quantity']), 100.05)
@@ -59,6 +63,7 @@ class OrderSerializerTests(TestCase):
         client_order_id = uuid.uuid4()
         data = {
             "user": self.user.pk,
+            "strategy": self.strategy.pk,
             "status": "open",
             "symbol": "TEST",
             "quantity": 100.05,
@@ -90,6 +95,7 @@ class OrderSerializerTests(TestCase):
         order = serializer.save()
 
         self.assertEqual(self.user, order.user)
+        self.assertEqual(self.strategy, order.strategy)
         self.assertEqual(data['status'], order.status)
         self.assertEqual(data['symbol'], order.symbol.symbol)
         self.assertEqual(data['quantity'], float(order.quantity))

@@ -11,7 +11,7 @@ class UserFactory(DjangoModelFactory):
     email = factory.Sequence(lambda n: 'user_{0}@tradingbot.com'.format(n))
     password = factory.PostGenerationMethodCall('set_password', None)
 
-    class Meta:  # NOQA
+    class Meta:
         model = User
         django_get_or_create = ('email',)
 

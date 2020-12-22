@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from server.assets.models import Asset
+from server.core.models import Strategy
 from server.users.models import User
 from server.users.serializers import UserSerializer
 
@@ -13,6 +14,10 @@ class OrderSerializer(serializers.ModelSerializer):
     symbol = serializers.SlugRelatedField(
         queryset=Asset.objects.all(),
         slug_field="symbol",
+    )
+    strategy = serializers.SlugRelatedField(
+        queryset=Strategy.objects.all(),
+        slug_field="type",
     )
     client_order_id = serializers.UUIDField(format='hex_verbose')
     status = serializers.CharField(source='get_status_display')
@@ -34,6 +39,9 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     symbol = serializers.SlugRelatedField(
         queryset=Asset.objects.all(),
         slug_field="symbol",
+    )
+    strategy = serializers.PrimaryKeyRelatedField(
+        queryset=Strategy.objects.all()
     )
     client_order_id = serializers.UUIDField(format='hex_verbose')
 

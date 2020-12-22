@@ -12,7 +12,7 @@ class ExchangeFactory(DjangoModelFactory):
     alt_name = factory.Faker('catch_phrase')
     is_active = True
 
-    class Meta:  # NOQA
+    class Meta:
         model = Exchange
 
 
@@ -23,7 +23,7 @@ class AssetClassFactory(DjangoModelFactory):
     alt_name = factory.Faker('catch_phrase')
     is_active = True
 
-    class Meta:  # NOQA
+    class Meta:
         model = AssetClass
 
 
@@ -41,5 +41,5 @@ class AssetFactory(DjangoModelFactory):
     symbol = factory.Faker('name')
     tradable = True
 
-    class Meta:  # NOQA
+    class Meta:
         model = Asset

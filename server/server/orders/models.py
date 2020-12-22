@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from server.assets.models import Asset
+from server.core.models import Strategy
 
 from .managers import OrderQuerySet
 
@@ -68,6 +69,12 @@ class Order(models.Model):
         settings.AUTH_USER_MODEL,
         verbose_name=_('user'),
         related_name='+',
+        on_delete=models.CASCADE,
+    )
+    strategy = models.ForeignKey(
+        Strategy,
+        verbose_name=_('strategy'),
+        related_name='orders',
         on_delete=models.CASCADE,
     )
     status = models.CharField(

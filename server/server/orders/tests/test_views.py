@@ -5,6 +5,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from server.assets.models import Asset
 from server.assets.tests.factories import AssetFactory
+from server.core.tests.factories import StrategyFactory
 from server.orders.models import Order
 from server.users.tests.factories import AdminFactory, UserFactory
 
@@ -16,6 +17,7 @@ class OrderViewTests(APITestCase):
     def setUp(self):
         self.admin = AdminFactory()
         self.user = UserFactory()
+        self.strategy = StrategyFactory()
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
         )
@@ -42,6 +44,7 @@ class OrderViewTests(APITestCase):
         AssetFactory(symbol="AAPL")
         order_1 = {
             "user": self.user.pk,
+            "strategy": self.strategy.pk,
             "status": "open",
             "symbol": "AAPL",
             "quantity": 100.05,
@@ -52,6 +55,7 @@ class OrderViewTests(APITestCase):
         }
         order_2 = {
             "user": self.user.pk,
+            "strategy": self.strategy.pk,
             "status": "open",
             "symbol": "AAPL",
             "quantity": 100.05,
@@ -83,6 +87,7 @@ class OrderViewTests(APITestCase):
         AssetFactory(symbol="AAPL")
         limit_order = {
             "user": self.user.pk,
+            "strategy": self.strategy.pk,
             "status": "open",
             "symbol": "AAPL",
             "quantity": 100.05,
@@ -108,6 +113,7 @@ class OrderViewTests(APITestCase):
         AssetFactory(symbol="AAPL")
         limit_order = {
             "user": self.user.pk,
+            "strategy": self.strategy.pk,
             "status": "open",
             "symbol": "AAPL",
             "quantity": 100.05,
@@ -133,6 +139,7 @@ class OrderViewTests(APITestCase):
         AssetFactory(symbol="AAPL")
         limit_order = {
             "user": self.user.pk,
+            "strategy": self.strategy.pk,
             "status": "open",
             "symbol": "AAPL",
             "quantity": 100.05,
