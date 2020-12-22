@@ -1,4 +1,3 @@
-import uuid
 from decimal import Decimal
 
 from django.test import TestCase
@@ -13,9 +12,8 @@ class OrderTests(TestCase):
 
     def test_create_account(self):
         """An account object can be created."""
-        id = uuid.uuid4()
         account = Account(
-            id=id,
+            id='8dd89dc4-ac43-4ecd-88d0-75791d63621c',
             user=self.user,
             account_blocked=False,
             account_number='PA24RIKIGB1U',
@@ -44,7 +42,7 @@ class OrderTests(TestCase):
         )
         account.save()
 
-        self.assertIn(account, Account.objects.all())
+        self.assertEqual(account.id, '8dd89dc4-ac43-4ecd-88d0-75791d63621c')
         self.assertEqual(account.user, self.user)
         self.assertFalse(account.account_blocked)
         self.assertEqual(account.account_number, 'PA24RIKIGB1U')

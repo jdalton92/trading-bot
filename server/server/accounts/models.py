@@ -2,6 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from .managers import AccountQuerySet
+
 
 class Account(models.Model):
     """Account information for a user of Alpaca trade api."""
@@ -128,9 +130,11 @@ class Account(models.Model):
     trading_blocked = models.BooleanField()
     transfers_blocked = models.BooleanField()
 
+    objects = AccountQuerySet.as_manager()
+
     class Meta:
         verbose_name = 'account'
         verbose_name_plural = 'accounts'
 
     def __str__(self):
-        return f"{self.user.full_name} Account"
+        return f"{self.user.first_name} {self.user.last_name} Account"

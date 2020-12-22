@@ -27,12 +27,13 @@ class UserSerializer(DynamicModelSerializer):
     class Meta:
         model = User
         fields = (
-            "first_name", "last_name", "email", "groups", "is_active",
+            "id", "first_name", "last_name", "email", "groups", "is_active",
             "is_staff", "is_superuser", "last_login", "date_joined"
         )
 
     def to_representation(self, instance):
         """Return fully serialized groups."""
         ret = super().to_representation(instance)
-        ret['groups'] = GroupSerializer(instance.groups, many=True).data
+        if 'groups' in self.fields:
+            ret['groups'] = GroupSerializer(instance.groups, many=True).data
         return ret

@@ -5,13 +5,14 @@ from rest_framework.response import Response
 from server.core.permissions import IsAdminOrOwner
 
 from .models import Account
-from .serializer import AccountSerializer
+from .serializers import AccountSerializer
 
 
-class AccountViewSet(viewsets.ModelViewSet):
+class AccountView(viewsets.ModelViewSet):
 
     def get_queryset(self, *args, **kwargs):
-        return Account.objects.all()
+        """Return accounts to requesting user."""
+        return Account.objects.visible(self.request.user)
 
     def get_permissions(self):
         """

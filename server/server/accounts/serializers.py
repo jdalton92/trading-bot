@@ -11,7 +11,6 @@ class AccountSerializer(serializers.ModelSerializer):
 
     id = serializers.UUIDField(format='hex_verbose')
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    status = serializers.CharField(source='get_status_display')
 
     class Meta:
         model = Account
@@ -21,6 +20,7 @@ class AccountSerializer(serializers.ModelSerializer):
         """Return fully serialized users."""
         ret = super().to_representation(instance)
         ret['user'] = UserSerializer(
+            instance.user,
             fields=("id", "first_name", "last_name")
         ).data
         return ret

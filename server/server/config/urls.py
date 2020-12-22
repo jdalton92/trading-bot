@@ -19,6 +19,7 @@ versioned_urls = [
     path(r'users/', include('server.users.urls')),
     path(r'', include('server.assets.urls')),
     path(r'orders/', include('server.orders.urls')),
+    path(r'accounts/', include('server.accounts.urls')),
 ]
 non_versioned_urls = sum([
     default_urls,
