@@ -10,4 +10,5 @@ exclude =
     dist,
     */migrations/,
     */settings.py
+    */celery.py
 max-complexity = 10
