@@ -22,17 +22,17 @@ class OrderSerializerTests(TestCase):
         cls.request.user = cls.admin
 
     def setUp(self):
-        self.strategy = StrategyFactory()
+        self.asset = AssetFactory(symbol='AAPL')
+        self.strategy = StrategyFactory(asset=self.asset)
         self.user = UserFactory()
 
     def test_view_order(self):
         """Order data is serialized correctly."""
-        asset = AssetFactory(symbol='TEST')
         order = Order(
             user=self.user,
             strategy=self.strategy,
             status=Order.OPEN,
-            symbol=asset,
+            symbol=self.asset,
             quantity=100.05,
             side=Order.BUY,
             type=Order.MARKET,
@@ -51,7 +51,7 @@ class OrderSerializerTests(TestCase):
         )
         self.assertEqual(data['strategy'], self.strategy.type)
         self.assertEqual(data['status'], Order.OPEN)
-        self.assertEqual(data['symbol'], 'TEST')
+        self.assertEqual(data['symbol'], 'AAPL')
         self.assertEqual(float(data['quantity']), 100.05)
         self.assertEqual(data['side'], Order.BUY)
         self.assertEqual(data['type'], Order.MARKET)
@@ -59,13 +59,12 @@ class OrderSerializerTests(TestCase):
 
     def test_create_order(self):
         """Order data is saved correctly for admins."""
-        AssetFactory(symbol='TEST')
         client_order_id = uuid.uuid4()
         data = {
             "user": self.user.pk,
             "strategy": self.strategy.pk,
             "status": "open",
-            "symbol": "TEST",
+            "symbol": "AAPL",
             "quantity": 100.05,
             "side": "buy",
             "type": "market",
@@ -117,6 +116,105 @@ class OrderSerializerTests(TestCase):
             data['stop_loss'],
             order.stop_loss
         )
+
+    def test_create_limit_order_invalid(self):
+        """Incorrect limit orders raise validations errors."""
+        data = {
+            "user": self.user.pk,
+            "strategy": self.strategy.pk,
+            "status": "open",
+            "symbol": "AAPL",
+            "quantity": 100.05,
+            "side": "buy",
+            "type": "limit",
+            "time_in_force": "day",
+            "client_order_id": str(uuid.uuid4())
+        }
+        serializer = OrderCreateSerializer(
+            data=data,
+            context={'request': self.request}
+        )
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            str(serializer.errors['limit_price'][0]),
+            "Field is required if `type` is `stop_limit` or `limit`"
+        )
+
+        data['limit_price'] = 100
+        serializer = OrderCreateSerializer(
+            data=data,
+            context={'request': self.request}
+        )
+        self.assertTrue(serializer.is_valid())
+
+    def test_create_stop_order_invalid(self):
+        """Incorrect stop orders raise validations errors."""
+        data = {
+            "user": self.user.pk,
+            "strategy": self.strategy.pk,
+            "status": "open",
+            "symbol": "AAPL",
+            "quantity": 100.05,
+            "side": "buy",
+            "type": "stop",
+            "time_in_force": "day",
+            "client_order_id": str(uuid.uuid4())
+        }
+        serializer = OrderCreateSerializer(
+            data=data,
+            context={'request': self.request}
+        )
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            str(serializer.errors['stop_price'][0]),
+            "Field is required if `type` is `stop` or `stop_limit`"
+        )
+
+        data['stop_price'] = 100
+        serializer = OrderCreateSerializer(
+            data=data,
+            context={'request': self.request}
+        )
+        self.assertTrue(serializer.is_valid())
+
+    def test_create_trailing_stop_order_invalid(self):
+        """Incorrect trailing stop orders raise validations errors."""
+        data = {
+            "user": self.user.pk,
+            "strategy": self.strategy.pk,
+            "status": "open",
+            "symbol": "AAPL",
+            "quantity": 100.05,
+            "side": "buy",
+            "type": "trailing_stop",
+            "time_in_force": "day",
+            "client_order_id": str(uuid.uuid4())
+        }
+        serializer = OrderCreateSerializer(
+            data=data,
+            context={'request': self.request}
+        )
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            str(serializer.errors['trail_price'][0]),
+            "Either `trail_price` or `trail_percentage` is required if `type` "
+            "is `trailing_stop`"
+        )
+        self.assertEqual(
+            str(serializer.errors['trail_percent'][0]),
+            "Either `trail_price` or `trail_percentage` is required if `type` "
+            "is `trailing_stop`"
+        )
+
+        data['trail_price'] = 100
+        serializer = OrderCreateSerializer(
+            data=data,
+            context={'request': self.request}
+        )
+        self.assertTrue(serializer.is_valid())
 
     def test_update_order(self):
         """Order data is updated correctly for admins."""

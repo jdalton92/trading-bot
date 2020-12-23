@@ -1,20 +1,25 @@
 import uuid
 from decimal import Decimal
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from server.assets.tests.factories import AssetFactory
 from server.core.tests.factories import StrategyFactory
 from server.orders.models import Order
 from server.users.tests.factories import UserFactory
 
+from .factories import OrderFactory
+
 
 class OrderTests(TestCase):
 
     def setUp(self):
-        self.strategy = StrategyFactory()
         self.user = UserFactory()
         self.asset = AssetFactory(
             symbol='TEST'
+        )
+        self.strategy = StrategyFactory(
+            asset=self.asset
         )
         self.stop_loss = {
             "stop_price": 100.50,
@@ -66,3 +71,13 @@ class OrderTests(TestCase):
         self.assertEqual(order.order_class, Order.SIMPLE)
         self.assertEqual(order.take_profit, self.take_profit)
         self.assertEqual(order.stop_loss, self.stop_loss)
+
+    def test_create_invalid_strategy_order(self):
+        """A order symbol must be the same as the strategy asset symbol."""
+        invalid_asset = AssetFactory()
+
+        with self.assertRaisesRegex(
+            ValidationError,
+            'Strategy asset symbol and order symbol must be the same'
+        ):
+            OrderFactory(strategy=self.strategy, symbol=invalid_asset)

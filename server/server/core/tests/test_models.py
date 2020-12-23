@@ -21,7 +21,7 @@ class StrategyTests(TestCase):
         time_now = timezone.now()
         strategy = Strategy(
             user=self.user,
-            type=Strategy.MOVING_AVERAGE,
+            type=Strategy.MOVING_AVERAGE_14D,
             asset=self.asset,
             start_date=time_now - timedelta(days=2),
             end_date=time_now + timedelta(days=2),
@@ -31,7 +31,7 @@ class StrategyTests(TestCase):
 
         self.assertIn(strategy, Strategy.objects.all())
         self.assertEqual(strategy.user, self.user)
-        self.assertEqual(strategy.type, 'moving_average')
+        self.assertEqual(strategy.type, 'moving_average_14d')
         self.assertEqual(strategy.asset, self.asset)
         self.assertEqual(strategy.start_date, time_now - timedelta(days=2))
         self.assertEqual(strategy.end_date, time_now + timedelta(days=2))
@@ -41,10 +41,12 @@ class StrategyTests(TestCase):
     def test_add_orders_to_strategy(self):
         """Strategy object can have orders associated."""
         strategy = StrategyFactory(
-            user=self.user
+            user=self.user,
+            asset=self.asset,
         )
         order = OrderFactory(
             user=self.user,
+            symbol=self.asset,
             strategy=strategy
         )
 

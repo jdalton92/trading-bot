@@ -1,6 +1,5 @@
 from django.contrib.auth.models import Group
 from rest_framework import serializers
-from server.core.serializers import DynamicModelSerializer
 
 from .models import User
 
@@ -13,7 +12,7 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class UserSerializer(DynamicModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     """Serializer for a user of the system."""
 
     groups = serializers.SlugRelatedField(
@@ -30,6 +29,18 @@ class UserSerializer(DynamicModelSerializer):
             "id", "first_name", "last_name", "email", "groups", "is_active",
             "is_staff", "is_superuser", "last_login", "date_joined"
         )
+
+    def __init__(self, *args, **kwargs):
+        """Dynamically add or exclude the fields to be serialized."""
+        fields = kwargs.pop('fields', None)
+
+        super().__init__(*args, **kwargs)
+
+        if fields is not None:
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
 
     def to_representation(self, instance):
         """Return fully serialized groups."""

@@ -17,7 +17,6 @@ class OrderTaskTests(TestCase):
         self.order_data = [
             {
                 "user": self.user.pk,
-                "strategy": self.strategy.pk,
                 "status": "open",
                 "symbol": "AAPL",
                 "quantity": 10.01,
@@ -28,7 +27,6 @@ class OrderTaskTests(TestCase):
             },
             {
                 "user": self.user.pk,
-                "strategy": self.strategy.pk,
                 "status": "open",
                 "symbol": "TLSA",
                 "quantity": 101.05,
@@ -39,7 +37,6 @@ class OrderTaskTests(TestCase):
             },
             {
                 "user": self.user.pk,
-                "strategy": self.strategy.pk,
                 "status": "open",
                 "symbol": "MFST",
                 "quantity": 105.08,

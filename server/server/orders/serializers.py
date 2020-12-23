@@ -41,7 +41,8 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         slug_field="symbol",
     )
     strategy = serializers.PrimaryKeyRelatedField(
-        queryset=Strategy.objects.all()
+        queryset=Strategy.objects.all(),
+        required=False
     )
     client_order_id = serializers.UUIDField(format='hex_verbose')
 

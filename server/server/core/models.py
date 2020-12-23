@@ -9,11 +9,13 @@ from .managers import StrategyQuerySet
 
 class Strategy(models.Model):
 
-    MOVING_AVERAGE = 'moving_average'
+    MOVING_AVERAGE_14D = 'moving_average_14d'
+    MOVING_AVERAGE_7D = 'moving_average_7d'
     # TO DO
     # TO DO
     TYPE_CHOICES = [
-        (MOVING_AVERAGE, _('moving average')),
+        (MOVING_AVERAGE_14D, _('14 day moving average')),
+        (MOVING_AVERAGE_7D, _('7 day moving average')),
     ]
 
     user = models.ForeignKey(

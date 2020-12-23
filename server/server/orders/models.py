@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from server.assets.models import Asset
@@ -76,6 +77,8 @@ class Order(models.Model):
         verbose_name=_('strategy'),
         related_name='orders',
         on_delete=models.CASCADE,
+        blank=True,
+        null=True
     )
     status = models.CharField(
         verbose_name=_('status'),
@@ -168,3 +171,16 @@ class Order(models.Model):
 
     def __str__(self):
         return f"{self.side} {self.quantity} {self.symbol.symbol}"
+
+    def clean(self):
+        if self.strategy:
+            if self.symbol.symbol != self.strategy.asset.symbol:
+                raise ValidationError(
+                    _('Strategy asset symbol and order symbol must be the '
+                      'same'),
+                    code='invalid'
+                )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super().save(*args, **kwargs)
