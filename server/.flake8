@@ -9,6 +9,6 @@ exclude =
     build,
     dist,
     */migrations/,
-    */settings.py
+    */settings.py,
     */celery.py
 max-complexity = 10
