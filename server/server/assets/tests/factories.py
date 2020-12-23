@@ -1,5 +1,3 @@
-import uuid
-
 import factory
 from factory.django import DjangoModelFactory
 from server.assets.models import Asset, AssetClass, Exchange

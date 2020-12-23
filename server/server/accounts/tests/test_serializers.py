@@ -1,11 +1,7 @@
-import uuid
-from decimal import Decimal
-
 from django.test import TestCase
 from django.test.client import RequestFactory
 from server.accounts.models import Account
 from server.accounts.serializers import AccountSerializer
-from server.users.serializers import UserSerializer
 from server.users.tests.factories import AdminFactory, UserFactory
 
 from .factories import AccountFactory

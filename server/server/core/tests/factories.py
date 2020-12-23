@@ -1,5 +1,4 @@
 import random
-from datetime import timedelta
 
 import factory
 import factory.fuzzy

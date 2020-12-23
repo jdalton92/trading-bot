@@ -272,7 +272,7 @@ class TradeApiRest:
 
     def _get_bars(self, symbols, limit, start, end, after, until):
         """
-        Retrievs list of bars for each requested symbol.
+        Retrieves list of bars for each requested symbol.
 
         Endpoint: GET /bars/{timeframe}
 

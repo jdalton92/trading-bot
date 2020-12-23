@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from server.assets.models import Asset
 from server.users.models import User
 from server.users.serializers import UserSerializer
 

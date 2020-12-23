@@ -44,7 +44,12 @@ class StrategyCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Validate strategy data."""
-        if data.get('stop_loss_amount') and data.get('stop_loss_percentage'):
+        stop_loss_amount = data.get('stop_loss_amount')
+        stop_loss_percentage = data.get('stop_loss_percentage')
+        take_profit_amount = data.get('take_profit_amount')
+        take_profit_percentage = data.get('take_profit_percentage')
+
+        if stop_loss_amount and stop_loss_percentage:
             error_message = [
                 "Enter either `stop_loss_amount` or `stop_loss_percentage`, but"
                 " not both"
@@ -54,7 +59,7 @@ class StrategyCreateSerializer(serializers.ModelSerializer):
                 'stop_loss_percentage': error_message,
             })
 
-        if data.get('take_profit_amount') and data.get('take_profit_percentage'):
+        if take_profit_amount and take_profit_percentage:
             error_message = [
                 "Enter either `take_profit_amount` or `take_profit_percentage`,"
                 " but not both"

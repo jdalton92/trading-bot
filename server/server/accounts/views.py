@@ -1,7 +1,5 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from rest_framework.response import Response
 from server.core.permissions import IsAdminOrOwner
 
 from .models import Account

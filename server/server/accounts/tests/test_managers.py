@@ -4,8 +4,6 @@ from django.test import TestCase
 from server.accounts.models import Account
 from server.users.tests.factories import AdminFactory, UserFactory
 
-from .factories import AccountFactory
-
 
 class AccountQuerySetTests(TestCase):
 

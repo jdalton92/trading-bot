@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from django.test import TestCase
 from server.accounts.models import Account
 from server.users.tests.factories import UserFactory

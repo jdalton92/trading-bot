@@ -41,5 +41,6 @@ def bulk_add_orders(orders):
     """
     for order in orders:
         serializer = OrderCreateSerializer(data=order)
-        if serializer.is_valid(raise_exception=True):  # Fail silently for bulk add
+        # Fail silently for bulk add
+        if serializer.is_valid(raise_exception=True):
             serializer.save()

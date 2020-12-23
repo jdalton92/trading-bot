@@ -3,7 +3,6 @@ import uuid
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-from server.assets.models import Asset
 from server.assets.tests.factories import AssetFactory
 from server.core.tests.factories import StrategyFactory
 from server.orders.models import Order

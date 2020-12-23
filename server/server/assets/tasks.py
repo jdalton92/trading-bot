@@ -74,3 +74,15 @@ def bulk_add_assets(assets):
         serializer = AssetSerializer(data=asset)
         if serializer.is_valid():  # Fail silently for bulk add
             serializer.save()
+
+
+@celery_app.task(ignore_result=True)
+def fetch_asset_quote(symbols):
+    """Fetch latest quote for list of symbols."""
+    if not isinstance(symbols, list):
+        symbols = [symbols]
+    api = TradeApiRest()
+    quotes = {}
+    for symbol in symbols:
+        quotes[symbol] = api._get_last_quote(symbol)
+    return quotes
