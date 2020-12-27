@@ -1,6 +1,7 @@
+from alpaca_trade_api.entity import Quote as AlpacaQuote
 from django.test import TestCase
 from server.assets.models import Asset, AssetClass, Exchange
-from server.assets.tasks import update_assets
+from server.assets.tasks import get_quotes, update_assets
 
 
 class AssetTaskTests(TestCase):
@@ -72,3 +73,12 @@ class AssetTaskTests(TestCase):
         self.assertEqual(Exchange.objects.all().count(), 2)
         self.assertEqual(AssetClass.objects.all().count(), 1)
         self.assertEqual(Asset.objects.all().count(), 3)
+
+    def test_get_quotes(self):
+        """Latest quotes for list of symbols is fetched."""
+        symbols = ["TSLA", "AAPL"]
+        quotes = get_quotes(symbols)
+
+        self.assertEqual(len(quotes), 2)
+        self.assertTrue(isinstance(quotes["TSLA"], AlpacaQuote))
+        self.assertTrue(isinstance(quotes["AAPL"], AlpacaQuote))

@@ -77,12 +77,18 @@ def bulk_add_assets(assets):
 
 
 @celery_app.task(ignore_result=True)
-def fetch_asset_quote(symbols):
+def get_quotes(symbols):
     """Fetch latest quote for list of symbols."""
     if not isinstance(symbols, list):
         symbols = [symbols]
     api = TradeApiRest()
     quotes = {}
+    errors = 0
     for symbol in symbols:
-        quotes[symbol] = api._get_last_quote(symbol)
+        try:
+            quotes[symbol] = api._get_last_quote(symbol)
+        except Exception:
+            errors += 1
+    if errors:
+        logger.error(f"Errors fetching stock quotes: {errors}")
     return quotes

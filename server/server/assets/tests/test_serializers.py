@@ -2,12 +2,13 @@ import uuid
 
 from django.test import TestCase
 from django.test.client import RequestFactory
-from server.assets.models import Asset, AssetClass, Exchange
+from server.assets.models import Asset, AssetClass, Bar, Exchange
 from server.assets.serializers import (AssetClassSerializer, AssetSerializer,
-                                       ExchangeSerializer)
+                                       BarSerializer, ExchangeSerializer)
 from server.users.tests.factories import AdminFactory
 
-from .factories import AssetClassFactory, AssetFactory, ExchangeFactory
+from .factories import (AssetClassFactory, AssetFactory, BarFactory,
+                        ExchangeFactory)
 
 
 class ExchangeSerializerTests(TestCase):
@@ -203,3 +204,70 @@ class AssetSerializerTests(TestCase):
 
         asset.refresh_from_db()
         self.assertEqual(asset.name, 'New Asset Name')
+
+
+class BarSerializerTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = AdminFactory()
+        cls.request = RequestFactory().get('/')
+        cls.request.user = cls.admin
+
+    def setUp(self):
+        self.asset = AssetFactory(symbol="AAPL")
+
+    def test_view_bar(self):
+        """Bar data is serialized correctly."""
+        bar = BarFactory(asset=self.asset)
+        data = BarSerializer(bar, context={'request': self.request}).data
+
+        self.assertEqual(Bar.objects.count(), 1)
+        self.assertEqual(data['asset'], self.asset.symbol)
+        self.assertEqual(data['t'], bar.t)
+        self.assertEqual(float(data['o']), bar.o)
+        self.assertEqual(float(data['h']), bar.h)
+        self.assertEqual(float(data['l']), bar.l)
+        self.assertEqual(float(data['c']), bar.c)
+        self.assertEqual(data['v'], bar.v)
+
+    def test_create_bar(self):
+        """Bar data is saved correctly."""
+        data = {
+            "asset": self.asset.symbol,
+            "t": 2100000000,
+            "o": 100.01,
+            "h": 110.05,
+            "l": 99.05,
+            "c": 105.01,
+            "v": 200000
+        }
+        serializer = BarSerializer(data=data, context={'request': self.request})
+
+        self.assertTrue(serializer.is_valid())
+        bar = serializer.save()
+
+        self.assertEqual(Bar.objects.count(), 1)
+        self.assertEqual(data['asset'], bar.asset.symbol)
+        self.assertEqual(data['t'], bar.t)
+        self.assertEqual(data['o'], float(bar.o))
+        self.assertEqual(data['h'], float(bar.h))
+        self.assertEqual(data['l'], float(bar.l))
+        self.assertEqual(data['c'], float(bar.c))
+        self.assertEqual(data['v'], bar.v)
+
+    def test_update_bar(self):
+        """Bar data can be partially updated."""
+        bar = BarFactory(c=100.05)
+        serializer = BarSerializer(
+            bar,
+            data={'c': 105.10},
+            partial=True,
+            context={'request': self.request}
+        )
+
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+
+        bar.refresh_from_db()
+        self.assertEqual(float(bar.c), 105.10)

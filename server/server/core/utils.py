@@ -270,21 +270,26 @@ class TradeApiRest:
     def _cancel_orders(self, id):
         return self.api.cancel_order(id)
 
-    def _get_bars(self, symbols, limit, start, end, after, until):
+    def _get_bars(self, symbols, timeframe, limit=None, start=None, end=None,
+                  after=None, until=None):
         """
         Retrieves list of bars for each requested symbol.
 
         Endpoint: GET /bars/{timeframe}
 
         :param symbols(str): One or more (max 200) symbol names split by commas
+        :param timeframe(str): One of minute, 1Min, 5Min, 15Min, day or 1D.
+        minute is an alias of 1Min. Similarly, day is of 1D.
         :param limit(int): The maximum number of bars to be returned for each
         symbol. Default 100
-        :param start(str): Filter bars equal to after this time, ISO Format
+        :param start(str): Filter bars equal to or after this time, ISO Format
         :param end(str): Filter bars equal to or before this time, ISO Format
         :param after(str): Filter bars after this time, ISO Format
         :param before(str): Filter bars before this time, ISO Format
         """
-        return self.api.get_barset(symbols, limit, start, end, after, until)
+        return self.api.get_barset(
+            symbols, timeframe, limit, start, end, after, until
+        )
 
     def _get_aggs(self, symbol, timespan, multiplier, _from, to):
         """

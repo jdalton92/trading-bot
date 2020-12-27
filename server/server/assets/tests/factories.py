@@ -1,6 +1,9 @@
+import random
+from decimal import Decimal
+
 import factory
 from factory.django import DjangoModelFactory
-from server.assets.models import Asset, AssetClass, Exchange
+from server.assets.models import Asset, AssetClass, Bar, Exchange
 
 
 class ExchangeFactory(DjangoModelFactory):
@@ -41,3 +44,18 @@ class AssetFactory(DjangoModelFactory):
 
     class Meta:
         model = Asset
+
+
+class BarFactory(DjangoModelFactory):
+    """Construct bar data."""
+
+    asset = factory.SubFactory(AssetFactory)
+    t = random.randint(1, 2100000000)
+    o = random.randint(1, 100000) / 100
+    h = random.randint(1, 100000) / 100
+    l = random.randint(1, 100000) / 100
+    c = random.randint(1, 100000) / 100
+    v = random.randint(1, 10000000)
+
+    class Meta:
+        model = Bar

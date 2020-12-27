@@ -132,7 +132,7 @@ class AssetClassViewTests(APITestCase):
 
     def test_admin_list_asset_class(self):
         """Asset class are listed for admins."""
-        response = self.client.get(reverse("v1:assetclasses-list"))
+        response = self.client.get(reverse("v1:asset-classes-list"))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -143,14 +143,14 @@ class AssetClassViewTests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + user.auth_token.key
         )
-        response = self.client.get(reverse("v1:assetclasses-list"))
+        response = self.client.get(reverse("v1:asset-classes-list"))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
     def test_create_asset_class(self):
         """Asset class can be created by admins."""
-        response = self.client.post(reverse("v1:assetclasses-list"), self.data)
+        response = self.client.post(reverse("v1:asset-classes-list"), self.data)
         asset_class = AssetClass.objects.filter(name=self.data["name"])
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -167,7 +167,7 @@ class AssetClassViewTests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + user.auth_token.key
         )
-        response = self.client.post(reverse("v1:assetclasses-list"), self.data)
+        response = self.client.post(reverse("v1:asset-classes-list"), self.data)
         asset_class = AssetClass.objects.filter(name=self.data["name"])
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -178,7 +178,7 @@ class AssetClassViewTests(APITestCase):
         data = {"name": "New Asset Class Name"}
 
         response = self.client.patch(
-            reverse("v1:assetclasses-detail", args=[self.asset_class.pk]),
+            reverse("v1:asset-classes-detail", args=[self.asset_class.pk]),
             data
         )
         self.asset_class.refresh_from_db()
@@ -195,7 +195,7 @@ class AssetClassViewTests(APITestCase):
         data = {"name": "New Asset Class Name"}
 
         response = self.client.patch(
-            reverse("v1:assetclasses-detail", args=[self.asset_class.pk]),
+            reverse("v1:asset-classes-detail", args=[self.asset_class.pk]),
             data
         )
         self.asset_class.refresh_from_db()
@@ -206,7 +206,7 @@ class AssetClassViewTests(APITestCase):
     def test_delete_asset_class(self):
         """Asset class can be deleted by admins."""
         response = self.client.delete(
-            reverse("v1:assetclasses-detail", args=[self.asset_class.pk])
+            reverse("v1:asset-classes-detail", args=[self.asset_class.pk])
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -221,7 +221,7 @@ class AssetClassViewTests(APITestCase):
             HTTP_AUTHORIZATION='Token ' + user.auth_token.key
         )
         response = self.client.delete(
-            reverse("v1:assetclasses-detail", args=[self.asset_class.pk])
+            reverse("v1:asset-classes-detail", args=[self.asset_class.pk])
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

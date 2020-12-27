@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from .models import Asset, AssetClass, Exchange
+from .models import Asset, AssetClass, Bar, Exchange
 
 
 class AssetSerializer(serializers.ModelSerializer):
-    """Serializer for a user of the system."""
+    """Serializer for tradeable assets via Alpaca api."""
 
     id = serializers.UUIDField(format='hex_verbose')
     asset_class = serializers.SlugRelatedField(
@@ -40,4 +40,20 @@ class ExchangeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exchange
+        fields = '__all__'
+
+
+class BarSerializer(serializers.ModelSerializer):
+    """
+    Serializer for bar data for tradeable assets via Alpaca api.
+    """
+
+    asset = serializers.SlugRelatedField(
+        queryset=Asset.objects.all(),
+        slug_field="symbol",
+        required=True
+    )
+
+    class Meta:
+        model = Bar
         fields = '__all__'

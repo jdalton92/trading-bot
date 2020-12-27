@@ -1,9 +1,9 @@
 import uuid
 
 from django.test import TestCase
-from server.assets.models import Asset, AssetClass, Exchange
+from server.assets.models import Asset, AssetClass, Bar, Exchange
 
-from .factories import AssetClassFactory, ExchangeFactory
+from .factories import AssetClassFactory, AssetFactory, ExchangeFactory
 
 
 class ExchangeTests(TestCase):
@@ -72,3 +72,29 @@ class AssetTests(TestCase):
         self.assertEqual(asset.status, Asset.ACTIVE)
         self.assertEqual(asset.symbol, 'SYMBOL')
         self.assertTrue(asset.tradable)
+
+
+class BarTests(TestCase):
+
+    def test_create_bar(self):
+        """Bar object can be created."""
+        asset = AssetFactory()
+        bar = Bar(
+            asset=asset,
+            t=2100000000,
+            o=100.01,
+            h=110.05,
+            l=99.05,
+            c=105.20,
+            v=20000
+        )
+        bar.save()
+
+        self.assertIn(bar, Bar.objects.all())
+        self.assertEqual(bar.asset, asset)
+        self.assertEqual(bar.t, 2100000000)
+        self.assertEqual(float(bar.o), 100.01)
+        self.assertEqual(float(bar.h), 110.05)
+        self.assertEqual(float(bar.l), 99.05)
+        self.assertEqual(float(bar.c), 105.20)
+        self.assertEqual(bar.v, 20000)
