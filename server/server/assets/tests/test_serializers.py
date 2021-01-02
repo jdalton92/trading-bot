@@ -242,7 +242,10 @@ class BarSerializerTests(TestCase):
             "c": 105.01,
             "v": 200000
         }
-        serializer = BarSerializer(data=data, context={'request': self.request})
+        serializer = BarSerializer(
+            data=data,
+            context={'request': self.request}
+        )
 
         self.assertTrue(serializer.is_valid())
         bar = serializer.save()

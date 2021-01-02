@@ -57,3 +57,17 @@ class BarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bar
         fields = '__all__'
+
+    def validate(self, data):
+        """Validate bar data."""
+        request_asset = self.context['request'].GET
+        print('\n\nrequest_asset', request_asset)
+        bar_asset = data.asset.id
+
+        if request_asset != bar_asset:
+            raise serializers.ValidationError({
+                "asset": "bar data asset must be same asset as asset url "
+                "endpoint",
+            })
+
+        return data

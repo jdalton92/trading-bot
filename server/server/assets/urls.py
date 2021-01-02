@@ -6,7 +6,7 @@ router = DefaultRouter()
 
 router.register(r'assets', AssetView, basename='assets')
 router.register(
-    r'assets/(?P<asset_id>[0-9]+)/bars/',
+    r'assets/(?P<asset_id>[0-9a-f-]+)/bars/',
     BarView,
     basename='asset-bars'
 )

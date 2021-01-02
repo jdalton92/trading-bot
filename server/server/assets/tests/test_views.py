@@ -3,9 +3,9 @@ import uuid
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-from server.assets.models import Asset, AssetClass, Exchange
+from server.assets.models import Asset, AssetClass, Bar, Exchange
 from server.assets.tests.factories import (AssetClassFactory, AssetFactory,
-                                           ExchangeFactory)
+                                           BarFactory, ExchangeFactory)
 from server.users.tests.factories import AdminFactory, UserFactory
 
 
@@ -385,3 +385,65 @@ class AssetViewTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
+
+
+class BarViewTests(APITestCase):
+
+    def setUp(self):
+        self.admin = AdminFactory()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
+        )
+        self.asset = AssetFactory()
+        self.bar = BarFactory(asset=self.asset)
+        self.data = {
+            "asset": self.asset.symbol,
+            "t": 2100000000,
+            "o": 100.01,
+            "h": 110.05,
+            "l": 99.05,
+            "c": 105.01,
+            "v": 200000
+        }
+
+    def test_list_bars_admin(self):
+        """Bars are listed for admins."""
+        response = self.client.get(
+            reverse("v1:asset-bars-list", kwargs={"asset_id": self.asset.pk}),
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_bars_user(self):
+        """Bars are listed for users."""
+        user = UserFactory()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
+        )
+        response = self.client.get(
+            reverse("v1:asset-bars-list", kwargs={"asset_id": self.asset.pk}),
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_create_bar(self):
+        """Bars can be created by admins and users."""
+        response = self.client.post(
+            reverse("v1:asset-bars-list", kwargs={"asset_id": self.asset.pk}),
+            self.data
+        )
+        bar = Bar.objects.filter(asset__symbol=self.asset.symbol, t=2100000000)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(bar.exists())
+
+        bar = bar.first()
+        self.assertEqual(str(bar.asset.pk), self.asset.pk)
+        self.assertEqual(bar.t, self.data['t'])
+        self.assertEqual(float(bar.o), self.data['o'])
+        self.assertEqual(float(bar.h), self.data['h'])
+        self.assertEqual(float(bar.l), self.data['l'])
+        self.assertEqual(float(bar.c), self.data['c'])
+        self.assertEqual(bar.v, self.data['v'])
