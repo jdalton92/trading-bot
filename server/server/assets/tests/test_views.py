@@ -394,7 +394,7 @@ class BarViewTests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
         )
-        self.asset = AssetFactory()
+        self.asset = AssetFactory(symbol="AAPL")
         self.bar = BarFactory(asset=self.asset)
         self.data = {
             "asset": self.asset.symbol,
@@ -447,3 +447,37 @@ class BarViewTests(APITestCase):
         self.assertEqual(float(bar.l), self.data['l'])
         self.assertEqual(float(bar.c), self.data['c'])
         self.assertEqual(bar.v, self.data['v'])
+
+    def test_partial_update_bars(self):
+        """Admins can partially update bars."""
+        data = {"t": 1100000000}
+
+        response = self.client.patch(
+            reverse(
+                "v1:asset-bars-detail",
+                kwargs={"asset_id": self.asset.pk, "pk": self.bar.pk},
+                context={"asset_id": self.asset.pk}
+            ),
+            data
+        )
+        self.bar.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.t, data["t"])
+
+    # def test_partial_update_exchanges_invalid(self):
+    #     """Users can not partially update exchanges."""
+    #     user = UserFactory()
+    #     self.client.credentials(
+    #         HTTP_AUTHORIZATION='Token ' + user.auth_token.key
+    #     )
+    #     data = {"name": "New Exchange Name"}
+
+    #     response = self.client.patch(
+    #         reverse("v1:exchanges-detail", args=[self.exchange.pk]),
+    #         data
+    #     )
+    #     self.exchange.refresh_from_db()
+
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    #     self.assertEqual(self.exchange.name, "Exchange")

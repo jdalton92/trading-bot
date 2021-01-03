@@ -2,6 +2,8 @@ from django.contrib.postgres.fields import CICharField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from .managers import BarQuerySet
+
 
 class Exchange(models.Model):
     """A exchange available via Alpaca."""
@@ -153,3 +155,12 @@ class Bar(models.Model):
         verbose_name=_('volume'),
         help_text=_('volume')
     )
+
+    objects = BarQuerySet.as_manager()
+
+    class Meta:
+        verbose_name = _('bar')
+        verbose_name_plural = _('bars')
+
+    def __str__(self):
+        return f"{self.asset.symbol} Bar - {self.t}"

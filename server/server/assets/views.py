@@ -69,7 +69,7 @@ class ExchangeView(viewsets.ModelViewSet):
 class BarView(viewsets.ModelViewSet):
 
     def get_queryset(self, *args, **kwargs):
-        return Bar.objects.filter(asset__pk=kwargs['asset_id'])
+        return Bar.objects.visible(self.kwargs['asset_id'])
 
     def get_serializer_class(self):
         return BarSerializer
