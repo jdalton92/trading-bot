@@ -2,6 +2,7 @@ import uuid
 
 from django.test import TestCase
 from django.test.client import RequestFactory
+from rest_framework.reverse import reverse
 from server.assets.models import Asset, AssetClass, Bar, Exchange
 from server.assets.serializers import (AssetClassSerializer, AssetSerializer,
                                        BarSerializer, ExchangeSerializer)
@@ -242,9 +243,10 @@ class BarSerializerTests(TestCase):
             "c": 105.01,
             "v": 200000
         }
+
         serializer = BarSerializer(
             data=data,
-            context={'request': self.request}
+            context={'request': self.request, 'asset_id': self.asset.id}
         )
 
         self.assertTrue(serializer.is_valid())
@@ -259,14 +261,44 @@ class BarSerializerTests(TestCase):
         self.assertEqual(data['c'], float(bar.c))
         self.assertEqual(data['v'], bar.v)
 
+    def test_create_bar_invalid(self):
+        """
+        Errors are raised if request params asset_id is not the same as the data
+        asset pk.
+        """
+        new_asset = AssetFactory()
+        data = {
+            "asset": new_asset.symbol,
+            "t": 2100000000,
+            "o": 100.01,
+            "h": 110.05,
+            "l": 99.05,
+            "c": 105.01,
+            "v": 200000
+        }
+
+        serializer = BarSerializer(
+            data=data,
+            context={'request': self.request, 'asset_id': self.asset.id}
+        )
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            serializer.errors["asset"][0],
+            "bar data asset pk must be same as url params `asset_id`"
+        )
+
     def test_update_bar(self):
         """Bar data can be partially updated."""
-        bar = BarFactory(c=100.05)
+        bar = BarFactory(
+            c=100.05,
+            asset=self.asset,
+        )
         serializer = BarSerializer(
             bar,
             data={'c': 105.10},
             partial=True,
-            context={'request': self.request}
+            context={'request': self.request, 'asset_id': self.asset.id}
         )
 
         self.assertTrue(serializer.is_valid())

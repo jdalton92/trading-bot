@@ -60,14 +60,16 @@ class BarSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Validate bar data."""
-        request_asset = self.context['request'].GET
-        print('\n\nrequest_asset', request_asset)
-        bar_asset = data.asset.id
+        request_asset_id = self.context['asset_id']
+        # When updating bar, the data might not have the asset field
+        bar_asset_id = (
+            data['asset'].id if data.get('asset') else self.instance.asset.pk
+        )
 
-        if request_asset != bar_asset:
+        if str(request_asset_id) != str(bar_asset_id):
             raise serializers.ValidationError({
-                "asset": "bar data asset must be same asset as asset url "
-                "endpoint",
+                "asset": "bar data asset pk must be same as url params "
+                "`asset_id`"
             })
 
         return data
