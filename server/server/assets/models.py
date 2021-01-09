@@ -159,6 +159,7 @@ class Bar(models.Model):
     objects = BarQuerySet.as_manager()
 
     class Meta:
+        ordering = ("-t",)
         verbose_name = _('bar')
         verbose_name_plural = _('bars')
 

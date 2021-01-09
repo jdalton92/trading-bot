@@ -60,9 +60,9 @@ class BarSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Validate bar data."""
-        print('\n\nself.kwargs', self.kwargs)
-        request_asset_id = self.context['asset_id']
-        # When updating bar, the data might not have the asset field
+        kwargs = self.context['request'].parser_context['kwargs']
+        request_asset_id = kwargs.get('asset_id')
+        # When partial updating data, the data might not have the asset field
         bar_asset_id = (
             data['asset'].id if data.get('asset') else self.instance.asset.pk
         )

@@ -1,4 +1,5 @@
 from rest_framework import mixins, viewsets
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from .models import Asset, AssetClass, Bar, Exchange
@@ -9,9 +10,13 @@ from .serializers import (AssetClassSerializer, AssetSerializer, BarSerializer,
 class AssetView(viewsets.ModelViewSet):
 
     def get_queryset(self, *args, **kwargs):
+        """Return assets to requesting user."""
         return Asset.objects.all()
 
     def get_serializer_class(self):
+        """
+        Instantiates and returns the serializer that the asset view requires.
+        """
         return AssetSerializer
 
     def get_permissions(self):
@@ -29,9 +34,14 @@ class AssetView(viewsets.ModelViewSet):
 class AssetClassView(viewsets.ModelViewSet):
 
     def get_queryset(self, *args, **kwargs):
+        """Return asset classes to requesting user."""
         return AssetClass.objects.all()
 
     def get_serializer_class(self):
+        """
+        Instantiates and returns the serializer that the asset class view
+        requires.
+        """
         return AssetClassSerializer
 
     def get_permissions(self):
@@ -49,9 +59,13 @@ class AssetClassView(viewsets.ModelViewSet):
 class ExchangeView(viewsets.ModelViewSet):
 
     def get_queryset(self, *args, **kwargs):
+        """Return exchanges to requesting user."""
         return Exchange.objects.all()
 
     def get_serializer_class(self):
+        """
+        Instantiates and returns the serializer that the exchange view requires.
+        """
         return ExchangeSerializer
 
     def get_permissions(self):
@@ -69,14 +83,30 @@ class ExchangeView(viewsets.ModelViewSet):
 class BarView(viewsets.ModelViewSet):
 
     def get_queryset(self, *args, **kwargs):
-        return Bar.objects.visible(self.kwargs['asset_id'])
+        """Return bars to requesting user."""
+        queryset = Bar.objects.visible(self.kwargs['asset_id'])
+        start = self.request.query_params.get('start')
+        end = self.request.query_params.get('end')
+
+        if (start and not end) or (not start and end):
+            raise ValidationError(
+                "You must include both `start` and `end` params"
+            )
+
+        if start and end:
+            queryset = queryset.filter(t__gte=start, t__lt=end)
+
+        return queryset
 
     def get_serializer_class(self):
+        """
+        Instantiates and returns the serializer that the bar view requires.
+        """
         return BarSerializer
 
     def get_permissions(self):
         """
-        Instantiates and returns the list of permissions that the bars view
+        Instantiates and returns the list of permissions that the bar view
         requires.
         """
         if self.action in ['list', 'retrieve']:

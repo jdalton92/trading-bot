@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase
 from server.assets.models import Asset, AssetClass, Bar, Exchange
 from server.assets.tests.factories import (AssetClassFactory, AssetFactory,
                                            BarFactory, ExchangeFactory)
+from server.core.utils import add_query_params_to_url
 from server.users.tests.factories import AdminFactory, UserFactory
 
 
@@ -395,7 +396,18 @@ class BarViewTests(APITestCase):
             HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
         )
         self.asset = AssetFactory(symbol="AAPL")
-        self.bar = BarFactory(asset=self.asset)
+        self.bar_1 = BarFactory(
+            asset=self.asset,
+            t=100000
+        )
+        self.bar_2 = BarFactory(
+            asset=self.asset,
+            t=150000
+        )
+        self.bar_3 = BarFactory(
+            asset=self.asset,
+            t=200000
+        )
         self.data = {
             "asset": self.asset.symbol,
             "t": 2100000000,
@@ -413,7 +425,7 @@ class BarViewTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 3)
 
     def test_list_bars_user(self):
         """Bars are listed for users."""
@@ -426,7 +438,37 @@ class BarViewTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 3)
+
+    def test_filter_listed_bars(self):
+        """Bars are filtered by passing in `start` and `end` params."""
+        url = reverse("v1:asset-bars-list", kwargs={"asset_id": self.asset.pk})
+        params = {"start": 120000, "end": 250000}
+        url = add_query_params_to_url(url, params)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['id'], self.bar_3.pk)
+        self.assertEqual(response.data[1]['id'], self.bar_2.pk)
+
+    def test_filter_listed_bars_invalid(self):
+        """
+        Validation error is raised if url contains only one of the query params
+        `start` and `end`.
+        """
+        url = reverse("v1:asset-bars-list", kwargs={"asset_id": self.asset.pk})
+        params = {"start": 120000}
+        url = add_query_params_to_url(url, params)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.content.decode('UTF-8'),
+            '["You must include both `start` and `end` params"]'
+        )
 
     def test_create_bar(self):
         """Bars can be created by admins and users."""
@@ -455,29 +497,31 @@ class BarViewTests(APITestCase):
         response = self.client.patch(
             reverse(
                 "v1:asset-bars-detail",
-                kwargs={"asset_id": self.asset.pk, "pk": self.bar.pk},
-                context={"asset_id": self.asset.pk}
+                kwargs={"asset_id": self.asset.pk, "pk": self.bar_1.pk},
             ),
             data
         )
-        self.bar.refresh_from_db()
+        self.bar_1.refresh_from_db()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(self.t, data["t"])
+        self.assertEqual(self.bar_1.t, data["t"])
 
-    # def test_partial_update_exchanges_invalid(self):
-    #     """Users can not partially update exchanges."""
-    #     user = UserFactory()
-    #     self.client.credentials(
-    #         HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-    #     )
-    #     data = {"name": "New Exchange Name"}
+    def test_partial_update_bars_invalid(self):
+        """Users can not partially update bars."""
+        user = UserFactory()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
+        )
+        data = {"t": 1100000000}
 
-    #     response = self.client.patch(
-    #         reverse("v1:exchanges-detail", args=[self.exchange.pk]),
-    #         data
-    #     )
-    #     self.exchange.refresh_from_db()
+        response = self.client.patch(
+            reverse(
+                "v1:asset-bars-detail",
+                kwargs={"asset_id": self.asset.pk, "pk": self.bar_1.pk},
+            ),
+            data
+        )
+        self.bar_1.refresh_from_db()
 
-    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-    #     self.assertEqual(self.exchange.name, "Exchange")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(self.bar_1.t, 100000)
