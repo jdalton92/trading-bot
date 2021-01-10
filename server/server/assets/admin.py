@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Asset, AssetClass, Exchange
+from .models import Asset, AssetClass, Bar, Exchange
 
 
 class AssetClassAdmin(admin.ModelAdmin):
@@ -29,3 +29,4 @@ class AssetAdmin(admin.ModelAdmin):
 admin.site.register(Exchange, ExchangeAdmin)
 admin.site.register(Asset, AssetAdmin)
 admin.site.register(AssetClass, AssetClassAdmin)
+admin.site.register(Bar)

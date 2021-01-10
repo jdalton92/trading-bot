@@ -2,7 +2,6 @@ import uuid
 
 from django.test import TestCase
 from django.test.client import RequestFactory
-from rest_framework.reverse import reverse
 from server.assets.models import Asset, AssetClass, Bar, Exchange
 from server.assets.serializers import (AssetClassSerializer, AssetSerializer,
                                        BarSerializer, ExchangeSerializer)
