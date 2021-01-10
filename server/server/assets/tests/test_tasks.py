@@ -1,7 +1,8 @@
+from alpaca_trade_api.entity import Bar as AlpacaBar
 from alpaca_trade_api.entity import Quote as AlpacaQuote
 from django.test import TestCase
-from server.assets.models import Asset, AssetClass, Exchange
-from server.assets.tasks import get_quotes, update_assets
+from server.assets.models import Asset, AssetClass, Bar, Exchange
+from server.assets.tasks import get_bars, get_quotes, update_assets
 
 
 class AssetTaskTests(TestCase):
@@ -82,3 +83,17 @@ class AssetTaskTests(TestCase):
         self.assertEqual(len(quotes), 2)
         self.assertTrue(isinstance(quotes["TSLA"], AlpacaQuote))
         self.assertTrue(isinstance(quotes["AAPL"], AlpacaQuote))
+
+    def test_get_bars(self):
+        """Latest bars for list of symbols is fetched and saved."""
+        symbols = ["TSLA", "AAPL"]
+        bars = get_bars(symbols, '1D', 10)
+
+        # Bars are fetched correctly
+        self.assertEqual(len(bars), 2)
+        self.assertTrue(isinstance(bars["TSLA"][0], AlpacaBar))
+        self.assertTrue(isinstance(bars["AAPL"][0], AlpacaBar))
+
+        # Bars are saved to db correctly
+        self.assertContains(Bar.objecs.all(), bars["TSLA"][0])
+        self.assertContains(Bar.objecs.all(), bars["AAPL"][0])

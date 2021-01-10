@@ -5,7 +5,7 @@ from server.config import celery_app
 from server.core.utils import TradeApiRest
 
 from .models import Asset, AssetClass, Exchange
-from .serializers import AssetSerializer
+from .serializers import AssetSerializer, BarSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -92,3 +92,27 @@ def get_quotes(symbols):
     if errors:
         logger.error(f"Errors fetching stock quotes: {errors}")
     return quotes
+
+
+@celery_app.task(ignore_result=True)
+def get_bars(symbols, timeframe, limit=None, start=None, end=None,
+             after=None, until=None):
+    """Fetch bar data for list of symbols."""
+    if not isinstance(symbols, list):
+        symbols = [symbols]
+    api = TradeApiRest()
+    try:
+        bars = api._get_bars(
+            symbols, timeframe, limit, start, end, after, until
+        )
+    except Exception as e:
+        logger.error(f"Errors fetching bars: {e}")
+
+    for asset in bars:
+        for bar in asset:
+            # TO DO - TRANSFORM ALPACABAR INSTANCE TO BAR MODEL FORMAT
+            serializer = BarSerializer(data=bar)
+            if serializer.is_valid():  # Fail silently for bulk add
+                serializer.save()
+
+    return bars
