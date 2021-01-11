@@ -118,6 +118,7 @@ class BarView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def create(self, request, *args, **kwargs):
+        """Add asset symbol from endpoint to bar data."""
         data = request.data
         data['asset'] = get_object_or_404(
             Asset,

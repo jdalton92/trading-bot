@@ -490,6 +490,20 @@ class BarViewTests(APITestCase):
         self.assertEqual(float(bar.c), self.data['c'])
         self.assertEqual(bar.v, self.data['v'])
 
+    def test_create_bar_invalid(self):
+        """Bar data can not be created for assets that don't exist."""
+        response = self.client.post(
+            reverse(
+                "v1:asset-bars-list",
+                kwargs={"asset_id": str(uuid.uuid4())}
+            ),
+            self.data
+        )
+        bar = Bar.objects.filter(asset__symbol=self.asset.symbol, t=2100000000)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertFalse(bar.exists())
+
     def test_partial_update_bars(self):
         """Admins can partially update bars."""
         data = {"t": 1100000000}
