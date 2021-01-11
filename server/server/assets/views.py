@@ -1,6 +1,8 @@
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
+from rest_framework import status, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
 
 from .models import Asset, AssetClass, Bar, Exchange
 from .serializers import (AssetClassSerializer, AssetSerializer, BarSerializer,
@@ -114,3 +116,19 @@ class BarView(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data['asset'] = get_object_or_404(
+            Asset,
+            pk=self.kwargs.get('asset_id')
+        ).symbol
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )

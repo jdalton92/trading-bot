@@ -260,33 +260,6 @@ class BarSerializerTests(TestCase):
         self.assertEqual(data['c'], float(bar.c))
         self.assertEqual(data['v'], bar.v)
 
-    def test_create_bar_invalid(self):
-        """
-        Errors are raised if request params asset_id is not the same as the data
-        asset pk.
-        """
-        new_asset = AssetFactory()
-        data = {
-            "asset": new_asset.symbol,
-            "t": 2100000000,
-            "o": 100.01,
-            "h": 110.05,
-            "l": 99.05,
-            "c": 105.01,
-            "v": 200000
-        }
-
-        serializer = BarSerializer(
-            data=data,
-            context={'request': self.request, 'asset_id': self.asset.id}
-        )
-
-        self.assertFalse(serializer.is_valid())
-        self.assertEqual(
-            serializer.errors["asset"][0],
-            "bar data asset pk must be same as url params `asset_id`"
-        )
-
     def test_update_bar(self):
         """Bar data can be partially updated."""
         bar = BarFactory(

@@ -57,20 +57,3 @@ class BarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bar
         fields = '__all__'
-
-    def validate(self, data):
-        """Validate bar data."""
-        request_asset_id = self.context.get('asset_id') or \
-            self.context['request'].parser_context['kwargs'].get('asset_id')
-        # When partial updating data, the data might not have the asset field
-        bar_asset_id = (
-            data['asset'].id if data.get('asset') else self.instance.asset.pk
-        )
-
-        if str(request_asset_id) != str(bar_asset_id):
-            raise serializers.ValidationError({
-                "asset": "bar data asset pk must be same as url params "
-                "`asset_id`"
-            })
-
-        return data

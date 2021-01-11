@@ -23,7 +23,7 @@ def update_assets(assets=None):
         api = TradeApiRest()
         assets = api._list_assets()
 
-    # Transform Alpaca response into asset model format
+    # Transform Alpaca response into dict required by Asset model
     if isinstance(assets[0], AlpacaAsset):
         assets = list(map(lambda asset: asset.__dict__['_raw'], assets))
         exchanges = set(map(lambda asset: asset['exchange'], assets))
@@ -72,7 +72,8 @@ def bulk_add_assets(assets):
             asset['asset_class'] = asset['class']
             del asset['class']
         serializer = AssetSerializer(data=asset)
-        if serializer.is_valid():  # Fail silently for bulk add
+        # Fail silently for bulk add
+        if serializer.is_valid():
             serializer.save()
 
 
@@ -95,24 +96,25 @@ def get_quotes(symbols):
 
 
 @celery_app.task(ignore_result=True)
-def get_bars(symbols, timeframe, limit=None, start=None, end=None,
-             after=None, until=None):
+def update_bars(symbols, timeframe, limit=None, start=None, end=None,
+                after=None, until=None):
     """Fetch bar data for list of symbols."""
     if not isinstance(symbols, list):
         symbols = [symbols]
     api = TradeApiRest()
     try:
-        bars = api._get_bars(
+        assets_bars = api._get_bars(
             symbols, timeframe, limit, start, end, after, until
         )
     except Exception as e:
         logger.error(f"Errors fetching bars: {e}")
 
-    for asset in bars:
-        for bar in asset:
-            # TO DO - TRANSFORM ALPACABAR INSTANCE TO BAR MODEL FORMAT
+    for asset_symbol in assets_bars:
+        for bar in assets_bars[asset_symbol]:
+            bar = bar.__dict__['_raw']
+            bar['asset'] = asset_symbol
             serializer = BarSerializer(data=bar)
-            if serializer.is_valid():  # Fail silently for bulk add
+            if serializer.is_valid(raise_exception=True):
                 serializer.save()
 
-    return bars
+    return assets_bars
