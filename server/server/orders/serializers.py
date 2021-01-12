@@ -35,7 +35,10 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating/updating an order placed by a user of Alpaca."""
 
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user = serializers.PrimaryKeyRelatedField(
+        default=serializers.CurrentUserDefault(),
+        queryset=User.objects.all()
+    )
     symbol = serializers.SlugRelatedField(
         queryset=Asset.objects.all(),
         slug_field="symbol",

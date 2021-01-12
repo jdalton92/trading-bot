@@ -36,7 +36,6 @@ class StrategyViewTests(APITestCase):
     def test_create_strategy(self):
         """Admins and users can create strategies."""
         strategy_1 = {
-            "user": self.admin.pk,
             "type": Strategy.MOVING_AVERAGE_14D,
             "asset": self.asset_1.symbol,
             "start_date": timezone.now(),
@@ -45,7 +44,6 @@ class StrategyViewTests(APITestCase):
             "stop_loss_amount": 10,
         }
         strategy_2 = {
-            "user": self.user.pk,
             "type": Strategy.MOVING_AVERAGE_14D,
             "asset": self.asset_2.symbol,
             "start_date": timezone.now(),

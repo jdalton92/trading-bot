@@ -28,7 +28,10 @@ class StrategySerializer(serializers.ModelSerializer):
 class StrategyCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating/updating a user strategy."""
 
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user = serializers.PrimaryKeyRelatedField(
+        default=serializers.CurrentUserDefault(),
+        queryset=User.objects.all()
+    )
     asset = serializers.SlugRelatedField(
         queryset=Asset.objects.all(),
         slug_field="symbol",

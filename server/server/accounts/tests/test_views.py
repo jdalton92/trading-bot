@@ -31,7 +31,6 @@ class AccountViewTests(APITestCase):
         """Admins and users can create accounts."""
         account_1 = {
             'id': 'c74b4d35-ad27-4f57-9fc6-5c4ef106ef63',
-            'user': self.admin.pk,
             'account_blocked': False,
             'account_number': 'ESS8FCSFK603',
             'buying_power': 0,
@@ -60,7 +59,6 @@ class AccountViewTests(APITestCase):
         }
         account_2 = {
             'id': '0c96a60c-e8a0-4deb-a0f1-e71d4b89dac5',
-            'user': self.user.pk,
             'account_blocked': False,
             'account_number': '3UMZM893MOQM',
             'buying_power': 0,

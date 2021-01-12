@@ -9,7 +9,10 @@ class AccountSerializer(serializers.ModelSerializer):
     """Serializer for account information of a user of Alpaca."""
 
     id = serializers.UUIDField(format='hex_verbose')
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user = serializers.PrimaryKeyRelatedField(
+        default=serializers.CurrentUserDefault(),
+        queryset=User.objects.all()
+    )
 
     class Meta:
         model = Account
