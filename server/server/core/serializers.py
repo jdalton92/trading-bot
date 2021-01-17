@@ -20,7 +20,7 @@ class StrategySerializer(serializers.ModelSerializer):
         fields = (
             "user", "type", "asset", "start_date", "end_date", "trade_value",
             "stop_loss_amount", "stop_loss_percentage", "take_profit_amount",
-            "take_profit_percentage", "is_active"
+            "take_profit_percentage", "is_active", "timeframe"
         )
         read_only_fields = fields
 
@@ -42,7 +42,7 @@ class StrategyCreateSerializer(serializers.ModelSerializer):
         fields = (
             "user", "type", "asset", "start_date", "end_date", "trade_value",
             "stop_loss_amount", "stop_loss_percentage", "take_profit_amount",
-            "take_profit_percentage", "is_active"
+            "take_profit_percentage", "is_active", "timeframe"
         )
 
     def validate(self, data):

@@ -51,7 +51,6 @@ class OrderViewTests(APITestCase):
     def test_create_order(self):
         """Admins and users can create orders."""
         order_1 = {
-            # "user": self.user.pk,
             "strategy": self.strategy.pk,
             "status": "open",
             "symbol": "AAPL",
@@ -62,7 +61,6 @@ class OrderViewTests(APITestCase):
             "client_order_id": str(uuid.uuid4())
         }
         order_2 = {
-            # "user": self.user.pk,
             "strategy": self.strategy.pk,
             "status": "open",
             "symbol": "AAPL",

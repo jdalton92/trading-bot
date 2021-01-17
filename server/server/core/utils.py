@@ -1,7 +1,12 @@
 import logging
+import time
+from datetime import timedelta
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import alpaca_trade_api as tradeapi
+from api.assets.tasks import update_bars
+from api.core.models import Strategy
+from django.util import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +21,8 @@ class TradeApiRest:
             #   * APCA_API_SECRET_KEY
             #   * APCA_API_BASE_URL
             self.api = tradeapi.REST()
-        except Exception as exc:
-            logger.error(f'Tradeview api connection failed: {exc}')
+        except Exception as e:
+            logger.error(f'Tradeview api connection failed: {e}')
             return
 
     def _account_info(self):
@@ -352,3 +357,42 @@ def add_query_params_to_url(url, params):
     query.update(params)
     redirect_parts[4] = urlencode(query)
     return urlunparse(redirect_parts)
+
+
+class StrategyUtil:
+
+    def moving_average(self, user):
+        """Initialise moving average strategy."""
+        api = TradeApiRest()
+        strategies = Strategy.objects.filter(user=user)
+        strategy_symbols = strategies.values_list('symbol', flat=True)
+
+        # Check market open
+        if not api._is_market_open:
+            return
+
+        # Update latest bars
+        update_bars(strategy_symbols, '15Min')
+
+        # Check moving average, conditionally update previous X-period bars if
+        # required
+        for strategy in strategies:
+            if strategy.type == Strategy.MOVING_AVERAGE_7D:
+                delta = 7
+            else:
+                delta = 14
+            base_time = timezone.now() - timedelta(days=delta)
+
+            base_time_epoch = int(time.mktime(base_time.timetuple()) * 1000)
+            # datetime_obj_with_tz = timezone.make_aware(
+            #     datetime.fromtimestamp(value)
+            # )
+
+            bars = Bars.objects.filter(
+                symbol=strategy.symbol,
+                t__gte=base_time_epoch
+            )
+
+            if bars.count() <
+
+        # Conditionally place order

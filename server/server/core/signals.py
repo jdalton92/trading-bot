@@ -19,6 +19,13 @@ def create_periodic_tasks(
     #     day_of_month='*',
     #     month_of_year='*'
     # )
+    # on_15_minute, _ = CrontabSchedule.objects.get_or_create(
+    #     minute='15',
+    #     hour='*',
+    #     day_of_week='*',
+    #     day_of_month='*',
+    #     month_of_year='*'
+    # )
     # on_30_minute, _ = CrontabSchedule.objects.get_or_create(
     #     minute='30',
     #     hour='*',

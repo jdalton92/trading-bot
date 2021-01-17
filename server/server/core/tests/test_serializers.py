@@ -56,6 +56,7 @@ class StrategySerializerTests(TestCase):
         self.assertEqual(data['end_date'], '2020-12-19T06:29:12.853922Z')
         self.assertEqual(float(data['trade_value']), strategy.trade_value)
         self.assertTrue(data['is_active'])
+        self.assertEqual(data['timeframe'], Strategy.MIN_15)
 
     def test_create_strategy(self):
         """Strategy data is saved correctly."""
@@ -66,6 +67,7 @@ class StrategySerializerTests(TestCase):
             "start_date": timezone.now(),
             "end_date": timezone.now() + timedelta(days=2),
             "trade_value": 10000,
+            "timeframe": Strategy.MIN_1
         }
         serializer = StrategyCreateSerializer(
             data=data, context={'request': self.request}
@@ -80,6 +82,7 @@ class StrategySerializerTests(TestCase):
         self.assertEqual(data['start_date'], strategy.start_date)
         self.assertEqual(data['end_date'], strategy.end_date)
         self.assertEqual(float(data['trade_value']), strategy.trade_value)
+        self.assertEqual(data['timeframe'], strategy.timeframe)
         self.assertTrue(strategy.is_active)
 
     def test_create_strategy_invalid_stop_loss(self):

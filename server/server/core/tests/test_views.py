@@ -42,6 +42,7 @@ class StrategyViewTests(APITestCase):
             "end_date": timezone.now() + timedelta(days=2),
             "trade_value": 10000,
             "stop_loss_amount": 10,
+            "timeframe": Strategy.MIN_1
         }
         strategy_2 = {
             "type": Strategy.MOVING_AVERAGE_14D,
@@ -50,6 +51,7 @@ class StrategyViewTests(APITestCase):
             "end_date": timezone.now() + timedelta(days=2),
             "trade_value": 10000,
             "stop_loss_amount": 10,
+            "timeframe": Strategy.MIN_5
         }
 
         # Admin create order

@@ -18,6 +18,19 @@ class Strategy(models.Model):
         (MOVING_AVERAGE_7D, _('7 day moving average')),
     ]
 
+    MIN_1 = '1Min'
+    MIN_5 = '5Min'
+    MIN_15 = '15Min'
+    HOUR_1 = '1H'
+    DAY_1 = '1D'
+    TYPE_TIMEFRAME = [
+        (MIN_1, _('1 minute')),
+        (MIN_5, _('5 minute')),
+        (MIN_15, _('15 minute')),
+        (HOUR_1, _('1 hour')),
+        (DAY_1, _('1 day')),
+    ]
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name=_('user'),
@@ -37,6 +50,12 @@ class Strategy(models.Model):
     )
     start_date = models.DateTimeField(_('start date'), blank=True, null=True)
     end_date = models.DateTimeField(_('end date'), blank=True, null=True)
+    timeframe = models.CharField(
+        verbose_name=_('timeframe'),
+        choices=TYPE_TIMEFRAME,
+        max_length=128,
+        default=MIN_15
+    )
     trade_value = models.DecimalField(
         verbose_name=_('trade value'),
         max_digits=12,
