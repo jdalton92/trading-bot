@@ -2,7 +2,7 @@ import logging
 
 from alpaca_trade_api.entity import Asset as AlpacaAsset
 from server.config import celery_app
-from server.core.utils import TradeApiRest
+from server.core.alpaca import TradeApiRest
 
 from .models import Asset, AssetClass, Exchange
 from .serializers import AssetSerializer, BarSerializer

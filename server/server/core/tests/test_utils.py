@@ -1,8 +1,8 @@
 from django.test import TestCase
-from server.core.utils import TradeApiRest
+from server.core.alpaca import TradeApiRest
 
 
-class AssetTaskTests(TestCase):
+class CoreTaskTests(TestCase):
 
     def setUp(self):
         self.api = TradeApiRest()

@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     from server.assets.models import Asset
     from server.assets.serializers import BarSerializer
-    from server.core.utils import TradeApiRest
+    from server.core.alpaca import TradeApiRest
 
     symbols = ["TSLA", "AAPL"]
     bars = get_bars(symbols, '1D', 10)

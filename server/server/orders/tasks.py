@@ -1,7 +1,7 @@
 import logging
 
 from server.config import celery_app
-from server.core.utils import TradeApiRest
+from server.core.alpaca import TradeApiRest
 
 from .models import Order
 from .serializers import OrderCreateSerializer
@@ -42,5 +42,5 @@ def bulk_add_orders(orders):
     for order in orders:
         serializer = OrderCreateSerializer(data=order)
         # Fail silently for bulk add
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             serializer.save()
