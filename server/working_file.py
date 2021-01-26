@@ -36,6 +36,12 @@ if __name__ == "__main__":
     from server.assets.serializers import BarSerializer
     from server.core.alpaca import TradeApiRest
 
-    symbols = ["TSLA", "AAPL"]
-    bars = get_bars(symbols, '1D', 10)
-    print('bars', bars['AAPL'][0].__dict__['raw'])
+    api = TradeApiRest()
+    order = api._submit_order(
+        symbol="error",
+        qty=10,
+        side="buy",
+        type="market",
+        time_in_force="gtc"
+    )
+    print(order)

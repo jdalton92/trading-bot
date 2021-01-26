@@ -1,12 +1,19 @@
+import logging
+import math
 import time
 from datetime import timedelta
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
+from django.db.models import Avg, F, RowRange, Window
 from django.utils import timezone
+from rest_framework import status
 from server.assets.models import Bars
 from server.assets.tasks import update_bars
 from server.core.alpaca import TradeApiRest
 from server.core.models import Strategy
+from server.orders.models import Order
+
+logger = logging.getLogger(__name__)
 
 
 def add_query_params_to_url(url, params):
@@ -44,12 +51,7 @@ class StrategyUtil:
                 business_days = 10
 
             base_time = timezone.now() - timedelta(days=days)
-
             base_time_epoch = int(time.mktime(base_time.timetuple()) * 1000)
-            # datetime_obj_with_tz = timezone.make_aware(
-            #     datetime.fromtimestamp(value)
-            # )
-
             bars = Bars.objects.filter(
                 symbol=strategy.symbol,
                 t__gte=base_time_epoch
@@ -57,12 +59,12 @@ class StrategyUtil:
 
             # Hacky adjustment for public holidays and crontab tasks not being
             # perfectly aligned with market open etc.
+            adjusted = 0.8
             seven_day_bars_to_update = []
             fourteen_day_bars_to_update = []
-            adjusted = 0.8
             fifteen_min_bars_per_day = 6.5 * 60 / 15
-            internal_per_period = business_days * fifteen_min_bars_per_day
-            if bars.count() < (adjusted * internal_per_period):
+            total_bars_count = business_days * fifteen_min_bars_per_day
+            if bars.count() < (adjusted * total_bars_count):
                 if strategy.type == Strategy.MOVING_AVERAGE_7D:
                     seven_day_bars_to_update.append(strategy.symbol)
                 else:
@@ -79,4 +81,58 @@ class StrategyUtil:
             10 * fifteen_min_bars_per_day
         )
 
-        # Calculate price vs moving average and conditionally place order
+        # Calculate price and moving average and conditionally place order
+        for strategy in strategies:
+            current_bar = Bars.objects.filter(symbol=strategy.symbol).annotate(
+                moving_average=Window(
+                    expression=Avg('close'),
+                    order_by=F('t'),
+                    frame=RowRange(start=-total_bars_count, end=0)
+                )
+            )
+            prev_bar = Bars.objects.filter(symbol=strategy.symbol).annotate(
+                moving_average=Window(
+                    expression=Avg('close'),
+                    order_by=F('t'),
+                    frame=RowRange(start=-total_bars_count - 1, end=1)
+                )
+            )
+
+            if current_bar.c >= current_bar.moving_average \
+                    and prev_bar.c < prev_bar.moving_average:
+                side = Order.BUY
+                account = api._account_info()
+                trade_value = min(
+                    strategy.trade_value,
+                    account.equity
+                )
+                quote = api._get_last_quote(strategy.symbol)
+                quantity = math.floor(trade_value / quote['askprice'])
+            elif current_bar.c <= current_bar.moving_average \
+                    and prev_bar.c > prev_bar.moving_average:
+                side = Order.SELL
+                account = api._account_info()
+                trade_value = min(
+                    strategy.trade_value,
+                    account.equity
+                )
+                position = api._list_position_by_symbol(strategy.symbol)
+
+                if position.status_code == status.HTTP_404_NOT_FOUND:
+                    return
+
+                quantity = math.floor(trade_value / position['market_value'])
+
+            try:
+                order = api._submit_order(
+                    symbol=strategy.symbol,
+                    qty=quantity,
+                    side=side,
+                    type=Order.MARKET,
+                    time_in_force=Order.GTC
+                )
+            except Exception as e:
+                logger.error(f'Tradeview order failed: {e}')
+                return
+
+            Order.object.create(**order)
