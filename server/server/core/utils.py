@@ -29,9 +29,14 @@ class StrategyUtil:
 
     def moving_average(self, user):
         """Initialise moving average strategy."""
-        api = TradeApiRest()
-        strategies = Strategy.objects.filter(user=user)
+        strategies = Strategy.objects.filter(user=user, is_active=True)
+
+        if not strategies.exists():
+            return
+
         strategy_symbols = strategies.values_list('symbol', flat=True)
+
+        api = TradeApiRest()
 
         # Check market open
         if not api._is_market_open:

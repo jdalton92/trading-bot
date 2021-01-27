@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from server.assets.models import Asset
+from server.assets.models import Asset, AssetClass
 from server.core.models import Strategy
 
 from .managers import OrderQuerySet
@@ -11,11 +11,39 @@ from .managers import OrderQuerySet
 class Order(models.Model):
     """An order placed by a user."""
 
-    OPEN = 'open'
-    CLOSED = 'closed'
+    NEW = 'new'
+    PARTIALLY_FILLED = 'partially_filled'
+    FILLED = 'filled'
+    DONE_FOR_DAY = 'done_for_day'
+    CANCELED = 'canceled'
+    EXPIRED = 'expired'
+    REPLACED = 'replaced'
+    PENDING_CANCEL = 'pending_cancel'
+    PENDING_REPLACE = 'pending_replace'
+    ACCEPTED = 'accepted'
+    PENDING_NEW = 'pending_new'
+    ACCEPTED_FOR_BIDDING = 'accepted_for_bidding'
+    STOPPED = 'stopped'
+    REJECTED = 'rejected'
+    SUSPENDED = 'suspended'
+    CALCULATED = 'calculated'
     STATUS_CHOICES = [
-        (OPEN, _('open')),
-        (CLOSED, _('closed')),
+        (NEW, _('new')),
+        (PARTIALLY_FILLED, _('partially filled')),
+        (FILLED, _('filled')),
+        (DONE_FOR_DAY, _('done for day')),
+        (CANCELED, _('canceled')),
+        (EXPIRED, _('expired')),
+        (REPLACED, _('replaced')),
+        (PENDING_CANCEL, _('pending cancel')),
+        (PENDING_REPLACE, _('pending replace')),
+        (ACCEPTED, _('accepted')),
+        (PENDING_NEW, _('pending new')),
+        (ACCEPTED_FOR_BIDDING, _('accepted for bidding')),
+        (STOPPED, _('stopped')),
+        (REJECTED, _('rejected')),
+        (SUSPENDED, _('suspended')),
+        (CALCULATED, _('calculated')),
     ]
 
     BUY = 'buy'
@@ -53,19 +81,6 @@ class Order(models.Model):
         (FOK, _('fill or kill')),
     ]
 
-    SIMPLE = 'simple'
-    BRACKET = 'bracket'
-    OCO = 'oco'
-    OTO = 'oto'
-    ORDER_CLASS_CHOICES = [
-        (SIMPLE, _('simple')),
-        (BRACKET, _('bracket')),
-        (OCO, _('one cancels other')),
-        (OTO, _('one triggers other')),
-    ]
-
-    created = models.DateTimeField(_('created'), auto_now_add=True)
-    modified = models.DateTimeField(_('modified'), auto_now=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name=_('user'),
@@ -80,31 +95,65 @@ class Order(models.Model):
         blank=True,
         null=True
     )
-    status = models.CharField(
-        verbose_name=_('status'),
-        choices=STATUS_CHOICES,
-        max_length=56,
-        default=OPEN
+    # Use UUID returned from Alpaca api as primary key
+    id = models.UUIDField(primary_key=True, editable=False, unique=True)
+    client_order_id = models.UUIDField(editable=False, unique=True)
+    created_at = models.DateTimeField(_('created'))
+    updated_at = models.DateTimeField(_('modified'), blank=True, null=True)
+    submitted_at = models.DateTimeField(_('submitted'), blank=True, null=True)
+    filled_at = models.DateTimeField(_('filled'), blank=True, null=True)
+    expired_at = models.DateTimeField(_('expired'), blank=True, null=True)
+    canceled_at = models.DateTimeField(_('canceled'), blank=True, null=True)
+    failed_at = models.DateTimeField(_('failed'), blank=True, null=True)
+    replaced_at = models.DateTimeField(_('replaced'), blank=True, null=True)
+    replaced_by = models.UUIDField(
+        editable=False,
+        unique=True,
+        blank=True,
+        null=True
+    )
+    replaces = models.UUIDField(
+        editable=False,
+        unique=True,
+        blank=True,
+        null=True
+    )
+    asset_id = models.ForeignKey(
+        Asset,
+        verbose_name=_('asset id'),
+        related_name='+',
+        on_delete=models.CASCADE,
     )
     symbol = models.ForeignKey(
         Asset,
-        verbose_name=_('symbols'),
-        related_name='trades',
+        verbose_name=_('symbol'),
+        related_name='orders',
         on_delete=models.CASCADE,
     )
-    quantity = models.DecimalField(
+    asset_class = models.ForeignKey(
+        AssetClass,
+        verbose_name=_('asset class'),
+        related_name='orders',
+        on_delete=models.CASCADE,
+    )
+    qty = models.DecimalField(
         verbose_name=_('quantity'),
         max_digits=12,
         decimal_places=5,
     )
-    side = models.CharField(
-        verbose_name=_('side'),
-        choices=SIDE_CHOICES,
-        max_length=56,
+    filled_qty = models.DecimalField(
+        verbose_name=_('filled quantity'),
+        max_digits=12,
+        decimal_places=5,
     )
     type = models.CharField(
         verbose_name=_('side'),
         choices=TYPE_CHOICES,
+        max_length=56,
+    )
+    side = models.CharField(
+        verbose_name=_('side'),
+        choices=SIDE_CHOICES,
         max_length=56,
     )
     time_in_force = models.CharField(
@@ -126,6 +175,25 @@ class Order(models.Model):
         blank=True,
         null=True
     )
+    filled_avg_price = models.DecimalField(
+        verbose_name=_('filled average price'),
+        max_digits=12,
+        decimal_places=5,
+        blank=True,
+        null=True
+    )
+    status = models.CharField(
+        verbose_name=_('status'),
+        choices=STATUS_CHOICES,
+        max_length=56,
+    )
+    extended_hours = models.BooleanField(default=False)
+    legs = models.ForeignKey(
+        "self",
+        verbose_name=_('legs'),
+        related_name='parent',
+        on_delete=models.CASCADE,
+    )
     trail_price = models.DecimalField(
         verbose_name=_('trail price'),
         max_digits=12,
@@ -140,27 +208,10 @@ class Order(models.Model):
         blank=True,
         null=True
     )
-    extended_hours = models.BooleanField(default=False)
-    client_order_id = models.UUIDField(
-        editable=False,
-        unique=True,
-    )
-    order_class = models.CharField(
-        verbose_name=_('order class'),
-        choices=ORDER_CLASS_CHOICES,
-        max_length=56,
-        blank=True,
-        null=True
-    )
-    take_profit = models.JSONField(
-        _("take profit"),
-        blank=True,
-        null=True,
-    )
-    stop_loss = models.JSONField(
-        _("stop loss"),
-        blank=True,
-        null=True,
+    hwm = models.DecimalField(
+        verbose_name=_('hwm'),
+        max_digits=12,
+        decimal_places=5,
     )
 
     objects = OrderQuerySet.as_manager()
@@ -174,10 +225,11 @@ class Order(models.Model):
 
     def clean(self):
         if self.strategy:
-            if self.symbol.symbol != self.strategy.asset.symbol:
+            if self.asset_id.symbol != self.strategy.asset.symbol or \
+                    self.symbol.symbol != self.strategy.asset.symbol:
                 raise ValidationError(
-                    _('Strategy asset symbol and order symbol must be the '
-                      'same'),
+                    _('Strategy ``asset`` and order ``symbol`` and ``asset_id``'
+                      ' must be the same'),
                     code='invalid'
                 )
 

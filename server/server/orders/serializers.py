@@ -32,8 +32,24 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in Order._meta.get_fields()]
 
 
+class OrderPostSerializer(serializers.ModelSerializer):
+    """Serializer for posting an order to the Alpaca api."""
+
+    # TO DO
+
+    class Meta:
+        model = Order
+        fields = (
+            'symbol', 'qty', 'side', 'type', 'time_in_force', 'limit_price',
+            'stop_price', 'trail_price', 'trail_percent', 'extended_hours',
+            'client_order_id', 'order_class', 'take_profit', 'stop_loss'
+        )
+
+
 class OrderCreateSerializer(serializers.ModelSerializer):
-    """Serializer for creating/updating an order placed by a user of Alpaca."""
+    """
+    Serializer for creating/updating an order object returned from Alpaca api.
+    """
 
     user = serializers.PrimaryKeyRelatedField(
         default=serializers.CurrentUserDefault(),
