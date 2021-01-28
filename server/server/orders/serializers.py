@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import mixins, serializers
 from server.assets.models import Asset
 from server.core.models import Strategy
 from server.users.models import User
@@ -32,42 +32,58 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in Order._meta.get_fields()]
 
 
-class OrderPostSerializer(serializers.ModelSerializer):
-    """Serializer for posting an order to the Alpaca api."""
+class TakeProfitSerializer(serializers.Serializer):
+    """Serializer for take profit params when posting an order to Alpaca api."""
 
-    # TO DO
+    limit_price = serializers.DecimalField()
 
     class Meta:
-        model = Order
+        fields = '__all__'
+
+
+class StopLossSerializer(serializers.Serializer):
+    """Serializer for stop loss params when posting an order to Alpaca api."""
+
+    stop_price = serializers.DecimalField(required=False)
+    limit_price = serializers.DecimalField(required=False)
+
+    class Meta:
+        fields = '__all__'
+
+    def validate(self, data):
+        """Validate conditionally required fields."""
+        is_bracket = data.get('type') == Order.BRACKET
+        has_limit_price = bool(data.get('limit_price'))
+        if is_bracket and not has_limit_price:
+            raise serializers.ValidationError({'limit_price': [
+                'Field is required if `type` is `bracket`'
+            ]})
+
+
+class OrderPostSerializer(serializers.Serializer):
+    """Serializer for posting an order to the Alpaca api."""
+
+    symbol = serializers.CharField()
+    qty = serializers.DecimalField()
+    side = serializers.ChoiceField(choices=Order.SIDE_CHOICES)
+    type = serializers.ChoiceField(choices=Order.TYPE_CHOICES)
+    time_in_force = serializers.ChoiceField(choices=Order.TIME_IN_FORCE_CHOICES)
+    limit_price = serializers.DecimalField(required=False)
+    stop_price = serializers.DecimalField(required=False)
+    trail_price = serializers.DecimalField(required=False)
+    trail_percent = serializers.DecimalField(required=False)
+    extended_hours = serializers.BooleanField(default=False)
+    client_order_id = serializers.UUIDField(format='hex_verbose')
+    order_class = serializers.ChoiceField(choices=Order.ORDER_CLASS_CHOICES)
+    take_profit = TakeProfitSerializer(required=False)
+    stop_loss = StopLossSerializer(required=False)
+
+    class Meta:
         fields = (
             'symbol', 'qty', 'side', 'type', 'time_in_force', 'limit_price',
             'stop_price', 'trail_price', 'trail_percent', 'extended_hours',
             'client_order_id', 'order_class', 'take_profit', 'stop_loss'
         )
-
-
-class OrderCreateSerializer(serializers.ModelSerializer):
-    """
-    Serializer for creating/updating an order object returned from Alpaca api.
-    """
-
-    user = serializers.PrimaryKeyRelatedField(
-        default=serializers.CurrentUserDefault(),
-        queryset=User.objects.all()
-    )
-    symbol = serializers.SlugRelatedField(
-        queryset=Asset.objects.all(),
-        slug_field="symbol",
-    )
-    strategy = serializers.PrimaryKeyRelatedField(
-        queryset=Strategy.objects.all(),
-        required=False
-    )
-    client_order_id = serializers.UUIDField(format='hex_verbose')
-
-    class Meta:
-        model = Order
-        fields = '__all__'
 
     def validate(self, data):
         """Validate conditionally required fields."""
@@ -99,3 +115,27 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 'trail_price': error_message
             })
         return data
+
+
+class OrderCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating/updating an order object returned from Alpaca api.
+    """
+
+    user = serializers.PrimaryKeyRelatedField(
+        default=serializers.CurrentUserDefault(),
+        queryset=User.objects.all()
+    )
+    symbol = serializers.SlugRelatedField(
+        queryset=Asset.objects.all(),
+        slug_field="symbol",
+    )
+    strategy = serializers.PrimaryKeyRelatedField(
+        queryset=Strategy.objects.all(),
+        required=False
+    )
+    client_order_id = serializers.UUIDField(format='hex_verbose')
+
+    class Meta:
+        model = Order
+        fields = '__all__'

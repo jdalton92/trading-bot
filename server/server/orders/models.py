@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -81,6 +82,17 @@ class Order(models.Model):
         (FOK, _('fill or kill')),
     ]
 
+    SIMPLE = 'simple'
+    BRACKET = 'bracket'
+    OCO = 'oco'
+    OTO = 'oto'
+    ORDER_CLASS_CHOICES = [
+        (SIMPLE, _('simple')),
+        (BRACKET, _('bracket')),
+        (OCO, _('one cancels other')),
+        (OTO, _('one triggers other')),
+    ]
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name=_('user'),
@@ -106,15 +118,19 @@ class Order(models.Model):
     canceled_at = models.DateTimeField(_('canceled'), blank=True, null=True)
     failed_at = models.DateTimeField(_('failed'), blank=True, null=True)
     replaced_at = models.DateTimeField(_('replaced'), blank=True, null=True)
-    replaced_by = models.UUIDField(
-        editable=False,
-        unique=True,
+    replaced_by = models.ForeignKey(
+        "self",
+        verbose_name=_('replaced by'),
+        related_name='+',
+        on_delete=models.CASCADE,
         blank=True,
         null=True
     )
-    replaces = models.UUIDField(
-        editable=False,
-        unique=True,
+    replaces = models.ForeignKey(
+        "self",
+        verbose_name=_('replaces'),
+        related_name='+',
+        on_delete=models.CASCADE,
         blank=True,
         null=True
     )
@@ -122,18 +138,6 @@ class Order(models.Model):
         Asset,
         verbose_name=_('asset id'),
         related_name='+',
-        on_delete=models.CASCADE,
-    )
-    symbol = models.ForeignKey(
-        Asset,
-        verbose_name=_('symbol'),
-        related_name='orders',
-        on_delete=models.CASCADE,
-    )
-    asset_class = models.ForeignKey(
-        AssetClass,
-        verbose_name=_('asset class'),
-        related_name='orders',
         on_delete=models.CASCADE,
     )
     qty = models.DecimalField(
@@ -188,11 +192,13 @@ class Order(models.Model):
         max_length=56,
     )
     extended_hours = models.BooleanField(default=False)
-    legs = models.ForeignKey(
+    legs = models.ManyToManyField(
         "self",
         verbose_name=_('legs'),
         related_name='parent',
-        on_delete=models.CASCADE,
+        symmetrical=False,
+        blank=True,
+        null=True
     )
     trail_price = models.DecimalField(
         verbose_name=_('trail price'),
@@ -212,6 +218,8 @@ class Order(models.Model):
         verbose_name=_('hwm'),
         max_digits=12,
         decimal_places=5,
+        blank=True,
+        null=True
     )
 
     objects = OrderQuerySet.as_manager()
@@ -221,17 +229,25 @@ class Order(models.Model):
         verbose_name_plural = 'orders'
 
     def __str__(self):
-        return f"{self.side} {self.quantity} {self.symbol.symbol}"
+        return f"{self.side} {self.qty} {self.asset_id.symbol}"
 
     def clean(self):
         if self.strategy:
             if self.asset_id.symbol != self.strategy.asset.symbol or \
                     self.symbol.symbol != self.strategy.asset.symbol:
                 raise ValidationError(
-                    _('Strategy ``asset`` and order ``symbol`` and ``asset_id``'
-                      ' must be the same'),
+                    _('Strategy ``asset`` and order ``asset_id`` must be the '
+                      'same'),
                     code='invalid'
                 )
+
+    @property
+    def symbol(self):
+        return self.asset_id
+
+    @property
+    def asset_class(self):
+        return self.asset_id.asset_class
 
     def save(self, *args, **kwargs):
         self.clean()
