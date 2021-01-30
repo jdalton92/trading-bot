@@ -151,7 +151,7 @@ class Order(models.Model):
         decimal_places=5,
     )
     type = models.CharField(
-        verbose_name=_('side'),
+        verbose_name=_('type'),
         choices=TYPE_CHOICES,
         max_length=56,
     )
@@ -198,7 +198,6 @@ class Order(models.Model):
         related_name='parent',
         symmetrical=False,
         blank=True,
-        null=True
     )
     trail_price = models.DecimalField(
         verbose_name=_('trail price'),

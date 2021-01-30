@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('filled_qty', models.DecimalField(decimal_places=5,
                                                    max_digits=12, verbose_name='filled quantity')),
                 ('type', models.CharField(choices=[('market', 'market'), ('limit', 'limit'), ('stop', 'stop'), (
-                    'stop_limit', 'stop limit'), ('trailing_stop', 'trailing stop')], max_length=56, verbose_name='side')),
+                    'stop_limit', 'stop limit'), ('trailing_stop', 'trailing stop')], max_length=56, verbose_name='type')),
                 ('side', models.CharField(choices=[
                  ('buy', 'buy'), ('sell', 'sell')], max_length=56, verbose_name='side')),
                 ('time_in_force', models.CharField(choices=[('day', 'day'), ('gtc', 'good till cancelled'), ('opg', 'order on open'), (
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                                             max_digits=12, null=True, verbose_name='hwm')),
                 ('asset_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
                                                related_name='+', to='assets.asset', verbose_name='asset id')),
-                ('legs', models.ManyToManyField(blank=True, null=True,
+                ('legs', models.ManyToManyField(blank=True,
                                                 related_name='parent', to='orders.Order', verbose_name='legs')),
                 ('replaced_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
                                                   related_name='+', to='orders.order', verbose_name='replaced by')),
