@@ -1,5 +1,6 @@
 import uuid
 
+from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -10,7 +11,10 @@ from server.users.tests.factories import AdminFactory, UserFactory
 
 from .factories import OrderFactory
 
+time_now = '2021-01-30T05:25:22.831798Z'
 
+
+@freeze_time(time_now)  # Freeze time for testing timedate fields
 class OrderViewTests(APITestCase):
 
     def setUp(self):
@@ -23,52 +27,97 @@ class OrderViewTests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
         )
-        self.stop_loss = {
-            "stop_price": 100.50,
-            "limit_price": 110.30
-        }
-        self.take_profit = {
-            "limit_price": 110.30
-        }
         self.order_1 = OrderFactory(
             user=self.user,
             strategy=self.strategy,
-            symbol=self.asset
+            asset_id=self.asset
         )
         self.order_2 = OrderFactory(
             user=self.user,
             strategy=self.strategy,
-            symbol=self.asset
+            asset_id=self.asset
         )
+        self.order_3 = OrderFactory()
+        self.order_4 = OrderFactory()
 
     def test_list_orders(self):
         """Admins can list orders."""
         response = self.client.get(reverse("v1:orders-list"))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 4)
 
     def test_create_order(self):
         """Admins and users can create orders."""
+        uuid_1 = uuid.uuid4()
+        uuid_2 = uuid.uuid4()
+        uuid_3 = uuid.uuid4()
+        uuid_4 = uuid.uuid4()
         order_1 = {
+            "user": self.user.pk,
             "strategy": self.strategy.pk,
-            "status": "open",
-            "symbol": "AAPL",
-            "quantity": 100.05,
-            "side": "buy",
-            "type": "market",
-            "time_in_force": "day",
-            "client_order_id": str(uuid.uuid4())
+            "id": uuid_1,
+            "client_order_id": uuid_2,
+            "created_at": time_now,
+            "updated_at": time_now,
+            "submitted_at": time_now,
+            "filled_at": time_now,
+            "expired_at": time_now,
+            "canceled_at": time_now,
+            "failed_at": time_now,
+            "replaced_at": time_now,
+            "replaced_by": self.order_1.pk,
+            "replaces": self.order_2.pk,
+            "asset_id": self.asset.pk,
+            "symbol": self.asset.symbol,
+            "asset_class": self.asset.asset_class.name,
+            "legs": [self.order_3.pk],
+            "qty": 100,
+            "filled_qty": 100,
+            "type": Order.MARKET,
+            "side": Order.BUY,
+            "time_in_force": Order.DAY,
+            "limit_price": 110.05,
+            "stop_price": 90.05,
+            "filled_avg_price": 100,
+            "status": Order.FILLED,
+            "extended_hours": True,
+            "trail_price": 100,
+            "trail_percentage": 50.05,
+            "hwm": 95.7
         }
         order_2 = {
+            "user": self.user.pk,
             "strategy": self.strategy.pk,
-            "status": "open",
-            "symbol": "AAPL",
-            "quantity": 100.05,
-            "side": "sell",
-            "type": "market",
-            "time_in_force": "day",
-            "client_order_id": str(uuid.uuid4())
+            "id": uuid_3,
+            "client_order_id": uuid_4,
+            "created_at": time_now,
+            "updated_at": time_now,
+            "submitted_at": time_now,
+            "filled_at": time_now,
+            "expired_at": time_now,
+            "canceled_at": time_now,
+            "failed_at": time_now,
+            "replaced_at": time_now,
+            "replaced_by": self.order_1.pk,
+            "replaces": self.order_2.pk,
+            "asset_id": self.asset.pk,
+            "symbol": self.asset.symbol,
+            "asset_class": self.asset.asset_class.name,
+            "legs": [self.order_4.pk],
+            "qty": 100,
+            "filled_qty": 100,
+            "type": Order.MARKET,
+            "side": Order.BUY,
+            "time_in_force": Order.DAY,
+            "limit_price": 110.05,
+            "stop_price": 90.05,
+            "filled_avg_price": 100,
+            "status": Order.FILLED,
+            "extended_hours": True,
+            "trail_price": 100,
+            "trail_percentage": 50.05,
+            "hwm": 95.7
         }
 
         # Admin create order
@@ -91,10 +140,10 @@ class OrderViewTests(APITestCase):
     def test_partial_update_order(self):
         """Admins and users can partially update orders."""
         order_1 = {
-            "status": Order.CLOSED
+            "status": Order.PARTIALLY_FILLED
         }
         order_2 = {
-            "status": Order.OPEN
+            "status": Order.CANCELED
         }
 
         # Admin patch order
