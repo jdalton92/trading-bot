@@ -9,7 +9,7 @@ from .models import Order
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    """Serializer for orders objects returned from Alpaca."""
+    """Serializer for reading order objects returned from Alpaca."""
 
     user = UserSerializer(fields=("id", "first_name", "last_name"))
     symbol = serializers.SlugRelatedField(
@@ -33,8 +33,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
-        # read_only_fields = [f.name for f in Order._meta.get_fields()]
-        read_only_fields = ['symbol', 'asset_class']
+        read_only_fields = [f.name for f in Order._meta.get_fields()]
 
     def __init__(self, *args, **kwargs):
         """Dynamically add or exclude the fields to be serialized."""
@@ -57,17 +56,6 @@ class OrderSerializer(serializers.ModelSerializer):
                 many=True,
             ).data
         return ret
-
-    @transaction.atomic
-    def create(self, validated_data):
-        validated_data.pop('symbol', None)
-        print('\nvalidated data', validated_data)
-        return super().create(**validated_data)
-
-    @transaction.atomic
-    def update(self, instance, validated_data):
-        validated_data.pop('symbol', None)
-        return super().update(instance, **validated_data)
 
 
 class TakeProfitSerializer(serializers.Serializer):
@@ -163,6 +151,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     Serializer for creating/updating an order object returned from Alpaca api.
     """
 
+    id = serializers.UUIDField(format='hex_verbose')
     user = serializers.PrimaryKeyRelatedField(
         default=serializers.CurrentUserDefault(),
         queryset=User.objects.all()
@@ -176,7 +165,34 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         required=False
     )
     client_order_id = serializers.UUIDField(format='hex_verbose')
+    legs = serializers.PrimaryKeyRelatedField(
+        queryset=Order.objects.all(),
+        many=True,
+        required=False
+    )
 
     class Meta:
         model = Order
         fields = '__all__'
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if instance.legs.count():
+            ret['legs'] = OrderSerializer(
+                instance.legs,
+                fields=('id', 'symbol', 'side', 'qty'),
+                many=True,
+            ).data
+        return ret
+
+    @transaction.atomic
+    def create(self, validated_data):
+        validated_data.pop('symbol', None)
+        validated_data.pop('asset_class', None)
+        return super().create(validated_data)
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        validated_data.pop('symbol', None)
+        validated_data.pop('asset_class', None)
+        return super().update(instance, validated_data)

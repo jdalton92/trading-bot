@@ -275,6 +275,10 @@ class OrderSerializerTests(TestCase):
             "replaces": self.order_2.pk,
             "asset_id": self.asset.pk,
             "symbol": self.asset.symbol,
+            "asset_class": self.asset.asset_class.name,
+            "legs": [
+                self.order_3.pk, self.order_4.pk
+            ],
             "qty": 100,
             "filled_qty": 100,
             "type": Order.MARKET,
@@ -297,49 +301,58 @@ class OrderSerializerTests(TestCase):
 
         self.assertTrue(serializer.is_valid())
 
-        print('\nerrors', serializer.errors)
-
         order = serializer.save()
 
-        self.assertEqual(self.user, order.user)
-        self.assertEqual(self.strategy, order.strategy)
-        self.assertEqual(data['status'], order.status)
-        self.assertEqual(data['symbol'], order.symbol.symbol)
-        self.assertEqual(data['qty'], float(order.qty))
-        self.assertEqual(data['side'], order.side)
-        self.assertEqual(data['type'], order.type)
-        self.assertEqual(data['time_in_force'], order.time_in_force)
-        self.assertEqual(data['client_order_id'], str(order.client_order_id))
-        self.assertEqual(data['limit_price'], float(order.limit_price))
-        self.assertEqual(data['stop_price'], float(order.stop_price))
-        self.assertEqual(data['trail_price'], float(order.trail_price))
-        self.assertEqual(
-            data['trail_percentage'],
-            float(order.trail_percentage)
-        )
-        self.assertTrue(order.extended_hours)
-        self.assertEqual(data['order_class'], order.order_class)
-        self.assertEqual(data['take_profit'], order.take_profit)
-        self.assertEqual(
-            data['stop_loss'],
-            order.stop_loss
-        )
+        self.assertEqual(data['id'], order.id)
+        self.assertEqual(data['user'], order.user.pk)
+        self.assertEqual(data['strategy'], order.strategy.pk)
+        self.assertEqual(str(data['id']), str(uuid_1))
+        self.assertEqual(str(data['client_order_id']), str(uuid_2))
+        self.assertEqual(data['created_at'], time_now)
+        self.assertEqual(data['updated_at'], time_now)
+        self.assertEqual(data['submitted_at'], time_now)
+        self.assertEqual(data['filled_at'], time_now)
+        self.assertEqual(data['canceled_at'], time_now)
+        self.assertEqual(data['failed_at'], time_now)
+        self.assertEqual(data['replaced_at'], time_now)
+        self.assertEqual(data['replaced_by'], self.order_1.pk)
+        self.assertEqual(data['replaces'], self.order_2.pk)
+        self.assertEqual(data['replaces'], self.order_2.pk)
+        self.assertEqual(data['asset_id'], self.asset.pk)
+        self.assertEqual(data['symbol'], self.asset.symbol)
+        self.assertEqual(data['asset_class'], order.asset_id.asset_class.name)
+        self.assertEqual(float(data['qty']), 100)
+        self.assertEqual(float(data['filled_qty']), 100)
+        self.assertEqual(data['type'], Order.MARKET)
+        self.assertEqual(data['side'], Order.BUY)
+        self.assertEqual(data['time_in_force'], Order.DAY)
+        self.assertEqual(float(data['limit_price']), 110.05)
+        self.assertEqual(float(data['stop_price']), 90.05)
+        self.assertEqual(float(data['filled_avg_price']), 100)
+        self.assertEqual(data['status'], Order.FILLED)
+        self.assertTrue(data['extended_hours'])
+        self.assertEqual(len(data['legs']), 2)
+        self.assertEqual(float(data['trail_price']), 100)
+        self.assertEqual(float(data['trail_percentage']), 50.05)
+        self.assertEqual(float(data['hwm']), 95.7)
 
     def test_update_order(self):
         """Order data returned from alpaca is updated correctly for admins."""
         order = OrderFactory(status='open')
         serializer = OrderCreateSerializer(
             order,
-            data={'status': 'closed'},
+            data={'status': 'partially_filled'},
             partial=True,
             context={'request': self.request}
         )
 
         self.assertTrue(serializer.is_valid())
+        serializer.is_valid()
+
         serializer.save()
 
         order.refresh_from_db()
         self.assertEqual(
             order.status,
-            'closed'
+            'partially_filled'
         )
