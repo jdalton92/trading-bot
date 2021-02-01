@@ -17,16 +17,16 @@ class OrderQuerySetTests(TestCase):
         """Admin can view all orders."""
         visible = Order.objects.visible(self.admin)
 
-        self.assertIn(self.order_1, visible)
+        self.assertTrue(visible.filter(pk=self.order_1.pk))
 
     def test_order_visible_users(self):
         """User can only view their own orders."""
         visible = Order.objects.visible(self.user_1)
 
-        self.assertIn(self.order_1, visible)
+        self.assertTrue(visible.filter(pk=self.order_1.pk))
 
     def test_order_visible__other_users(self):
         """User can not view others orders."""
         visible = Order.objects.visible(self.user_2)
 
-        self.assertNotIn(self.order_1, visible)
+        self.assertFalse(visible.filter(pk=self.order_1.pk))

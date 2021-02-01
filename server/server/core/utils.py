@@ -7,7 +7,7 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from django.db.models import Avg, F, RowRange, Window
 from django.utils import timezone
 from rest_framework import status
-from server.assets.models import Bars
+from server.assets.models import Bar
 from server.assets.tasks import update_bars
 from server.core.alpaca import TradeApiRest
 from server.core.models import Strategy
@@ -57,7 +57,7 @@ class StrategyUtil:
 
             base_time = timezone.now() - timedelta(days=days)
             base_time_epoch = int(time.mktime(base_time.timetuple()) * 1000)
-            bars = Bars.objects.filter(
+            bars = Bar.objects.filter(
                 symbol=strategy.symbol,
                 t__gte=base_time_epoch
             )
@@ -88,14 +88,14 @@ class StrategyUtil:
 
         # Calculate price and moving average and conditionally place order
         for strategy in strategies:
-            current_bar = Bars.objects.filter(symbol=strategy.symbol).annotate(
+            current_bar = Bar.objects.filter(symbol=strategy.symbol).annotate(
                 moving_average=Window(
                     expression=Avg('close'),
                     order_by=F('t'),
                     frame=RowRange(start=-total_bars_count, end=0)
                 )
             )
-            prev_bar = Bars.objects.filter(symbol=strategy.symbol).annotate(
+            prev_bar = Bar.objects.filter(symbol=strategy.symbol).annotate(
                 moving_average=Window(
                     expression=Avg('close'),
                     order_by=F('t'),

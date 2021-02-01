@@ -19,13 +19,13 @@ def update_orders(all_orders=None):
 
     existing_orders = [
         str(order_id) for order_id in Order.objects.all().values_list(
-            'client_order_id',
+            'pk',
             flat=True
         )
     ]
     new_orders = [
         order for order in all_orders
-        if order['client_order_id'] not in existing_orders
+        if str(order['id']) not in existing_orders
     ]
     bulk_add_orders(new_orders)
 

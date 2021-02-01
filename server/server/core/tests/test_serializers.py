@@ -30,7 +30,7 @@ class StrategySerializerTests(TestCase):
         self.strategy = StrategyFactory(asset=self.asset)
         self.order = OrderFactory(
             strategy=self.strategy,
-            symbol=self.asset
+            asset_id=self.asset
         )
 
     def test_view_strategy(self):

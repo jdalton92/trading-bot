@@ -46,8 +46,8 @@ class StrategyTests(TestCase):
         )
         order = OrderFactory(
             user=self.user,
-            symbol=self.asset,
+            asset_id=self.asset,
             strategy=strategy
         )
 
-        self.assertIn(order, strategy.orders.all())
+        self.assertTrue(strategy.orders.filter(pk=order.pk).exists())

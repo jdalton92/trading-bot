@@ -1,4 +1,7 @@
+import uuid
+
 from django.test import TestCase
+from django.utils import timezone
 from server.assets.tests.factories import AssetFactory
 from server.core.tests.factories import StrategyFactory
 from server.orders.models import Order
@@ -14,36 +17,54 @@ class OrderTaskTests(TestCase):
         self.asset_1 = AssetFactory(symbol="AAPL")
         self.asset_2 = AssetFactory(symbol="TLSA")
         self.asset_3 = AssetFactory(symbol="MFST")
+        self.uuid_1 = uuid.uuid4()
+        self.uuid_2 = uuid.uuid4()
+        self.uuid_3 = uuid.uuid4()
+        self.uuid_4 = uuid.uuid4()
+        self.uuid_5 = uuid.uuid4()
+        self.uuid_6 = uuid.uuid4()
         self.order_data = [
             {
                 "user": self.user.pk,
-                "status": "open",
-                "symbol": "AAPL",
-                "quantity": 10.01,
+                "status": "filled",
+                "asset_id": self.asset_1.pk,
+                "symbol": self.asset_1.symbol,
+                "qty": 10.01,
+                "filled_qty": 10.01,
                 "side": "buy",
                 "type": "market",
                 "time_in_force": "day",
-                "client_order_id": "a8d52afb-b645-4d69-abfb-5e4810bd8c05"
+                "client_order_id": self.uuid_1,
+                "id": self.uuid_2,
+                "created_at": timezone.now(),
             },
             {
                 "user": self.user.pk,
-                "status": "open",
-                "symbol": "TLSA",
-                "quantity": 101.05,
+                "status": "filled",
+                "asset_id": self.asset_2.pk,
+                "symbol": self.asset_2.symbol,
+                "qty": 101.05,
+                "filled_qty": 10.01,
                 "side": "buy",
                 "type": "market",
                 "time_in_force": "day",
-                "client_order_id": "5bd31df8-802a-47c5-b385-49425b57f9da"
+                "client_order_id": self.uuid_3,
+                "id": self.uuid_4,
+                "created_at": timezone.now(),
             },
             {
                 "user": self.user.pk,
-                "status": "open",
-                "symbol": "MFST",
-                "quantity": 105.08,
+                "status": "filled",
+                "asset_id": self.asset_3.pk,
+                "symbol": self.asset_3.symbol,
+                "qty": 105.08,
+                "filled_qty": 10.01,
                 "side": "buy",
                 "type": "market",
                 "time_in_force": "day",
-                "client_order_id": "28664ba6-6d3e-40a6-a679-f633d38981ef"
+                "client_order_id": self.uuid_5,
+                "id": self.uuid_6,
+                "created_at": timezone.now(),
             }
         ]
 
