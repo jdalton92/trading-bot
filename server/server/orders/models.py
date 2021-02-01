@@ -1,9 +1,8 @@
 from django.conf import settings
-from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from server.assets.models import Asset, AssetClass
+from server.assets.models import Asset
 from server.core.models import Strategy
 
 from .managers import OrderQuerySet

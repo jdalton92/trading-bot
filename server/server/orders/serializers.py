@@ -1,5 +1,5 @@
 from django.db import transaction
-from rest_framework import mixins, serializers
+from rest_framework import serializers
 from server.assets.models import Asset, AssetClass
 from server.core.models import Strategy
 from server.users.models import User
