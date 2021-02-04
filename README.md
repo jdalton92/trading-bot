@@ -57,7 +57,13 @@ $ (sever) pipenv install
 4. Run `docker-compose up` to initialise postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
 
 ```sh
-$ docker-compose up
+$ (server) docker-compose up
+```
+
+Note: you may have to give `wait-for-it.sh` executable permissions
+
+```sh
+$ (server) chmod +x wait-for-it.sh
 ```
 
 5. Run the server on localhost a separte terminal and run database migrations, create a superuser (refer `.env.example` file for default superuser account details, and include `--no-input` command)

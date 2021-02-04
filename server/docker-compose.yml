@@ -14,27 +14,38 @@ services:
     image: redis:alpine
     ports:
       - "6379:6379"
+    links:
+      - db
     depends_on:
       - db
 
   celery:
     build: .
-    command: sh -c "celery -A server.config worker -l info"
+    command: sh -c "./wait-for-it.sh db:5432 && ./wait-for-it.sh redis:6379 -- celery -A server.config worker --concurrency 1 --loglevel=info"
     volumes:
       - .:/trading-bot
+    links:
+      - db
+      - redis
     depends_on:
+      - db
       - redis
     env_file:
       - .env
 
   celery-beat:
     build: .
-    command: sh -c "celery -A server.config beat -l info"
+    command: sh -c "./wait-for-it.sh db:5432 && ./wait-for-it.sh redis:6379 -- celery -A server.config beat -l info -S django"
     volumes:
       - .:/trading-bot
     env_file:
       - .env
+    links:
+      - db
+      - redis
+      - celery
     depends_on:
+      - db
       - redis
       - celery
 
