@@ -47,45 +47,44 @@ $ cp .env.example .env
 
 **Note:** setting `POSTGRES_HOST_AUTH_METHOD=trust` means Postgresql does not require a password. This is used only in development mode, being run on localhost
 
-3. Activate your virtual environment, and install the necessary dependencies summarised in the `Pipfile`
+3. Activate your virtual environment, and navigate back into your project folder if necessary
 
 ```sh
 $ pipenv shell
-$ (sever) pipenv install
 ```
 
-4. Run `docker-compose up` to initialise postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
+4. Run `docker-compose up` to initialise django server, postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
 
 ```sh
 $ (server) docker-compose up
 ```
 
-Note: you may have to give `wait-for-it.sh` executable permissions
+Note: you may have to give `wait-for-it.sh` and `docker-entrypoint.sh` executable permissions
 
 ```sh
-$ (server) chmod +x wait-for-it.sh
+$ (server) chmod +x ./wait-for-it.sh && chmod +x ./docker-entrypoint.sh
 ```
 
-5. Run the server on localhost a separte terminal and run database migrations, create a superuser (refer `.env.example` file for default superuser account details, and include `--no-input` command)
+5. To run the server for the first time, you will have to run database migrations and create a superuser (refer `.env.example` file for default superuser account details). To do this you can use `docker-compose` and the `web` container
 
 ```sh
-$ (server) python manage.py migrate
-$ (server) python manage.py createsuperuser --no-input
-$ (server) python manage.py runserver
+$ (server) docker-compose exec web python manage.py migrate
+$ (server) docker-compose exec web python manage.py createsuperuser --no-input
 ```
 
 # Testing
 
 ## Server
 
+
 ```sh
-$ (server) python manage.py test server
+$ (server) docker-compose exec web python manage.py test server
 ```
 
 - Optionally add `--keepdb` to persist database between tests, and `--verbosity=2` to recieve verbose output of tests
 
 ```sh
-$ (server) python manage.py test server --keepdb --verbosity=2
+$ (server) docker-compose exec web python manage.py test server --keepdb --verbosity=2
 ```
 
 ## Client
@@ -112,6 +111,18 @@ psycopg2-binary
 django-debug-toolbar
 freezegun
 ```
+
+# Note
+
+To make running `docker-compose` commands on your local machine easier, you can use alias' in your `.bashrc`/`.zshrc` configuration files eg.
+
+```sh
+# ~/.zshrc file
+[...]
+alias pm="docker-compose exec web python manage.py"
+```
+
+Then the command `docker-compose exec web python manage.py test server` becomes `pm test server`
 
 # Licence
 

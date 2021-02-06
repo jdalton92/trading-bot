@@ -103,7 +103,8 @@ DATABASES = {
         'NAME': env("POSTGRES_NAME", default="tradingbot"),
         "USER": env("POSTGRES_USER", default="tradingbot"),
         "PASSWORD": env("POSTGRES_PASSWORD", default=""),
-        "HOST": env("POSTGRES_HOST", default="localhost"),
+        "HOST": "db",
+        # "HOST": env("POSTGRES_HOST", default="localhost"),
         "PORT": env("POSTGRES_PORT", default=5432),
     }
 }
