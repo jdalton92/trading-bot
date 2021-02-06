@@ -17,5 +17,7 @@ WORKDIR /trading-bot
 COPY ./Pipfile ./trading-bot/Pipfile
 RUN pip install pipenv && pipenv install --system --deploy --dev
 
+ENTRYPOINT ["./bin/docker-entrypoint.sh"]
+
 # Django will serve on this container port.
 EXPOSE 8000
