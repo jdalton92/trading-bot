@@ -19,7 +19,8 @@ import environ
 env = environ.Env()
 
 BASE_DIR = os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.abspath(__file__))
+)
 
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 

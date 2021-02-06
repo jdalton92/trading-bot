@@ -1,13 +1,14 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8e475091d9240fa4b0970d291ed3cc8da2ad8e22e764431314d1320815f164de"
+            "sha256": "96b8bfee9b682f37f076b122ec2f20f4e08567621a1b3872da3293696e418f58"
         },
         "pipfile-spec": 6,
         "requires": {
             "Django": "==3.1.2",
             "django-debug-toolbar": "==2.2",
             "djangorestframework": "==3.11.1",
+            "freezegun": "==1.1.0",
             "python_version": "3.8",
             "requests": "==2.22.0"
         },

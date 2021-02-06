@@ -28,3 +28,4 @@ djangorestframework = "==3.11.1"
 requests = "==2.22.0"
 # Development Libraries
 django-debug-toolbar = "==2.2"
+freezegun = "==1.1.0"
