@@ -59,7 +59,7 @@ $ pipenv shell
 $ (server) docker-compose up
 ```
 
-Note: you may have to give `wait-for-it.sh` and `docker-entrypoint.sh` executable permissions
+**Note:** you may have to give `wait-for-it.sh` and `docker-entrypoint.sh` executable permissions
 
 ```sh
 $ (server) chmod +x ./wait-for-it.sh && chmod +x ./docker-entrypoint.sh
@@ -114,7 +114,7 @@ freezegun
 
 # Note
 
-To make running `docker-compose` commands on your local machine easier, you can use alias' in your `.bashrc`/`.zshrc` configuration files eg.
+To make running `docker-compose` commands on your local machine easier, use alias' in `.bashrc`/`.zshrc` configuration files eg.
 
 ```sh
 # ~/.zshrc file
