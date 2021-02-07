@@ -10,7 +10,7 @@ env = environ.Env()
 DJANGO_SETTINGS_MODULE = env("DJANGO_SETTINGS_MODULE")
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', DJANGO_SETTINGS_MODULE)
 
-app = Celery('api')
+app = Celery('server')
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

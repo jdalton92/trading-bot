@@ -8,6 +8,7 @@ from django.utils import timezone
 from rest_framework import status
 from server.assets.models import Bar
 from server.assets.tasks import update_bars
+from server.config import celery_app
 from server.core.alpaca import TradeApiRest
 from server.core.models import Strategy
 from server.orders.models import Order
@@ -15,7 +16,8 @@ from server.orders.models import Order
 logger = logging.getLogger(__name__)
 
 
-def moving_average(self, user):
+@celery_app.task()
+def moving_average(user):
     """Initialise moving average strategy."""
     strategies = Strategy.objects.filter(user=user, is_active=True)
 
