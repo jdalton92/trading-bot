@@ -11,11 +11,11 @@ class Exchange(models.Model):
     name = models.CharField(
         verbose_name=_('name'),
         unique=True,
-        max_length=256
+        max_length=255
     )
     alt_name = models.CharField(
         verbose_name=_('alt name'),
-        max_length=256,
+        max_length=255,
         blank=True,
         null=True,
     )
@@ -37,11 +37,11 @@ class AssetClass(models.Model):
     name = models.CharField(
         verbose_name=_('name'),
         unique=True,
-        max_length=256
+        max_length=255
     )
     alt_name = models.CharField(
         verbose_name=_('alt name'),
-        max_length=256,
+        max_length=255,
         blank=True,
         null=True,
     )
@@ -75,7 +75,7 @@ class Asset(models.Model):
     )
     name = models.CharField(
         verbose_name=_('name'),
-        max_length=256,
+        max_length=255,
         blank=True,
         null=True,
     )
