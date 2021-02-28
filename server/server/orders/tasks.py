@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def update_orders(all_orders=None):
-    """Update db with account historical orders placed from Alpaca account."""
+    """Update db with historical orders placed from Alpaca account."""
     logger.info('Updating historical orders...')
 
     if not all_orders:
