@@ -15,7 +15,7 @@ def update_orders(all_orders=None):
 
     if not all_orders:
         api = TradeApiRest()
-        all_orders = api._get_orders(status="all", limit=500)
+        all_orders = api.get_orders(status="all", limit=500)
 
     existing_orders = [
         str(order_id) for order_id in Order.objects.all().values_list("pk", flat=True)

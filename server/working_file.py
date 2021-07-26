@@ -16,7 +16,7 @@ def get_bars(
     if not isinstance(symbols, list):
         symbols = [symbols]
     api = TradeApiRest()
-    bars = api._get_bars(symbols, timeframe, limit, start, end, after, until)
+    bars = api.get_bars(symbols, timeframe, limit, start, end, after, until)
 
     # for asset in bars:
     #     for bar in asset:
@@ -36,14 +36,14 @@ if __name__ == "__main__":
     from server.core.alpaca import TradeApiRest
 
     api = TradeApiRest()
-    # order = api._submit_order(
+    # order = api.submit_order(
     #     symbol="TSLA",
     #     qty=1,
     #     side="buy",
     #     type="market",
     #     time_in_force="ioc"
     # )
-    orders = api._get_order_by_client_order_id("a39ee42d-bb23-4395-8049-b8e69a1efd81")
+    orders = api.get_order_by_client_order_id("a39ee42d-bb23-4395-8049-b8e69a1efd81")
     print(orders)
 
     sample_order = {

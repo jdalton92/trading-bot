@@ -10,5 +10,5 @@ class CoreTaskTests(TestCase):
 
     def test_account_status(self):
         """Account is not blocked."""
-        self.api._is_account_blocked.return_value = False
-        self.assertFalse(self.api._is_account_blocked())
+        self.api.is_account_blocked.return_value = False
+        self.assertFalse(self.api.is_account_blocked())

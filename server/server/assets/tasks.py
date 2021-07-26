@@ -21,7 +21,7 @@ def update_assets(assets=None):
 
     if not assets:
         api = TradeApiRest()
-        assets = api._list_assets()
+        assets = api.list_assets()
 
     # Transform Alpaca response into dict required by Asset model
     if isinstance(assets[0], AlpacaAsset):
@@ -82,7 +82,7 @@ def get_quotes(symbols):
     errors = 0
     for symbol in symbols:
         try:
-            quotes[symbol] = api._get_last_quote(symbol)
+            quotes[symbol] = api.get_last_quote(symbol)
         except Exception:
             errors += 1
     if errors:
@@ -99,7 +99,7 @@ def update_bars(
         symbols = [symbols]
     api = TradeApiRest()
     try:
-        assets_bars = api._get_bars(symbols, timeframe, limit, start, end, after, until)
+        assets_bars = api.get_bars(symbols, timeframe, limit, start, end, after, until)
     except Exception as e:
         logger.error(f"Errors fetching bars: {e}")
 

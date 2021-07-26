@@ -29,7 +29,7 @@ def moving_average(user):
     api = TradeApiRest()
 
     # Check market open
-    if not api._is_market_open:
+    if not api.is_market_open:
         return
 
     # Update latest bars
@@ -87,18 +87,18 @@ def moving_average(user):
             and prev_bar.c < prev_bar.moving_average
         ):
             side = Order.BUY
-            account = api._account_info()
+            account = api.account_info()
             trade_value = min(strategy.trade_value, account.equity)
-            quote = api._get_last_quote(strategy.symbol)
+            quote = api.get_last_quote(strategy.symbol)
             quantity = math.floor(trade_value / quote["askprice"])
         elif (
             current_bar.c <= current_bar.moving_average
             and prev_bar.c > prev_bar.moving_average
         ):
             side = Order.SELL
-            account = api._account_info()
+            account = api.account_info()
             trade_value = min(strategy.trade_value, account.equity)
-            position = api._list_position_by_symbol(strategy.symbol)
+            position = api.list_position_by_symbol(strategy.symbol)
 
             if position.status_code == status.HTTP_404_NOT_FOUND:
                 return
@@ -106,7 +106,7 @@ def moving_average(user):
             quantity = math.floor(trade_value / position["market_value"])
 
         try:
-            order = api._submit_order(
+            order = api.submit_order(
                 symbol=strategy.symbol,
                 qty=quantity,
                 side=side,
