@@ -6,7 +6,6 @@ from .factories import OrderFactory
 
 
 class OrderQuerySetTests(TestCase):
-
     def setUp(self):
         self.admin = AdminFactory()
         self.user_1 = UserFactory()

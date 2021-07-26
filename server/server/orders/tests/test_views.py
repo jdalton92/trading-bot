@@ -11,31 +11,22 @@ from server.users.tests.factories import AdminFactory, UserFactory
 
 from .factories import OrderFactory
 
-time_now = '2021-01-30T05:25:22.831798Z'
+time_now = "2021-01-30T05:25:22.831798Z"
 
 
 @freeze_time(time_now)  # Freeze time for testing timedate fields
 class OrderViewTests(APITestCase):
-
     def setUp(self):
         self.admin = AdminFactory()
         self.user = UserFactory()
         self.asset = AssetFactory(symbol="AAPL")
-        self.strategy = StrategyFactory(
-            asset=self.asset
-        )
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
-        )
+        self.strategy = StrategyFactory(asset=self.asset)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.admin.auth_token.key)
         self.order_1 = OrderFactory(
-            user=self.user,
-            strategy=self.strategy,
-            asset_id=self.asset
+            user=self.user, strategy=self.strategy, asset_id=self.asset
         )
         self.order_2 = OrderFactory(
-            user=self.user,
-            strategy=self.strategy,
-            asset_id=self.asset
+            user=self.user, strategy=self.strategy, asset_id=self.asset
         )
         self.order_3 = OrderFactory()
         self.order_4 = OrderFactory()
@@ -84,7 +75,7 @@ class OrderViewTests(APITestCase):
             "extended_hours": True,
             "trail_price": 100,
             "trail_percentage": 50.05,
-            "hwm": 95.7
+            "hwm": 95.7,
         }
         order_2 = {
             "user": self.user.pk,
@@ -117,7 +108,7 @@ class OrderViewTests(APITestCase):
             "extended_hours": True,
             "trail_price": 100,
             "trail_percentage": 50.05,
-            "hwm": 95.7
+            "hwm": 95.7,
         }
 
         # Admin create order
@@ -128,9 +119,7 @@ class OrderViewTests(APITestCase):
         self.assertTrue(order.exists())
 
         # User create order
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user.auth_token.key)
         response = self.client.post(reverse("v1:orders-list"), order_2)
         order = Order.objects.filter(client_order_id=order_2["client_order_id"])
 
@@ -139,17 +128,12 @@ class OrderViewTests(APITestCase):
 
     def test_partial_update_order(self):
         """Admins and users can partially update orders."""
-        order_1 = {
-            "status": Order.PARTIALLY_FILLED
-        }
-        order_2 = {
-            "status": Order.CANCELED
-        }
+        order_1 = {"status": Order.PARTIALLY_FILLED}
+        order_2 = {"status": Order.CANCELED}
 
         # Admin patch order
         response = self.client.patch(
-            reverse("v1:orders-detail", args=[self.order_1.pk]),
-            order_1
+            reverse("v1:orders-detail", args=[self.order_1.pk]), order_1
         )
         self.order_1.refresh_from_db()
 
@@ -157,12 +141,9 @@ class OrderViewTests(APITestCase):
         self.assertEqual(self.order_1.status, order_1["status"])
 
         # User patch order
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user.auth_token.key)
         response = self.client.patch(
-            reverse("v1:orders-detail", args=[self.order_2.pk]),
-            order_2
+            reverse("v1:orders-detail", args=[self.order_2.pk]), order_2
         )
         self.order_2.refresh_from_db()
 
@@ -176,29 +157,23 @@ class OrderViewTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(
-            Order.objects.filter(pk=self.order_1.pk).exists()
-        )
+        self.assertFalse(Order.objects.filter(pk=self.order_1.pk).exists())
 
     def test_user_delete_order(self):
         """Users can delete their own orders."""
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user.auth_token.key)
         response = self.client.delete(
             reverse("v1:orders-detail", args=[self.order_1.pk])
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(
-            Order.objects.filter(pk=self.order_1.pk).exists()
-        )
+        self.assertFalse(Order.objects.filter(pk=self.order_1.pk).exists())
 
     def test_user_delete_order_invalid(self):
         """Users can not delete other user's orders."""
         non_order_owner = UserFactory()
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + non_order_owner.auth_token.key
+            HTTP_AUTHORIZATION="Token " + non_order_owner.auth_token.key
         )
         response = self.client.delete(
             reverse("v1:orders-detail", args=[self.order_1.pk])
@@ -206,6 +181,4 @@ class OrderViewTests(APITestCase):
 
         # Returns HTTP 404 as other user's orders are not visible to non admin
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertTrue(
-            Order.objects.filter(pk=self.order_1.pk).exists()
-        )
+        self.assertTrue(Order.objects.filter(pk=self.order_1.pk).exists())

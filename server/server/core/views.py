@@ -7,7 +7,6 @@ from .serializers import StrategyCreateSerializer, StrategySerializer
 
 
 class StrategyView(viewsets.ModelViewSet):
-
     def get_queryset(self, *args, **kwargs):
         """Return strategies to requesting user."""
         return Strategy.objects.visible(self.request.user)
@@ -16,7 +15,7 @@ class StrategyView(viewsets.ModelViewSet):
         """
         Instantiates and returns the serializer that the strategy view requires.
         """
-        if self.action in ['list', 'retrieve']:
+        if self.action in ["list", "retrieve"]:
             return StrategySerializer
         return StrategyCreateSerializer
 
@@ -25,9 +24,9 @@ class StrategyView(viewsets.ModelViewSet):
         Instantiates and returns the list of permissions that the strategy view
         requires.
         """
-        if self.action == 'create':
+        if self.action == "create":
             permission_classes = [IsAuthenticated]
-        if self.action == 'list':
+        if self.action == "list":
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [IsAdminOrOwner]

@@ -1,1 +1,1 @@
-default_app_config = 'server.core.apps.CoreConfig'
+default_app_config = "server.core.apps.CoreConfig"

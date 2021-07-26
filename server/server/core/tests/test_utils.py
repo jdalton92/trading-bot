@@ -4,8 +4,7 @@ from django.test import TestCase
 
 
 class CoreTaskTests(TestCase):
-
-    @patch('server.core.alpaca.TradeApiRest')
+    @patch("server.core.alpaca.TradeApiRest")
     def setUp(self, mock_api):
         self.api = mock_api()
 

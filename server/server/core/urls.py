@@ -4,6 +4,6 @@ from .views import StrategyView
 
 router = DefaultRouter()
 
-router.register(r'strategies/', StrategyView, basename='strategies')
+router.register(r"strategies/", StrategyView, basename="strategies")
 
 urlpatterns = router.urls

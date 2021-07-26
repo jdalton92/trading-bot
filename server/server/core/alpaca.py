@@ -16,7 +16,7 @@ class TradeApiRest:
             #   * APCA_API_BASE_URL
             self.api = tradeapi.REST()
         except Exception as e:
-            logger.error(f'Tradeview api connection failed: {e}')
+            logger.error(f"Tradeview api connection failed: {e}")
             return
 
     def _account_info(self):
@@ -74,9 +74,14 @@ class TradeApiRest:
         """
         return self.api.get_account()
 
-    def _get_portfolio_history(self, date_start=None, date_end=None,
-                               period=None, timeframe=None,
-                               extended_hours=None):
+    def _get_portfolio_history(
+        self,
+        date_start=None,
+        date_end=None,
+        period=None,
+        timeframe=None,
+        extended_hours=None,
+    ):
         """
         Returns timeseries data about equity and profit/loss (P/L).
 
@@ -136,8 +141,15 @@ class TradeApiRest:
         """
         return self.api.get_position(symbol)
 
-    def _get_orders(self, status=None, limit=None, after=None, until=None,
-                    direction=None, nested=None):
+    def _get_orders(
+        self,
+        status=None,
+        limit=None,
+        after=None,
+        until=None,
+        direction=None,
+        nested=None,
+    ):
         """
         Get order information.
 
@@ -155,12 +167,10 @@ class TradeApiRest:
             - nested(bool): if true, the result will roll up multi-leg orders
             under the legs field of primary order.
         """
-        return self.api.list_orders(
-            status, limit, after, until, direction, nested
-        )
+        return self.api.list_orders(status, limit, after, until, direction, nested)
 
     def _get_order_by_client_order_id(self, client_order_id):
-        """"
+        """ "
         Get order details when client_order_id is manually speicified by client.
 
         Endpoint: GET /orders
@@ -192,10 +202,22 @@ class TradeApiRest:
         """
         return self.api.cancel_all_orders()
 
-    def _submit_order(self, symbol, qty, side, type, time_in_force,
-                      limit_price=None, stop_price=None, client_order_id=None,
-                      order_class=None, take_profit=None, stop_loss=None,
-                      trail_price=None, trail_percent=None):
+    def _submit_order(
+        self,
+        symbol,
+        qty,
+        side,
+        type,
+        time_in_force,
+        limit_price=None,
+        stop_price=None,
+        client_order_id=None,
+        order_class=None,
+        take_profit=None,
+        stop_loss=None,
+        trail_price=None,
+        trail_percent=None,
+    ):
         """
         Submit an order.
 
@@ -241,9 +263,19 @@ class TradeApiRest:
 
         """
         return self.api.submit_order(
-            symbol, qty, side, type, time_in_force, limit_price, stop_price,
-            client_order_id, order_class, take_profit, stop_loss, trail_price,
-            trail_percent
+            symbol,
+            qty,
+            side,
+            type,
+            time_in_force,
+            limit_price,
+            stop_price,
+            client_order_id,
+            order_class,
+            take_profit,
+            stop_loss,
+            trail_price,
+            trail_percent,
         )
 
     def _is_tradable(self, symbol):
@@ -265,13 +297,21 @@ class TradeApiRest:
 
     def _is_market_open(self):
         """Return true if the market is currently open."""
-        return self.api.get_clock()['is_open']
+        return self.api.get_clock()["is_open"]
 
     def _cancel_orders(self, id):
         return self.api.cancel_order(id)
 
-    def _get_bars(self, symbols, timeframe, limit=None, start=None, end=None,
-                  after=None, until=None):
+    def _get_bars(
+        self,
+        symbols,
+        timeframe,
+        limit=None,
+        start=None,
+        end=None,
+        after=None,
+        until=None,
+    ):
         """
         Retrieves list of bars for each requested symbol.
 
@@ -287,9 +327,7 @@ class TradeApiRest:
         :param after(str): Filter bars after this time, ISO Format
         :param before(str): Filter bars before this time, ISO Format
         """
-        return self.api.get_barset(
-            symbols, timeframe, limit, start, end, after, until
-        )
+        return self.api.get_barset(symbols, timeframe, limit, start, end, after, until)
 
     def _get_aggs(self, symbol, timespan, multiplier, _from, to):
         """
@@ -341,4 +379,4 @@ class TradeApiRest:
 
     def _open_orders(self):
         """Get all orders that are open."""
-        return self.api.list_orders(status='open')
+        return self.api.list_orders(status="open")

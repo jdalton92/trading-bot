@@ -18,9 +18,7 @@ import environ
 
 env = environ.Env()
 
-BASE_DIR = os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))
-)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 
@@ -28,68 +26,68 @@ ENVIRONMENT = env("ENVIRONMENT", default="development")
 
 DEBUG = env.bool("DEBUG", default=False)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 INTERNAL_IPS = [
-    '127.0.0.1',  # Required for Django Debug Toolbar (development)
+    "127.0.0.1",  # Required for Django Debug Toolbar (development)
 ]
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.contenttypes',
-    'django.contrib.auth',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.contenttypes",
+    "django.contrib.auth",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # Plugins
-    'rest_framework',
-    'rest_framework.authtoken',
-    'django_filters',
-    'debug_toolbar',
-    'django_celery_beat',
-    'celery',
+    "rest_framework",
+    "rest_framework.authtoken",
+    "django_filters",
+    "debug_toolbar",
+    "django_celery_beat",
+    "celery",
     # My apps
-    'server.core',
-    'server.users',
-    'server.assets',
-    'server.orders',
-    'server.accounts'
+    "server.core",
+    "server.users",
+    "server.assets",
+    "server.orders",
+    "server.accounts",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Plugins
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     # My middleware
 ]
 
-ROOT_URLCONF = 'server.config.urls'
+ROOT_URLCONF = "server.config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'server.config.wsgi.application'
+WSGI_APPLICATION = "server.config.wsgi.application"
 
 
 # Database
@@ -99,9 +97,9 @@ WSGI_APPLICATION = 'server.config.wsgi.application'
 # environment, and no password is required. Do not do this in production
 
 DATABASES = {
-    'default': {
+    "default": {
         "ENGINE": "django.db.backends.postgresql",
-        'NAME': env("POSTGRES_NAME", default="tradingbot"),
+        "NAME": env("POSTGRES_NAME", default="tradingbot"),
         "USER": env("POSTGRES_USER", default="tradingbot"),
         "PASSWORD": env("POSTGRES_PASSWORD", default=""),
         "HOST": env("POSTGRES_HOST", default="db"),
@@ -130,20 +128,16 @@ CHANNEL_LAYERS = {
 
 REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        'rest_framework.authentication.TokenAuthentication',
+        "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PARSER_CLASSES": (
         "rest_framework.parsers.JSONParser",
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
     ),
-    "DEFAULT_RENDERER_CLASSES": (
-        "rest_framework.renderers.JSONRenderer",
-    ),
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.OrderingFilter",
@@ -161,16 +155,16 @@ ANONYMOUS_USER_NAME = None
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -183,34 +177,31 @@ LOG_LEVEL = env("LOG_LEVEL", default="ERROR")
 LOG_REQUESTS = env.bool("LOG_REQUESTS", default=False)
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
+    "version": 1,
+    "disable_existing_loggers": False,
     "formatters": {
         "standard": {"format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"}
     },
-    'handlers': {
-        'file': {
-            'level': LOG_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(os.path.dirname(BASE_DIR), 'debug.log'),
-            'maxBytes': 1024 * 1024 * 10,  # 10 MB
-            'backupCount': 5,
-            'formatter': 'standard',
+    "handlers": {
+        "file": {
+            "level": LOG_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(os.path.dirname(BASE_DIR), "debug.log"),
+            "maxBytes": 1024 * 1024 * 10,  # 10 MB
+            "backupCount": 5,
+            "formatter": "standard",
         },
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "standard"
-        }
+        "console": {"class": "logging.StreamHandler", "formatter": "standard"},
     },
-    'loggers': {
+    "loggers": {
         "": {
             "level": LOG_LEVEL,
-            "handlers": ['console'],
+            "handlers": ["console"],
         },
-        'django': {
-            'level': "ERROR",
-            'handlers': ['file'],
-            'propagate': True,
+        "django": {
+            "level": "ERROR",
+            "handlers": ["file"],
+            "propagate": True,
         },
         "django.request": {
             "level": "DEBUG" if LOG_REQUESTS else "ERROR",
@@ -228,17 +219,17 @@ CELERY_BROKER_URL = "redis://{}:{}".format(
 CELERY_RESULT_BACKEND = "redis://{}:{}".format(
     env("REDIS_HOST", default="redis"), env.int("REDIS_PORT", default=6379)
 )
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -250,4 +241,4 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"

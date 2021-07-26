@@ -4,26 +4,25 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from server.assets.models import Asset, AssetClass, Bar, Exchange
-from server.assets.tests.factories import (AssetClassFactory, AssetFactory,
-                                           BarFactory, ExchangeFactory)
+from server.assets.tests.factories import (
+    AssetClassFactory,
+    AssetFactory,
+    BarFactory,
+    ExchangeFactory,
+)
 from server.core.utils import add_query_params_to_url
 from server.users.tests.factories import AdminFactory, UserFactory
 
 
 class ExchangeViewTests(APITestCase):
-
     def setUp(self):
         self.admin = AdminFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
-        )
-        self.exchange = ExchangeFactory(
-            name="Exchange"
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.admin.auth_token.key)
+        self.exchange = ExchangeFactory(name="Exchange")
         self.data = {
-            'name': 'Exchange Name',
-            'alt_name': 'Exchange Alt Name',
-            'is_active': True
+            "name": "Exchange Name",
+            "alt_name": "Exchange Alt Name",
+            "is_active": True,
         }
 
     def test_list_exchanges(self):
@@ -42,16 +41,14 @@ class ExchangeViewTests(APITestCase):
         self.assertTrue(exchange.exists())
 
         exchange = exchange.first()
-        self.assertEqual(exchange.name, self.data['name'])
-        self.assertEqual(exchange.alt_name, self.data['alt_name'])
-        self.assertEqual(exchange.is_active, self.data['is_active'])
+        self.assertEqual(exchange.name, self.data["name"])
+        self.assertEqual(exchange.alt_name, self.data["alt_name"])
+        self.assertEqual(exchange.is_active, self.data["is_active"])
 
     def test_create_exchange_invalid(self):
         """Users cannot create exchanges."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         response = self.client.post(reverse("v1:exchanges-list"), self.data)
         exchange = Exchange.objects.filter(name=self.data["name"])
 
@@ -63,8 +60,7 @@ class ExchangeViewTests(APITestCase):
         data = {"name": "New Exchange Name"}
 
         response = self.client.patch(
-            reverse("v1:exchanges-detail", args=[self.exchange.pk]),
-            data
+            reverse("v1:exchanges-detail", args=[self.exchange.pk]), data
         )
         self.exchange.refresh_from_db()
 
@@ -74,14 +70,11 @@ class ExchangeViewTests(APITestCase):
     def test_partial_update_exchanges_invalid(self):
         """Users can not partially update exchanges."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         data = {"name": "New Exchange Name"}
 
         response = self.client.patch(
-            reverse("v1:exchanges-detail", args=[self.exchange.pk]),
-            data
+            reverse("v1:exchanges-detail", args=[self.exchange.pk]), data
         )
         self.exchange.refresh_from_db()
 
@@ -95,40 +88,29 @@ class ExchangeViewTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(
-            Exchange.objects.filter(pk=self.exchange.pk).exists()
-        )
+        self.assertFalse(Exchange.objects.filter(pk=self.exchange.pk).exists())
 
     def test_delete_exchanges_invalid(self):
         """Users can not delete exchanges."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         response = self.client.delete(
             reverse("v1:exchanges-detail", args=[self.exchange.pk])
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertTrue(
-            Exchange.objects.filter(pk=self.exchange.pk).exists()
-        )
+        self.assertTrue(Exchange.objects.filter(pk=self.exchange.pk).exists())
 
 
 class AssetClassViewTests(APITestCase):
-
     def setUp(self):
         self.admin = AdminFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
-        )
-        self.asset_class = AssetClassFactory(
-            name="Asset Class"
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.admin.auth_token.key)
+        self.asset_class = AssetClassFactory(name="Asset Class")
         self.data = {
-            'name': 'Asset Class Name',
-            'alt_name': 'Asset Class Alt Name',
-            'is_active': True
+            "name": "Asset Class Name",
+            "alt_name": "Asset Class Alt Name",
+            "is_active": True,
         }
 
     def test_admin_list_asset_class(self):
@@ -141,9 +123,7 @@ class AssetClassViewTests(APITestCase):
     def test_user_list_asset_class(self):
         """Asset class are listed for users."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         response = self.client.get(reverse("v1:asset-classes-list"))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -158,16 +138,14 @@ class AssetClassViewTests(APITestCase):
         self.assertTrue(asset_class.exists())
 
         asset_class = asset_class.first()
-        self.assertEqual(asset_class.name, self.data['name'])
-        self.assertEqual(asset_class.alt_name, self.data['alt_name'])
-        self.assertEqual(asset_class.is_active, self.data['is_active'])
+        self.assertEqual(asset_class.name, self.data["name"])
+        self.assertEqual(asset_class.alt_name, self.data["alt_name"])
+        self.assertEqual(asset_class.is_active, self.data["is_active"])
 
     def test_create_asset_class_invalid(self):
         """Asset class can not be created by users."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         response = self.client.post(reverse("v1:asset-classes-list"), self.data)
         asset_class = AssetClass.objects.filter(name=self.data["name"])
 
@@ -179,8 +157,7 @@ class AssetClassViewTests(APITestCase):
         data = {"name": "New Asset Class Name"}
 
         response = self.client.patch(
-            reverse("v1:asset-classes-detail", args=[self.asset_class.pk]),
-            data
+            reverse("v1:asset-classes-detail", args=[self.asset_class.pk]), data
         )
         self.asset_class.refresh_from_db()
 
@@ -190,14 +167,11 @@ class AssetClassViewTests(APITestCase):
     def test_partial_update_asset_class_invalid(self):
         """Asset class can not be partially updated by users."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         data = {"name": "New Asset Class Name"}
 
         response = self.client.patch(
-            reverse("v1:asset-classes-detail", args=[self.asset_class.pk]),
-            data
+            reverse("v1:asset-classes-detail", args=[self.asset_class.pk]), data
         )
         self.asset_class.refresh_from_db()
 
@@ -211,51 +185,40 @@ class AssetClassViewTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(
-            AssetClass.objects.filter(pk=self.asset_class.pk).exists()
-        )
+        self.assertFalse(AssetClass.objects.filter(pk=self.asset_class.pk).exists())
 
     def test_delete_asset_class_invalid(self):
         """Asset class can not be deleted by users."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         response = self.client.delete(
             reverse("v1:asset-classes-detail", args=[self.asset_class.pk])
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertTrue(
-            AssetClass.objects.filter(pk=self.asset_class.pk).exists()
-        )
+        self.assertTrue(AssetClass.objects.filter(pk=self.asset_class.pk).exists())
 
 
 class AssetViewTests(APITestCase):
-
     def setUp(self):
         self.admin = AdminFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.admin.auth_token.key)
         self.exchange = ExchangeFactory()
         self.asset_class = AssetClassFactory()
         self.asset = AssetFactory(
-            name="Asset",
-            exchange=self.exchange,
-            asset_class=self.asset_class
+            name="Asset", exchange=self.exchange, asset_class=self.asset_class
         )
         self.data = {
-            'id': str(uuid.uuid4()),
-            'name': 'Asset Name',
-            'asset_class': self.asset_class.name,
-            'easy_to_borrow': True,
-            'exchange': self.exchange.name,
-            'marginable': True,
-            'shortable': True,
-            'status': Asset.ACTIVE,
-            'symbol': 'SYMBOL',
-            'tradable': True,
+            "id": str(uuid.uuid4()),
+            "name": "Asset Name",
+            "asset_class": self.asset_class.name,
+            "easy_to_borrow": True,
+            "exchange": self.exchange.name,
+            "marginable": True,
+            "shortable": True,
+            "status": Asset.ACTIVE,
+            "symbol": "SYMBOL",
+            "tradable": True,
         }
 
     def test_list_assets_admin(self):
@@ -268,9 +231,7 @@ class AssetViewTests(APITestCase):
     def test_list_assets_user(self):
         """Assets are listed for users."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         response = self.client.get(reverse("v1:assets-list"))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -285,22 +246,20 @@ class AssetViewTests(APITestCase):
         self.assertTrue(asset.exists())
 
         asset = asset.first()
-        self.assertEqual(asset.name, self.data['name'])
-        self.assertEqual(asset.asset_class.name, self.data['asset_class'])
-        self.assertEqual(asset.easy_to_borrow, self.data['easy_to_borrow'])
-        self.assertEqual(asset.exchange.name, self.data['exchange'])
-        self.assertEqual(asset.marginable, self.data['marginable'])
-        self.assertEqual(asset.shortable, self.data['shortable'])
-        self.assertEqual(asset.status, self.data['status'])
-        self.assertEqual(asset.symbol, self.data['symbol'])
-        self.assertEqual(asset.tradable, self.data['tradable'])
+        self.assertEqual(asset.name, self.data["name"])
+        self.assertEqual(asset.asset_class.name, self.data["asset_class"])
+        self.assertEqual(asset.easy_to_borrow, self.data["easy_to_borrow"])
+        self.assertEqual(asset.exchange.name, self.data["exchange"])
+        self.assertEqual(asset.marginable, self.data["marginable"])
+        self.assertEqual(asset.shortable, self.data["shortable"])
+        self.assertEqual(asset.status, self.data["status"])
+        self.assertEqual(asset.symbol, self.data["symbol"])
+        self.assertEqual(asset.tradable, self.data["tradable"])
 
     def test_create_asset_invalid(self):
         """Assets can not be created by users."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         response = self.client.post(reverse("v1:assets-list"), self.data)
         asset = Asset.objects.filter(id=self.data["id"])
 
@@ -312,8 +271,7 @@ class AssetViewTests(APITestCase):
         data = {"name": "New Name"}
 
         response = self.client.patch(
-            reverse("v1:assets-detail", args=[self.asset.pk]),
-            data
+            reverse("v1:assets-detail", args=[self.asset.pk]), data
         )
         self.asset.refresh_from_db()
 
@@ -326,8 +284,7 @@ class AssetViewTests(APITestCase):
         data = {"asset_class": new_asset_class.name}
 
         response = self.client.patch(
-            reverse("v1:assets-detail", args=[self.asset.pk]),
-            data
+            reverse("v1:assets-detail", args=[self.asset.pk]), data
         )
         self.asset.refresh_from_db()
 
@@ -340,8 +297,7 @@ class AssetViewTests(APITestCase):
         data = {"exchange": new_exchange.name}
 
         response = self.client.patch(
-            reverse("v1:assets-detail", args=[self.asset.pk]),
-            data
+            reverse("v1:assets-detail", args=[self.asset.pk]), data
         )
         self.asset.refresh_from_db()
 
@@ -351,14 +307,11 @@ class AssetViewTests(APITestCase):
     def test_asset_partial_update_invalid(self):
         """Assets can not be partially updated by users."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         data = {"name": "New Name"}
 
         response = self.client.patch(
-            reverse("v1:assets-detail", args=[self.asset.pk]),
-            data
+            reverse("v1:assets-detail", args=[self.asset.pk]), data
         )
         self.asset.refresh_from_db()
 
@@ -367,9 +320,7 @@ class AssetViewTests(APITestCase):
 
     def test_delete_asset(self):
         """Assets can be deleted by admins."""
-        response = self.client.delete(
-            reverse("v1:assets-detail", args=[self.asset.pk])
-        )
+        response = self.client.delete(reverse("v1:assets-detail", args=[self.asset.pk]))
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Asset.objects.filter(pk=self.asset.pk).exists())
@@ -377,37 +328,21 @@ class AssetViewTests(APITestCase):
     def test_delete_asset_invalid(self):
         """Assets can not be deleted by users."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
-        response = self.client.delete(
-            reverse("v1:assets-detail", args=[self.asset.pk])
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
+        response = self.client.delete(reverse("v1:assets-detail", args=[self.asset.pk]))
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
 
 
 class BarViewTests(APITestCase):
-
     def setUp(self):
         self.admin = AdminFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.admin.auth_token.key)
         self.asset = AssetFactory(symbol="AAPL")
-        self.bar_1 = BarFactory(
-            asset=self.asset,
-            t=100000
-        )
-        self.bar_2 = BarFactory(
-            asset=self.asset,
-            t=150000
-        )
-        self.bar_3 = BarFactory(
-            asset=self.asset,
-            t=200000
-        )
+        self.bar_1 = BarFactory(asset=self.asset, t=100000)
+        self.bar_2 = BarFactory(asset=self.asset, t=150000)
+        self.bar_3 = BarFactory(asset=self.asset, t=200000)
         self.data = {
             "asset": self.asset.symbol,
             "t": 2100000000,
@@ -415,7 +350,7 @@ class BarViewTests(APITestCase):
             "h": 110.05,
             "l": 99.05,
             "c": 105.01,
-            "v": 200000
+            "v": 200000,
         }
 
     def test_list_bars_admin(self):
@@ -430,9 +365,7 @@ class BarViewTests(APITestCase):
     def test_list_bars_user(self):
         """Bars are listed for users."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         response = self.client.get(
             reverse("v1:asset-bars-list", kwargs={"asset_id": self.asset.pk}),
         )
@@ -450,8 +383,8 @@ class BarViewTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]['id'], self.bar_3.pk)
-        self.assertEqual(response.data[1]['id'], self.bar_2.pk)
+        self.assertEqual(response.data[0]["id"], self.bar_3.pk)
+        self.assertEqual(response.data[1]["id"], self.bar_2.pk)
 
     def test_filter_listed_bars_invalid(self):
         """
@@ -466,15 +399,14 @@ class BarViewTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.content.decode('UTF-8'),
-            '["You must include both `start` and `end` params"]'
+            response.content.decode("UTF-8"),
+            '["You must include both `start` and `end` params"]',
         )
 
     def test_create_bar(self):
         """Bars can be created by admins and users."""
         response = self.client.post(
-            reverse("v1:asset-bars-list", kwargs={"asset_id": self.asset.pk}),
-            self.data
+            reverse("v1:asset-bars-list", kwargs={"asset_id": self.asset.pk}), self.data
         )
         bar = Bar.objects.filter(asset__symbol=self.asset.symbol, t=2100000000)
 
@@ -483,21 +415,18 @@ class BarViewTests(APITestCase):
 
         bar = bar.first()
         self.assertEqual(str(bar.asset.pk), self.asset.pk)
-        self.assertEqual(bar.t, self.data['t'])
-        self.assertEqual(float(bar.o), self.data['o'])
-        self.assertEqual(float(bar.h), self.data['h'])
-        self.assertEqual(float(bar.l), self.data['l'])
-        self.assertEqual(float(bar.c), self.data['c'])
-        self.assertEqual(bar.v, self.data['v'])
+        self.assertEqual(bar.t, self.data["t"])
+        self.assertEqual(float(bar.o), self.data["o"])
+        self.assertEqual(float(bar.h), self.data["h"])
+        self.assertEqual(float(bar.l), self.data["l"])
+        self.assertEqual(float(bar.c), self.data["c"])
+        self.assertEqual(bar.v, self.data["v"])
 
     def test_create_bar_invalid(self):
         """Bar data can not be created for assets that don't exist."""
         response = self.client.post(
-            reverse(
-                "v1:asset-bars-list",
-                kwargs={"asset_id": str(uuid.uuid4())}
-            ),
-            self.data
+            reverse("v1:asset-bars-list", kwargs={"asset_id": str(uuid.uuid4())}),
+            self.data,
         )
         bar = Bar.objects.filter(asset__symbol=self.asset.symbol, t=2100000000)
 
@@ -513,7 +442,7 @@ class BarViewTests(APITestCase):
                 "v1:asset-bars-detail",
                 kwargs={"asset_id": self.asset.pk, "pk": self.bar_1.pk},
             ),
-            data
+            data,
         )
         self.bar_1.refresh_from_db()
 
@@ -523,9 +452,7 @@ class BarViewTests(APITestCase):
     def test_partial_update_bars_invalid(self):
         """Users can not partially update bars."""
         user = UserFactory()
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + user.auth_token.key
-        )
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + user.auth_token.key)
         data = {"t": 1100000000}
 
         response = self.client.patch(
@@ -533,7 +460,7 @@ class BarViewTests(APITestCase):
                 "v1:asset-bars-detail",
                 kwargs={"asset_id": self.asset.pk, "pk": self.bar_1.pk},
             ),
-            data
+            data,
         )
         self.bar_1.refresh_from_db()
 

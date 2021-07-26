@@ -6,14 +6,14 @@ from server.users.models import User
 class UserFactory(DjangoModelFactory):
     """Construct a user of the system."""
 
-    first_name = factory.Faker('name')
-    last_name = factory.Faker('name')
-    email = factory.Sequence(lambda n: 'user_{0}@tradingbot.com'.format(n))
-    password = factory.PostGenerationMethodCall('set_password', None)
+    first_name = factory.Faker("name")
+    last_name = factory.Faker("name")
+    email = factory.Sequence(lambda n: "user_{0}@tradingbot.com".format(n))
+    password = factory.PostGenerationMethodCall("set_password", None)
 
     class Meta:
         model = User
-        django_get_or_create = ('email',)
+        django_get_or_create = ("email",)
 
 
 class AdminFactory(UserFactory):

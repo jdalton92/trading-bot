@@ -8,61 +8,95 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('assets', '0001_initial'),
+        ("assets", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AssetClass',
+            name="AssetClass",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True, verbose_name='name')),
-                ('alt_name', models.CharField(blank=True, max_length=255, null=True, verbose_name='alt name')),
-                ('is_active', models.BooleanField(default=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=255, unique=True, verbose_name="name"),
+                ),
+                (
+                    "alt_name",
+                    models.CharField(
+                        blank=True, max_length=255, null=True, verbose_name="alt name"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
             ],
             options={
-                'verbose_name': 'asset class',
-                'verbose_name_plural': 'asset classes',
+                "verbose_name": "asset class",
+                "verbose_name_plural": "asset classes",
             },
         ),
         migrations.RenameField(
-            model_name='asset',
-            old_name='tradeable',
-            new_name='tradable',
+            model_name="asset",
+            old_name="tradeable",
+            new_name="tradable",
         ),
         migrations.RenameField(
-            model_name='exchange',
-            old_name='is_current',
-            new_name='is_active',
+            model_name="exchange",
+            old_name="is_current",
+            new_name="is_active",
         ),
         migrations.AlterField(
-            model_name='asset',
-            name='exchange',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='assets', to='assets.exchange', verbose_name='exchange'),
+            model_name="asset",
+            name="exchange",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="assets",
+                to="assets.exchange",
+                verbose_name="exchange",
+            ),
         ),
         migrations.AlterField(
-            model_name='asset',
-            name='name',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='name'),
+            model_name="asset",
+            name="name",
+            field=models.CharField(
+                blank=True, max_length=255, null=True, verbose_name="name"
+            ),
         ),
         migrations.AlterField(
-            model_name='asset',
-            name='status',
-            field=models.CharField(choices=[('active', 'active'), ('inactive', 'inactive')], max_length=56, verbose_name='status'),
+            model_name="asset",
+            name="status",
+            field=models.CharField(
+                choices=[("active", "active"), ("inactive", "inactive")],
+                max_length=56,
+                verbose_name="status",
+            ),
         ),
         migrations.AlterField(
-            model_name='asset',
-            name='symbol',
-            field=django.contrib.postgres.fields.citext.CICharField(max_length=56, unique=True, verbose_name='symbol'),
+            model_name="asset",
+            name="symbol",
+            field=django.contrib.postgres.fields.citext.CICharField(
+                max_length=56, unique=True, verbose_name="symbol"
+            ),
         ),
         migrations.AlterField(
-            model_name='exchange',
-            name='name',
-            field=models.CharField(max_length=255, unique=True, verbose_name='name'),
+            model_name="exchange",
+            name="name",
+            field=models.CharField(max_length=255, unique=True, verbose_name="name"),
         ),
         migrations.AlterField(
-            model_name='asset',
-            name='asset_class',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='assets', to='assets.assetclass', verbose_name='asset class'),
+            model_name="asset",
+            name="asset_class",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="assets",
+                to="assets.assetclass",
+                verbose_name="asset class",
+            ),
         ),
     ]

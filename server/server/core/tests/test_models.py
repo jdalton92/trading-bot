@@ -11,7 +11,6 @@ from .factories import StrategyFactory
 
 
 class StrategyTests(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.asset = AssetFactory()
@@ -25,13 +24,13 @@ class StrategyTests(TestCase):
             asset=self.asset,
             start_date=time_now - timedelta(days=2),
             end_date=time_now + timedelta(days=2),
-            trade_value=10000
+            trade_value=10000,
         )
         strategy.save()
 
         self.assertIn(strategy, Strategy.objects.all())
         self.assertEqual(strategy.user, self.user)
-        self.assertEqual(strategy.type, 'moving_average_14d')
+        self.assertEqual(strategy.type, "moving_average_14d")
         self.assertEqual(strategy.asset, self.asset)
         self.assertEqual(strategy.start_date, time_now - timedelta(days=2))
         self.assertEqual(strategy.end_date, time_now + timedelta(days=2))
@@ -44,10 +43,6 @@ class StrategyTests(TestCase):
             user=self.user,
             asset=self.asset,
         )
-        order = OrderFactory(
-            user=self.user,
-            asset_id=self.asset,
-            strategy=strategy
-        )
+        order = OrderFactory(user=self.user, asset_id=self.asset, strategy=strategy)
 
         self.assertTrue(strategy.orders.filter(pk=order.pk).exists())

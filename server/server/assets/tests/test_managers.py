@@ -6,7 +6,6 @@ from .factories import AssetFactory, BarFactory
 
 
 class BarQuerySetTests(TestCase):
-
     def setUp(self):
         self.admin = AdminFactory()
         self.user_1 = UserFactory()

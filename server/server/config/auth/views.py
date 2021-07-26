@@ -10,17 +10,18 @@ class CustomAuthToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(
-            data=request.data, context={'request': request}
+            data=request.data, context={"request": request}
         )
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        user = serializer.validated_data["user"]
         token, _ = Token.objects.get_or_create(user=user)
-        return Response({
-            'user_id': user.pk,
-            'email': user.email,
-            'token': token.key,
-        },
-            status=200
+        return Response(
+            {
+                "user_id": user.pk,
+                "email": user.email,
+                "token": token.key,
+            },
+            status=200,
         )
 
 
@@ -34,22 +35,21 @@ class LoginView(APIView):
     permission_classes = []
 
     def post(self, request):
-        username = request.data.get('username', None)
-        password = request.data.get('password', None)
+        username = request.data.get("username", None)
+        password = request.data.get("password", None)
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             token, _ = Token.objects.get_or_create(user=user)
             return Response(
                 {
-                    'user_id': user.pk,
-                    'email': user.email,
-                    'token': token.key,
+                    "user_id": user.pk,
+                    "email": user.email,
+                    "token": token.key,
                 },
-                status=200
+                status=200,
             )
         else:
             return Response(
-                {"error": "User does not exist, or is inactive"},
-                status=400
+                {"error": "User does not exist, or is inactive"}, status=400
             )

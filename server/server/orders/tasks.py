@@ -11,21 +11,17 @@ logger = logging.getLogger(__name__)
 
 def update_orders(all_orders=None):
     """Update db with historical orders placed from Alpaca account."""
-    logger.info('Updating historical orders...')
+    logger.info("Updating historical orders...")
 
     if not all_orders:
         api = TradeApiRest()
-        all_orders = api._get_orders(status='all', limit=500)
+        all_orders = api._get_orders(status="all", limit=500)
 
     existing_orders = [
-        str(order_id) for order_id in Order.objects.all().values_list(
-            'pk',
-            flat=True
-        )
+        str(order_id) for order_id in Order.objects.all().values_list("pk", flat=True)
     ]
     new_orders = [
-        order for order in all_orders
-        if str(order['id']) not in existing_orders
+        order for order in all_orders if str(order["id"]) not in existing_orders
     ]
     bulk_add_orders(new_orders)
 

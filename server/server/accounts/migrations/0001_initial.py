@@ -15,39 +15,160 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Account',
+            name="Account",
             fields=[
-                ('account_blocked', models.BooleanField()),
-                ('account_number', models.CharField(max_length=56, unique=True, verbose_name='account number')),
-                ('buying_power', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='buying power')),
-                ('cash', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='buying power')),
-                ('created_at', models.DateTimeField(verbose_name='created')),
-                ('currency', models.CharField(default='USD', max_length=56, verbose_name='currency')),
-                ('daytrade_count', models.PositiveIntegerField(default=0)),
-                ('daytrading_buying_power', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='daytrading buying power')),
-                ('equity', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='equity')),
-                ('id', models.UUIDField(editable=False, primary_key=True, serialize=False, unique=True)),
-                ('initial_margin', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='initial margin')),
-                ('last_equity', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='last equity')),
-                ('last_maintenance_margin', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='last maintenance margin')),
-                ('long_market_value', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='long market value')),
-                ('maintenance_margin', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='maintenance margin')),
-                ('multiplier', models.PositiveIntegerField()),
-                ('pattern_day_trader', models.BooleanField()),
-                ('portfolio_value', models.DecimalField(decimal_places=5, default=0, max_digits=12, verbose_name='portfolio value')),
-                ('regt_buying_power', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='reg T buying power')),
-                ('short_market_value', models.DecimalField(decimal_places=5, default=0, max_digits=12, verbose_name='short market value')),
-                ('shorting_enabled', models.BooleanField()),
-                ('sma', models.DecimalField(decimal_places=5, max_digits=12, verbose_name='special memorandum account')),
-                ('status', models.CharField(choices=[('ACTIVE', 'active'), ('REJECTED', 'rejected'), ('ONBOARDING', 'onboarding'), ('SUBMISSION_FAILED', 'submission failed'), ('SUBMITTED', 'submitted'), ('ACCOUNT_UPDATED', 'account updated'), ('APPROVAL_PENDING', 'approval pending')], max_length=56, verbose_name='status')),
-                ('trade_suspended_by_user', models.BooleanField()),
-                ('trading_blocked', models.BooleanField()),
-                ('transfers_blocked', models.BooleanField()),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                ("account_blocked", models.BooleanField()),
+                (
+                    "account_number",
+                    models.CharField(
+                        max_length=56, unique=True, verbose_name="account number"
+                    ),
+                ),
+                (
+                    "buying_power",
+                    models.DecimalField(
+                        decimal_places=5, max_digits=12, verbose_name="buying power"
+                    ),
+                ),
+                (
+                    "cash",
+                    models.DecimalField(
+                        decimal_places=5, max_digits=12, verbose_name="buying power"
+                    ),
+                ),
+                ("created_at", models.DateTimeField(verbose_name="created")),
+                (
+                    "currency",
+                    models.CharField(
+                        default="USD", max_length=56, verbose_name="currency"
+                    ),
+                ),
+                ("daytrade_count", models.PositiveIntegerField(default=0)),
+                (
+                    "daytrading_buying_power",
+                    models.DecimalField(
+                        decimal_places=5,
+                        max_digits=12,
+                        verbose_name="daytrading buying power",
+                    ),
+                ),
+                (
+                    "equity",
+                    models.DecimalField(
+                        decimal_places=5, max_digits=12, verbose_name="equity"
+                    ),
+                ),
+                (
+                    "id",
+                    models.UUIDField(
+                        editable=False, primary_key=True, serialize=False, unique=True
+                    ),
+                ),
+                (
+                    "initial_margin",
+                    models.DecimalField(
+                        decimal_places=5, max_digits=12, verbose_name="initial margin"
+                    ),
+                ),
+                (
+                    "last_equity",
+                    models.DecimalField(
+                        decimal_places=5, max_digits=12, verbose_name="last equity"
+                    ),
+                ),
+                (
+                    "last_maintenance_margin",
+                    models.DecimalField(
+                        decimal_places=5,
+                        max_digits=12,
+                        verbose_name="last maintenance margin",
+                    ),
+                ),
+                (
+                    "long_market_value",
+                    models.DecimalField(
+                        decimal_places=5,
+                        max_digits=12,
+                        verbose_name="long market value",
+                    ),
+                ),
+                (
+                    "maintenance_margin",
+                    models.DecimalField(
+                        decimal_places=5,
+                        max_digits=12,
+                        verbose_name="maintenance margin",
+                    ),
+                ),
+                ("multiplier", models.PositiveIntegerField()),
+                ("pattern_day_trader", models.BooleanField()),
+                (
+                    "portfolio_value",
+                    models.DecimalField(
+                        decimal_places=5,
+                        default=0,
+                        max_digits=12,
+                        verbose_name="portfolio value",
+                    ),
+                ),
+                (
+                    "regt_buying_power",
+                    models.DecimalField(
+                        decimal_places=5,
+                        max_digits=12,
+                        verbose_name="reg T buying power",
+                    ),
+                ),
+                (
+                    "short_market_value",
+                    models.DecimalField(
+                        decimal_places=5,
+                        default=0,
+                        max_digits=12,
+                        verbose_name="short market value",
+                    ),
+                ),
+                ("shorting_enabled", models.BooleanField()),
+                (
+                    "sma",
+                    models.DecimalField(
+                        decimal_places=5,
+                        max_digits=12,
+                        verbose_name="special memorandum account",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("ACTIVE", "active"),
+                            ("REJECTED", "rejected"),
+                            ("ONBOARDING", "onboarding"),
+                            ("SUBMISSION_FAILED", "submission failed"),
+                            ("SUBMITTED", "submitted"),
+                            ("ACCOUNT_UPDATED", "account updated"),
+                            ("APPROVAL_PENDING", "approval pending"),
+                        ],
+                        max_length=56,
+                        verbose_name="status",
+                    ),
+                ),
+                ("trade_suspended_by_user", models.BooleanField()),
+                ("trading_blocked", models.BooleanField()),
+                ("transfers_blocked", models.BooleanField()),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="user",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'account',
-                'verbose_name_plural': 'accounts',
+                "verbose_name": "account",
+                "verbose_name_plural": "accounts",
             },
         ),
     ]

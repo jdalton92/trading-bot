@@ -7,7 +7,6 @@ from .serializers import OrderCreateSerializer, OrderSerializer
 
 
 class OrderView(viewsets.ModelViewSet):
-
     def get_queryset(self, *args, **kwargs):
         """Return orders to requesting user."""
         return Order.objects.visible(self.request.user)
@@ -16,7 +15,7 @@ class OrderView(viewsets.ModelViewSet):
         """
         Instantiates and returns the serializer that the order view requires.
         """
-        if self.action in ['list', 'retrieve']:
+        if self.action in ["list", "retrieve"]:
             return OrderSerializer
         return OrderCreateSerializer
 
@@ -25,7 +24,7 @@ class OrderView(viewsets.ModelViewSet):
         Instantiates and returns the list of permissions that the order view
         requires.
         """
-        if self.action in ['update', 'partial_update', 'destroy']:
+        if self.action in ["update", "partial_update", "destroy"]:
             permission_classes = [IsAdminOrOwner]
         else:
             permission_classes = [IsAuthenticated]

@@ -8,21 +8,19 @@ from .models import Account
 class AccountSerializer(serializers.ModelSerializer):
     """Serializer for account information of a user of Alpaca."""
 
-    id = serializers.UUIDField(format='hex_verbose')
+    id = serializers.UUIDField(format="hex_verbose")
     user = serializers.PrimaryKeyRelatedField(
-        default=serializers.CurrentUserDefault(),
-        queryset=User.objects.all()
+        default=serializers.CurrentUserDefault(), queryset=User.objects.all()
     )
 
     class Meta:
         model = Account
-        fields = '__all__'
+        fields = "__all__"
 
     def to_representation(self, instance):
         """Return fully serialized users."""
         ret = super().to_representation(instance)
-        ret['user'] = UserSerializer(
-            instance.user,
-            fields=("id", "first_name", "last_name")
+        ret["user"] = UserSerializer(
+            instance.user, fields=("id", "first_name", "last_name")
         ).data
         return ret

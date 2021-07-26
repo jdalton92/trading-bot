@@ -17,7 +17,7 @@ def update_assets(assets=None):
 
     :param assets(list): list of assets
     """
-    logger.info('Updating asset, asset class, and exchange models...')
+    logger.info("Updating asset, asset class, and exchange models...")
 
     if not assets:
         api = TradeApiRest()
@@ -25,12 +25,12 @@ def update_assets(assets=None):
 
     # Transform Alpaca response into dict required by Asset model
     if isinstance(assets[0], AlpacaAsset):
-        assets = list(map(lambda asset: asset.__dict__['_raw'], assets))
-        exchanges = set(map(lambda asset: asset['exchange'], assets))
-        asset_classes = set(map(lambda asset: asset['class'], assets))
+        assets = list(map(lambda asset: asset.__dict__["_raw"], assets))
+        exchanges = set(map(lambda asset: asset["exchange"], assets))
+        asset_classes = set(map(lambda asset: asset["class"], assets))
     else:
-        exchanges = set(map(lambda asset: asset['exchange'], assets))
-        asset_classes = set(map(lambda asset: asset['class'], assets))
+        exchanges = set(map(lambda asset: asset["exchange"], assets))
+        asset_classes = set(map(lambda asset: asset["class"], assets))
 
     additions_to_db = 0
 
@@ -45,14 +45,9 @@ def update_assets(assets=None):
             additions_to_db += 1
 
     existing_assets = [
-        str(asset_id) for asset_id in Asset.objects.all().values_list(
-            'id',
-            flat=True
-        )
+        str(asset_id) for asset_id in Asset.objects.all().values_list("id", flat=True)
     ]
-    new_assets = [
-        asset for asset in assets if asset['id'] not in existing_assets
-    ]
+    new_assets = [asset for asset in assets if asset["id"] not in existing_assets]
     bulk_add_assets(new_assets)
 
     additions_to_db += len(new_assets)
@@ -68,9 +63,9 @@ def bulk_add_assets(assets):
     :param assets(list): list of assets to be created
     """
     for asset in assets:
-        if asset.get('class'):
-            asset['asset_class'] = asset['class']
-            del asset['class']
+        if asset.get("class"):
+            asset["asset_class"] = asset["class"]
+            del asset["class"]
         serializer = AssetSerializer(data=asset)
         # Fail silently for bulk add
         if serializer.is_valid():
@@ -96,23 +91,22 @@ def get_quotes(symbols):
 
 
 @celery_app.task(ignore_result=True)
-def update_bars(symbols, timeframe, limit=None, start=None, end=None,
-                after=None, until=None):
+def update_bars(
+    symbols, timeframe, limit=None, start=None, end=None, after=None, until=None
+):
     """Fetch bar data for list of symbols."""
     if not isinstance(symbols, list):
         symbols = [symbols]
     api = TradeApiRest()
     try:
-        assets_bars = api._get_bars(
-            symbols, timeframe, limit, start, end, after, until
-        )
+        assets_bars = api._get_bars(symbols, timeframe, limit, start, end, after, until)
     except Exception as e:
         logger.error(f"Errors fetching bars: {e}")
 
     for asset_symbol in assets_bars:
         for bar in assets_bars[asset_symbol]:
-            bar = bar.__dict__['_raw']
-            bar['asset'] = asset_symbol
+            bar = bar.__dict__["_raw"]
+            bar["asset"] = asset_symbol
             serializer = BarSerializer(data=bar)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()

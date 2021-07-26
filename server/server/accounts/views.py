@@ -7,7 +7,6 @@ from .serializers import AccountSerializer
 
 
 class AccountView(viewsets.ModelViewSet):
-
     def get_queryset(self, *args, **kwargs):
         """Return accounts to requesting user."""
         return Account.objects.visible(self.request.user)
@@ -17,9 +16,9 @@ class AccountView(viewsets.ModelViewSet):
         Instantiates and returns the list of permissions that the account view
         requires.
         """
-        if self.action == 'create':
+        if self.action == "create":
             permission_classes = [IsAuthenticated]
-        if self.action == 'list':
+        if self.action == "list":
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [IsAdminOrOwner]

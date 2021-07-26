@@ -6,7 +6,6 @@ from server.users.tests.factories import AdminFactory, UserFactory
 
 
 class AccountQuerySetTests(TestCase):
-
     def setUp(self):
         self.admin = AdminFactory()
         self.user_1 = UserFactory()
@@ -15,11 +14,11 @@ class AccountQuerySetTests(TestCase):
             id=uuid.uuid4(),
             user=self.user_1,
             account_blocked=False,
-            account_number='PA24RIKIGB1U',
+            account_number="PA24RIKIGB1U",
             buying_power=400000,
             cash=100000,
-            created_at='2020-10-31T23:40:50.376107Z',
-            currency='USD',
+            created_at="2020-10-31T23:40:50.376107Z",
+            currency="USD",
             daytrade_count=0,
             daytrading_buying_power=400000,
             equity=100000,
@@ -37,7 +36,7 @@ class AccountQuerySetTests(TestCase):
             status=Account.ACTIVE,
             trade_suspended_by_user=False,
             trading_blocked=False,
-            transfers_blocked=False
+            transfers_blocked=False,
         )
 
     def test_account_visible_admins(self):

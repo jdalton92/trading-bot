@@ -6,21 +6,17 @@ from .models import Asset, AssetClass, Bar, Exchange
 class AssetSerializer(serializers.ModelSerializer):
     """Serializer for tradeable assets via Alpaca api."""
 
-    id = serializers.UUIDField(format='hex_verbose')
+    id = serializers.UUIDField(format="hex_verbose")
     asset_class = serializers.SlugRelatedField(
-        queryset=AssetClass.objects.all(),
-        slug_field="name",
-        required=True
+        queryset=AssetClass.objects.all(), slug_field="name", required=True
     )
     exchange = serializers.SlugRelatedField(
-        queryset=Exchange.objects.all(),
-        slug_field="name",
-        required=True
+        queryset=Exchange.objects.all(), slug_field="name", required=True
     )
 
     class Meta:
         model = Asset
-        fields = '__all__'
+        fields = "__all__"
 
 
 class AssetClassSerializer(serializers.ModelSerializer):
@@ -30,7 +26,7 @@ class AssetClassSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AssetClass
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ExchangeSerializer(serializers.ModelSerializer):
@@ -40,7 +36,7 @@ class ExchangeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exchange
-        fields = '__all__'
+        fields = "__all__"
 
 
 class BarSerializer(serializers.ModelSerializer):
@@ -49,11 +45,9 @@ class BarSerializer(serializers.ModelSerializer):
     """
 
     asset = serializers.SlugRelatedField(
-        queryset=Asset.objects.all(),
-        slug_field="symbol",
-        required=True
+        queryset=Asset.objects.all(), slug_field="symbol", required=True
     )
 
     class Meta:
         model = Bar
-        fields = '__all__'
+        fields = "__all__"

@@ -11,16 +11,16 @@ from server.users.tests.factories import UserFactory
 class AccountFactory(DjangoModelFactory):
     """Construct an account."""
 
-    id = factory.Faker('uuid4')
+    id = factory.Faker("uuid4")
     user = factory.SubFactory(UserFactory)
     account_blocked = False
-    account_number = ''.join(random.choices(
-        string.ascii_uppercase + string.digits, k=12
-    ))
+    account_number = "".join(
+        random.choices(string.ascii_uppercase + string.digits, k=12)
+    )
     buying_power = round(random.uniform(1.00, 100000.00), 2)
     cash = round(random.uniform(1.00, 100000.00), 2)
     created_at = timezone.now()
-    currency = 'USD'
+    currency = "USD"
     daytrade_count = random.randint(0, 100)
     daytrading_buying_power = round(random.uniform(1.00, 100000.00), 2)
     equity = round(random.uniform(1.00, 100000.00), 2)

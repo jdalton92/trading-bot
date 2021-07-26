@@ -4,21 +4,20 @@ from server.users.tests.factories import UserFactory
 
 
 class OrderTests(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
 
     def test_create_account(self):
         """An account object can be created."""
         account = Account(
-            id='8dd89dc4-ac43-4ecd-88d0-75791d63621c',
+            id="8dd89dc4-ac43-4ecd-88d0-75791d63621c",
             user=self.user,
             account_blocked=False,
-            account_number='PA24RIKIGB1U',
+            account_number="PA24RIKIGB1U",
             buying_power=400000,
             cash=100000,
-            created_at='2020-10-31T23:40:50.376107Z',
-            currency='USD',
+            created_at="2020-10-31T23:40:50.376107Z",
+            currency="USD",
             daytrade_count=0,
             daytrading_buying_power=400000,
             equity=100000,
@@ -36,17 +35,17 @@ class OrderTests(TestCase):
             status=Account.ACTIVE,
             trade_suspended_by_user=False,
             trading_blocked=False,
-            transfers_blocked=False
+            transfers_blocked=False,
         )
         account.save()
 
-        self.assertEqual(account.id, '8dd89dc4-ac43-4ecd-88d0-75791d63621c')
+        self.assertEqual(account.id, "8dd89dc4-ac43-4ecd-88d0-75791d63621c")
         self.assertEqual(account.user, self.user)
         self.assertFalse(account.account_blocked)
-        self.assertEqual(account.account_number, 'PA24RIKIGB1U')
+        self.assertEqual(account.account_number, "PA24RIKIGB1U")
         self.assertEqual(account.buying_power, 400000)
         self.assertEqual(account.cash, 100000)
-        self.assertEqual(account.currency, 'USD')
+        self.assertEqual(account.currency, "USD")
         self.assertEqual(account.daytrade_count, 0)
         self.assertEqual(account.daytrading_buying_power, 400000)
         self.assertEqual(account.equity, 100000)

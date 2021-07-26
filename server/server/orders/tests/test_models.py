@@ -16,19 +16,14 @@ time_now = timezone.now()
 
 @freeze_time(time_now)  # Freeze time for testing timedate fields
 class OrderTests(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.order_1 = OrderFactory()
         self.order_2 = OrderFactory()
         self.order_3 = OrderFactory()
         self.order_4 = OrderFactory()
-        self.asset = AssetFactory(
-            symbol='TEST'
-        )
-        self.strategy = StrategyFactory(
-            asset=self.asset
-        )
+        self.asset = AssetFactory(symbol="TEST")
+        self.strategy = StrategyFactory(asset=self.asset)
 
     def test_create_order(self):
         """A order object can be created."""
@@ -62,7 +57,7 @@ class OrderTests(TestCase):
             extended_hours=True,
             trail_price=100,
             trail_percentage=50.05,
-            hwm=95.7
+            hwm=95.7,
         )
         order.legs.add(self.order_3, self.order_4)
         order.save()
@@ -106,6 +101,6 @@ class OrderTests(TestCase):
 
         with self.assertRaisesRegex(
             ValidationError,
-            'Strategy ``asset`` and order ``asset_id`` must be the same'
+            "Strategy ``asset`` and order ``asset_id`` must be the same",
         ):
             OrderFactory(strategy=self.strategy, asset_id=invalid_asset)

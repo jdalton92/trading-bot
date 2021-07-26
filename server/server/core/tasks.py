@@ -24,7 +24,7 @@ def moving_average(user):
     if not strategies.exists():
         return
 
-    strategy_symbols = strategies.values_list('symbol', flat=True)
+    strategy_symbols = strategies.values_list("symbol", flat=True)
 
     api = TradeApiRest()
 
@@ -33,7 +33,7 @@ def moving_average(user):
         return
 
     # Update latest bars
-    update_bars(strategy_symbols, '15Min')
+    update_bars(strategy_symbols, "15Min")
 
     # Check moving average, conditionally update previous X-period bars if
     # required
@@ -47,10 +47,7 @@ def moving_average(user):
 
         base_time = timezone.now() - timedelta(days=days)
         base_time_epoch = int(time.mktime(base_time.timetuple()) * 1000)
-        bars = Bar.objects.filter(
-            symbol=strategy.symbol,
-            t__gte=base_time_epoch
-        )
+        bars = Bar.objects.filter(symbol=strategy.symbol, t__gte=base_time_epoch)
 
         # Hacky adjustment for public holidays and crontab tasks not being
         # perfectly aligned with market open etc.
@@ -65,58 +62,48 @@ def moving_average(user):
             else:
                 fourteen_day_bars_to_update.append(strategy.symbol)
 
-    update_bars(
-        seven_day_bars_to_update,
-        "15Min",
-        5 * fifteen_min_bars_per_day
-    )
-    update_bars(
-        fourteen_day_bars_to_update,
-        "15Min",
-        10 * fifteen_min_bars_per_day
-    )
+    update_bars(seven_day_bars_to_update, "15Min", 5 * fifteen_min_bars_per_day)
+    update_bars(fourteen_day_bars_to_update, "15Min", 10 * fifteen_min_bars_per_day)
 
     # Calculate price and moving average and conditionally place order
     for strategy in strategies:
         current_bar = Bar.objects.filter(symbol=strategy.symbol).annotate(
             moving_average=Window(
-                expression=Avg('close'),
-                order_by=F('t'),
-                frame=RowRange(start=-total_bars_count, end=0)
+                expression=Avg("close"),
+                order_by=F("t"),
+                frame=RowRange(start=-total_bars_count, end=0),
             )
         )
         prev_bar = Bar.objects.filter(symbol=strategy.symbol).annotate(
             moving_average=Window(
-                expression=Avg('close'),
-                order_by=F('t'),
-                frame=RowRange(start=-total_bars_count - 1, end=1)
+                expression=Avg("close"),
+                order_by=F("t"),
+                frame=RowRange(start=-total_bars_count - 1, end=1),
             )
         )
 
-        if current_bar.c >= current_bar.moving_average \
-                and prev_bar.c < prev_bar.moving_average:
+        if (
+            current_bar.c >= current_bar.moving_average
+            and prev_bar.c < prev_bar.moving_average
+        ):
             side = Order.BUY
             account = api._account_info()
-            trade_value = min(
-                strategy.trade_value,
-                account.equity
-            )
+            trade_value = min(strategy.trade_value, account.equity)
             quote = api._get_last_quote(strategy.symbol)
-            quantity = math.floor(trade_value / quote['askprice'])
-        elif current_bar.c <= current_bar.moving_average \
-                and prev_bar.c > prev_bar.moving_average:
+            quantity = math.floor(trade_value / quote["askprice"])
+        elif (
+            current_bar.c <= current_bar.moving_average
+            and prev_bar.c > prev_bar.moving_average
+        ):
             side = Order.SELL
             account = api._account_info()
-            trade_value = min(
-                strategy.trade_value,
-                account.equity
-            )
+            trade_value = min(strategy.trade_value, account.equity)
             position = api._list_position_by_symbol(strategy.symbol)
 
             if position.status_code == status.HTTP_404_NOT_FOUND:
                 return
 
-            quantity = math.floor(trade_value / position['market_value'])
+            quantity = math.floor(trade_value / position["market_value"])
 
         try:
             order = api._submit_order(
@@ -124,9 +111,9 @@ def moving_average(user):
                 qty=quantity,
                 side=side,
                 type=Order.MARKET,
-                time_in_force=Order.GTC
+                time_in_force=Order.GTC,
             )
             Order.object.create(**order)
         except Exception as e:
-            logger.error(f'Tradeview order failed: {e}')
+            logger.error(f"Tradeview order failed: {e}")
             return

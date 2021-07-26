@@ -7,34 +7,85 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('assets', '0002_alter_group_fields'),
+        ("assets", "0002_alter_group_fields"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Bar',
+            name="Bar",
             fields=[
-                ('id', models.AutoField(auto_created=True,
-                                        primary_key=True, serialize=False, verbose_name='ID')),
-                ('t', models.PositiveIntegerField(
-                    help_text='the beginning time of this bar as a Unix epoch in seconds', verbose_name='time')),
-                ('o', models.DecimalField(decimal_places=5,
-                                          help_text='open price', max_digits=12, verbose_name='open')),
-                ('h', models.DecimalField(decimal_places=5,
-                                          help_text='high price', max_digits=12, verbose_name='high')),
-                ('l', models.DecimalField(decimal_places=5,
-                                          help_text='low price', max_digits=12, verbose_name='low')),
-                ('c', models.DecimalField(decimal_places=5,
-                                          help_text='close price', max_digits=12, verbose_name='close')),
-                ('v', models.PositiveIntegerField(
-                    help_text='volume', verbose_name='volume')),
-                ('asset', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                            related_name='quotes', to='assets.asset', verbose_name='asset')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "t",
+                    models.PositiveIntegerField(
+                        help_text="the beginning time of this bar as a Unix epoch in seconds",
+                        verbose_name="time",
+                    ),
+                ),
+                (
+                    "o",
+                    models.DecimalField(
+                        decimal_places=5,
+                        help_text="open price",
+                        max_digits=12,
+                        verbose_name="open",
+                    ),
+                ),
+                (
+                    "h",
+                    models.DecimalField(
+                        decimal_places=5,
+                        help_text="high price",
+                        max_digits=12,
+                        verbose_name="high",
+                    ),
+                ),
+                (
+                    "l",
+                    models.DecimalField(
+                        decimal_places=5,
+                        help_text="low price",
+                        max_digits=12,
+                        verbose_name="low",
+                    ),
+                ),
+                (
+                    "c",
+                    models.DecimalField(
+                        decimal_places=5,
+                        help_text="close price",
+                        max_digits=12,
+                        verbose_name="close",
+                    ),
+                ),
+                (
+                    "v",
+                    models.PositiveIntegerField(
+                        help_text="volume", verbose_name="volume"
+                    ),
+                ),
+                (
+                    "asset",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="quotes",
+                        to="assets.asset",
+                        verbose_name="asset",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'bar',
-                'verbose_name_plural': 'bars',
-                'ordering': ('-t',),
+                "verbose_name": "bar",
+                "verbose_name_plural": "bars",
+                "ordering": ("-t",),
             },
         ),
     ]

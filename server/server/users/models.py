@@ -1,5 +1,4 @@
-from django.contrib.auth.models import (AbstractBaseUser, Group,
-                                        PermissionsMixin)
+from django.contrib.auth.models import AbstractBaseUser, Group, PermissionsMixin
 from django.contrib.postgres.fields import CIEmailField
 from django.db import models
 from django.utils import timezone
@@ -29,11 +28,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
 
     class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
+        verbose_name = _("user")
+        verbose_name_plural = _("users")
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

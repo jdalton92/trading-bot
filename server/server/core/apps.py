@@ -9,11 +9,12 @@ from .signals import create_periodic_tasks
 class CoreConfig(AppConfig):
     """Configuration for the core application."""
 
-    name = 'server.core'
-    verbose_name = _('Core Config')
+    name = "server.core"
+    verbose_name = _("Core Config")
 
     def ready(self):
         post_migrate.connect(
-            create_periodic_tasks, sender=self,
-            dispatch_uid="server.core.signals.create_periodic_tasks"
+            create_periodic_tasks,
+            sender=self,
+            dispatch_uid="server.core.signals.create_periodic_tasks",
         )

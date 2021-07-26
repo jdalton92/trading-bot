@@ -6,7 +6,6 @@ from .serializers import UserSerializer
 
 
 class UserView(viewsets.ModelViewSet):
-
     def get_queryset(self, *args, **kwargs):
         return User.objects.all()
 
@@ -18,7 +17,7 @@ class UserView(viewsets.ModelViewSet):
         Instantiates and returns the list of permissions that the user view
         requires.
         """
-        if self.action == 'list':
+        if self.action == "list":
             permission_classes = [IsAuthenticated]
         else:
             permission_classes = [IsAdminUser]

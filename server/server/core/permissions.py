@@ -12,8 +12,10 @@ class IsAdminOrOwner(permissions.BasePermission):
             if request.user.is_staff or obj.user == request.user:
                 return True
         else:
-            return PermissionDenied({
-                "message": "You do not have correct permissions.",
-                "action": view.action,
-                "object_id": obj.id
-            })
+            return PermissionDenied(
+                {
+                    "message": "You do not have correct permissions.",
+                    "action": view.action,
+                    "object_id": obj.id,
+                }
+            )

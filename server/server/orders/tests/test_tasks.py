@@ -10,7 +10,6 @@ from server.users.tests.factories import UserFactory
 
 
 class OrderTaskTests(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.strategy = StrategyFactory()
@@ -65,7 +64,7 @@ class OrderTaskTests(TestCase):
                 "client_order_id": self.uuid_5,
                 "id": self.uuid_6,
                 "created_at": timezone.now(),
-            }
+            },
         ]
 
     def test_add_orders(self):
