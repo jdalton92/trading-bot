@@ -30,12 +30,6 @@ Alpaca Data API provides the market data available to the client user through th
 
 # Instructions
 
-## Client
-
-1. TBC
-
-## Server
-
 1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/). Create your own [Alpaca API Account](https://app.alpaca.markets/signup).
 
 2. Navigate to your `server` directory, and create a `.env` file. Copy the included `.env.example` in this repo for a starter file;
@@ -74,9 +68,6 @@ $ (server) docker-compose exec web python manage.py createsuperuser --no-input
 
 # Testing
 
-## Server
-
-
 ```sh
 $ (server) docker-compose exec web python manage.py test server
 ```
@@ -87,13 +78,7 @@ $ (server) docker-compose exec web python manage.py test server
 $ (server) docker-compose exec web python manage.py test server --keepdb --verbosity=2
 ```
 
-## Client
-
-```sh
-$ TBC
-```
-
-# Server Dependencies
+# Dependencies
 
 ```
 [packages]
