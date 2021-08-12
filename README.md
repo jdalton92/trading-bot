@@ -53,7 +53,7 @@ $ cp .env.example .env
 $ pipenv shell
 ```
 
-4. Run `docker-compose up` to initialise django server, postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
+4. Run `docker compose up` to initialise django server, postgres for databasing, and celery/celery-beat/redis for handling of background tasks.
 
 ```sh
 $ (server) docker-compose up
@@ -78,7 +78,7 @@ $ (server) docker-compose exec web python manage.py createsuperuser --no-input
 $ (server) docker-compose exec web python manage.py test server
 ```
 
-- Optionally add `--keepdb` to persist database between tests, and `--verbosity=2` to recieve verbose output of tests
+- Optionally add `--keepdb` to persist database between tests, and `--verbosity=2` to receive verbose output of tests
 
 ```sh
 $ (server) docker-compose exec web python manage.py test server --keepdb --verbosity=2
@@ -92,7 +92,6 @@ django
 djangorestframework
 django-environ
 alpaca-trade-api
-django-filter
 celery
 django-celery-beat
 psycopg2
