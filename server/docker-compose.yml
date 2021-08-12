@@ -4,11 +4,11 @@ services:
   db:
     image: postgres:9.6
     volumes:
-      - database_data:/var/lib/postgresql/data/
+      - database_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     expose:
-       - "5432"
+      - "5432"
     env_file:
       - .env
 

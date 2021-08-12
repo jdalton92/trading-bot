@@ -16,15 +16,15 @@ def create_periodic_tasks(
     CrontabSchedule = apps.get_model("django_celery_beat.CrontabSchedule")
     PeriodicTask = apps.get_model("django_celery_beat.PeriodicTask")
 
-    on_15_minute, _ = CrontabSchedule.objects.get_or_create(
+    every_15_minutes, _ = CrontabSchedule.objects.get_or_create(
         minute="15", hour="*", day_of_week="*", day_of_month="*", month_of_year="*"
     )
 
     tasks = [
         {
             "name": "Moving average strategy",
-            "task": "server.core.tasks.moving_average",
-            "crontab": on_15_minute,
+            "task": "server.core.tasks.run_strategies_for_users",
+            "crontab": every_15_minutes,
         },
     ]
 

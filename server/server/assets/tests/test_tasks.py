@@ -166,7 +166,7 @@ class AssetTaskTests(TestCase):
             if symbol == "AAPL":
                 return self.apple_quote
 
-        mock_api()._get_last_quote.side_effect = alpaca_quote_response
+        mock_api().get_last_quote.side_effect = alpaca_quote_response
 
         symbols = ["TSLA", "AAPL"]
         quotes = get_quotes(symbols)
@@ -178,12 +178,12 @@ class AssetTaskTests(TestCase):
     @patch("server.assets.tasks.TradeApiRest")
     def test_update_bars(self, mock_api):
         """Latest bars for list of symbols is fetched and saved."""
-        mock_api()._get_bars.return_value = self.bars
+        mock_api().get_bars.return_value = self.bars
 
         tesla = AssetFactory(symbol="TSLA")
         microsoft = AssetFactory(symbol="AAPL")
         symbols = [tesla.symbol, microsoft.symbol]
-        bars = update_bars(symbols, "1D", 2)
+        bars = update_bars(symbols=symbols, timeframe="1D", limit=2)
 
         # Bars are fetched
         self.assertEqual(len(bars), 2)

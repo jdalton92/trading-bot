@@ -12,19 +12,31 @@ from server.config import celery_app
 from server.core.alpaca import TradeApiRest
 from server.core.models import Strategy
 from server.orders.models import Order
+from server.users.models import User
 
 logger = logging.getLogger(__name__)
 
 
 @celery_app.task()
+def run_strategies_for_users(user_id=None):
+    """Run strategies for all users, unless a user is specified."""
+    if user_id is None:
+        users = User.objects.all()
+    else:
+        users = User.objects.filter(pk=user_id)
+
+    for user in users:
+        moving_average(user)
+
+
 def moving_average(user):
     """Initialise moving average strategy."""
-    strategies = Strategy.objects.filter(user=user, is_active=True)
+    strategies = Strategy.objects.filter(user=user).active()
 
     if not strategies.exists():
         return
 
-    strategy_symbols = strategies.values_list("symbol", flat=True)
+    strategy_symbols = strategies.values_list("asset__symbol", flat=True)
 
     api = TradeApiRest()
 

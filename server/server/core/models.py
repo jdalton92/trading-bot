@@ -1,6 +1,6 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from server.assets.models import Asset
 
@@ -99,7 +99,13 @@ class Strategy(models.Model):
     def __str__(self):
         return f"{self.user.first_name} {self.type} {self.asset.symbol}"
 
-    @property
-    def is_active(self):
-        time_now = timezone.now()
-        return self.start_date <= time_now and self.end_date > time_now
+    def clean(self):
+        """Ensure `end_date` is after `start_date`."""
+        if self.end_date <= self.start_date:
+            raise ValidationError(
+                "`end_date` must be after `start_date", code="invalid_end_date"
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)

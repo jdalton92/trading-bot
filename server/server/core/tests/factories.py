@@ -19,10 +19,11 @@ class StrategyFactory(DjangoModelFactory):
         start_dt=timezone.now() - timezone.timedelta(days=6),
         end_dt=timezone.now() - timezone.timedelta(days=2),
     )
-    end_date = factory.LazyAttribute(
-        lambda x: timezone.now() + timezone.timedelta(days=2)
+    end_date = factory.fuzzy.FuzzyDateTime(
+        start_dt=timezone.now() + timezone.timedelta(days=2),
+        end_dt=timezone.now() + timezone.timedelta(days=6),
     )
-    trade_value = round(random.uniform(1.00, 100000.00), 2)
+    trade_value = random.randint(1, 10000)
 
     class Meta:
         model = Strategy

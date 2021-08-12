@@ -31,11 +31,10 @@ class StrategyTests(TestCase):
         self.assertIn(strategy, Strategy.objects.all())
         self.assertEqual(strategy.user, self.user)
         self.assertEqual(strategy.type, "moving_average_14d")
-        self.assertEqual(strategy.asset, self.asset)
+        self.assertEqual(str(strategy.asset.pk), self.asset.pk)
         self.assertEqual(strategy.start_date, time_now - timedelta(days=2))
         self.assertEqual(strategy.end_date, time_now + timedelta(days=2))
         self.assertEqual(strategy.trade_value, 10000)
-        self.assertTrue(strategy.is_active)
 
     def test_add_orders_to_strategy(self):
         """Strategy object can have orders associated."""

@@ -46,7 +46,6 @@ class StrategySerializerTests(TestCase):
         self.assertEqual(data["start_date"], "2020-12-17T06:29:12.853922Z")
         self.assertEqual(data["end_date"], "2020-12-19T06:29:12.853922Z")
         self.assertEqual(float(data["trade_value"]), strategy.trade_value)
-        self.assertTrue(data["is_active"])
         self.assertEqual(data["timeframe"], Strategy.MIN_15)
 
     def test_create_strategy(self):
@@ -74,7 +73,6 @@ class StrategySerializerTests(TestCase):
         self.assertEqual(data["end_date"], strategy.end_date)
         self.assertEqual(float(data["trade_value"]), strategy.trade_value)
         self.assertEqual(data["timeframe"], strategy.timeframe)
-        self.assertTrue(strategy.is_active)
 
     def test_create_strategy_invalid_stop_loss(self):
         """

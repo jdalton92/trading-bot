@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib import admin
 
 from .models import Asset, AssetClass, Bar, Exchange
@@ -37,6 +39,11 @@ class AssetAdmin(admin.ModelAdmin):
     readonly_fields = [
         "id",
     ]
+
+    def save_model(self, request, obj, form, change):
+        """Add UUID if saving through admin."""
+        obj.id = uuid.uuid4()
+        super().save_model(request, obj, form, change)
 
 
 admin.site.register(Exchange, ExchangeAdmin)

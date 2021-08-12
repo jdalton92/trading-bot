@@ -6,11 +6,8 @@ from .serializers import UserSerializer
 
 
 class UserView(viewsets.ModelViewSet):
-    def get_queryset(self, *args, **kwargs):
-        return User.objects.all()
-
-    def get_serializer_class(self):
-        return UserSerializer
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
     def get_permissions(self):
         """

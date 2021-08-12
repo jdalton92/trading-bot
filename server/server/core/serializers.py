@@ -28,7 +28,6 @@ class StrategySerializer(serializers.ModelSerializer):
             "stop_loss_percentage",
             "take_profit_amount",
             "take_profit_percentage",
-            "is_active",
             "timeframe",
         )
         read_only_fields = fields
@@ -58,7 +57,6 @@ class StrategyCreateSerializer(serializers.ModelSerializer):
             "stop_loss_percentage",
             "take_profit_amount",
             "take_profit_percentage",
-            "is_active",
             "timeframe",
         )
 
