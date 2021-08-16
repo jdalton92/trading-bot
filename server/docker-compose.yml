@@ -39,7 +39,7 @@ services:
     build: .
     command: >
       sh -c "./bin/wait-for-it.sh db:5432 && ./bin/wait-for-it.sh redis:6379
-      -- celery -A server.config worker --concurrency 1 --loglevel=info
+      -- celery -A config worker --concurrency 1 --loglevel=info
       --without-heartbeat --without-gossip --without-mingle"
     volumes:
       - .:/trading-bot
@@ -56,7 +56,7 @@ services:
     build: .
     command: >
       sh -c "./bin/wait-for-it.sh db:5432 && ./bin/wait-for-it.sh redis:6379
-      -- celery -A server.config beat -l info -S django"
+      -- celery -A config beat -l info -S django"
     volumes:
       - .:/trading-bot
     env_file:
