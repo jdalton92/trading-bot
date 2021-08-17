@@ -26,27 +26,32 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
-        if User.objects.filter(is_superuser=True).exists():
-            self.stdout.write("Superuser already exists. Aborting...")
-            return
+        if kwargs["cs__create_superuser"]:
+            if User.objects.filter(is_superuser=True).exists():
+                self.stdout.write("Superuser already exists. Aborting...")
+                return
 
-        self.stdout.write("Creating superuser...")
-        self.create_superuser()
-        self.stdout.write("Done")
+            self.stdout.write("Creating superuser...")
+            self.create_superuser()
+            self.stdout.write("Done")
 
-        if kwargs["generate_test_data"]:
+        if kwargs["gtd__generate_test_data"]:
+            if not User.objects.filter(is_superuser=True).exists():
+                self.stdout.write("Superuser does not exist. Aborting...")
+                return
+
             self.stdout.write("Creating test data...")
             self.create_test_data()
             self.stdout.write("Done")
 
-    def create_superuser():
+    def create_superuser(self):
         User.objects.create_superuser(
             email=SUPERUSER_EMAIL,
             password=SUPERUSER_PASSWORD,
             first_name=SUPERUSER_FIRST_NAME,
         )
 
-    def create_test_data():
+    def create_test_data(self):
         from datetime import timedelta
 
         from assets.tests.factories import (
@@ -58,7 +63,7 @@ class Command(BaseCommand):
         from django.utils import timezone
         from users.models import User
 
-        superuser = User.objects.get(pk=1)
+        superuser = User.objects.filter(is_superuser=True).first()
         asset_class = AssetClassFactory(name="asset class")
         exchange = ExchangeFactory(name="exchange")
         asset_1 = AssetFactory(

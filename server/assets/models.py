@@ -99,7 +99,7 @@ class Asset(models.Model):
         verbose_name_plural = _("assets")
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.symbol}"
 
 
 class Bar(models.Model):
@@ -142,6 +142,7 @@ class Bar(models.Model):
 
     class Meta:
         ordering = ("-t",)
+        unique_together = ("asset_id", "t")
         verbose_name = _("bar")
         verbose_name_plural = _("bars")
 

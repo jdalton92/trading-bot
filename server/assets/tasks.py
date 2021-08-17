@@ -97,7 +97,9 @@ def update_bars(
     """Fetch bar data for list of symbols."""
     if not isinstance(symbols, list):
         symbols = [symbols]
+
     api = TradeApiRest()
+    assets_bars = []
     try:
         assets_bars = api.get_bars(symbols, timeframe, limit, start, end, after, until)
     except Exception as e:

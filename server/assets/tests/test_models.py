@@ -1,6 +1,7 @@
 import uuid
 
 from assets.models import Asset, AssetClass, Bar, Exchange
+from django.db.utils import IntegrityError
 from django.test import TestCase
 
 from .factories import AssetClassFactory, AssetFactory, ExchangeFactory
@@ -88,3 +89,21 @@ class BarTests(TestCase):
         self.assertEqual(float(bar.l), 99.05)
         self.assertEqual(float(bar.c), 105.20)
         self.assertEqual(bar.v, 20000)
+
+    def test_create_duplicate_time(self):
+        """Bars with duplicate `t` are invalid."""
+        asset = AssetFactory()
+        bar_1 = Bar(
+            asset=asset, t=2100000000, o=100.01, h=110.05, l=99.05, c=105.20, v=20000
+        )
+        bar_1.save()
+        self.assertIn(bar_1, Bar.objects.all())
+
+        bar_2 = Bar(
+            asset=asset, t=2100000000, o=100.01, h=110.05, l=99.05, c=105.20, v=20000
+        )
+
+        with self.assertRaisesRegex(
+            IntegrityError, "duplicate key value violates unique constraint"
+        ):
+            bar_2.save()

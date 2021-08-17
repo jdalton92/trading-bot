@@ -209,10 +209,10 @@ class BarSerializerTests(TestCase):
         self.assertEqual(Bar.objects.count(), 1)
         self.assertEqual(data["asset"], self.asset.symbol)
         self.assertEqual(data["t"], bar.t)
-        self.assertEqual(float(data["o"]), bar.o)
-        self.assertEqual(float(data["h"]), bar.h)
-        self.assertEqual(float(data["l"]), bar.l)
-        self.assertEqual(float(data["c"]), bar.c)
+        self.assertEqual(float(data["o"]), float(bar.o))
+        self.assertEqual(float(data["h"]), float(bar.h))
+        self.assertEqual(float(data["l"]), float(bar.l))
+        self.assertEqual(float(data["c"]), float(bar.c))
         self.assertEqual(data["v"], bar.v)
 
     def test_create_bar(self):

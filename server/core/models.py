@@ -97,7 +97,7 @@ class Strategy(models.Model):
         verbose_name_plural = "strategies"
 
     def __str__(self):
-        return f"{self.user.first_name} {self.type} {self.asset.symbol}"
+        return f"{self.user.first_name}: Strategy {self.id}"
 
     def clean(self):
         """Ensure `end_date` is after `start_date`."""

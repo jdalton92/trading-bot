@@ -3,6 +3,7 @@ import random
 import factory
 from assets.models import Asset, AssetClass, Bar, Exchange
 from factory.django import DjangoModelFactory
+from factory.fuzzy import FuzzyDecimal, FuzzyInteger
 
 
 class ExchangeFactory(DjangoModelFactory):
@@ -49,12 +50,12 @@ class BarFactory(DjangoModelFactory):
     """Construct bar data."""
 
     asset = factory.SubFactory(AssetFactory)
-    t = random.randint(1, 2100000000)
-    o = random.randint(1, 100000) / 100
-    h = random.randint(1, 100000) / 100
-    l = random.randint(1, 100000) / 100
-    c = random.randint(1, 100000) / 100
-    v = random.randint(1, 10000000)
+    t = FuzzyInteger(1, 2100000000)
+    o = FuzzyDecimal(1, 1000)
+    h = FuzzyDecimal(1, 1000)
+    l = FuzzyDecimal(1, 1000)
+    c = FuzzyDecimal(1, 1000)
+    v = FuzzyInteger(1, 10000000)
 
     class Meta:
         model = Bar

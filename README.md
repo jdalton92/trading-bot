@@ -103,15 +103,15 @@ freezegun
 
 # Note
 
-To make running `docker-compose` commands on your local machine easier, use alias' in `.bashrc`/`.zshrc` configuration files eg.
+To make running `docker compose` commands on your local machine easier, use alias' in `.bashrc`/`.zshrc` configuration files eg.
 
 ```sh
 # ~/.zshrc file
 [...]
-alias pm="docker-compose exec web python manage.py"
+alias pm="docker compose exec web python manage.py"
 ```
 
-Then the command `docker-compose exec web python manage.py test server` becomes `pm test server`
+Then the command `docker compose exec web python manage.py test server` becomes `pm test server`
 
 # Licence
 

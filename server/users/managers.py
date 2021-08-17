@@ -10,24 +10,14 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, email, password, **kwargs):
-        """
-        Create a new user.
-
-        Email and password must be specified. Creates a student
-        user by default.
-        """
+        """Create a new user."""
         user = self._create_user(email, password, **kwargs)
         user.save()
         return user
 
     def create_superuser(self, email, password, **kwargs):
-        """
-        Create a new superuser.
-
-        Creates a staff member with superuser privileges by default, but can
-        be customised to whatever role specified.
-        """
-        user = self._create_user(email, password)
+        """Create a new superuser."""
+        user = self._create_user(email, password, **kwargs)
         user.is_staff = True
         user.is_superuser = True
         user.save()
