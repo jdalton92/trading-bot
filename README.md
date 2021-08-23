@@ -64,23 +64,27 @@ $ (server) docker compose up
 $ (server) chmod +x ./wait-for-it.sh && chmod +x ./docker-entrypoint.sh
 ```
 
-5. To run the server for the first time, you will have to run database migrations and create a superuser (refer `.env.example` file for default superuser account details). To do this you can use `docker compose` and the `web` container
+5. To run the server for the first time, you will have to run database migrations. and create a superuser, and test data (refer `core.management.bootstrap.py` for detail on these commands). To do this you can use `docker compose` and the `web` container
 
 ```sh
-$ (server) docker-compose exec web python manage.py migrate
-$ (server) docker-compose exec web python manage.py createsuperuser --no-input
+# Run migrations
+$ (server) docker compose exec web python manage.py migrate
+# Create superuser account
+$ (server) docker compose exec web python manage.py bootstrap -cs
+# Generate test data
+$ (server) docker compose exec web python manage.py bootstrap -gtd
 ```
 
 # Testing
 
 ```sh
-$ (server) docker-compose exec web python manage.py test
+$ (server) docker compose exec web python manage.py test
 ```
 
 - Optionally add `--keepdb` to persist database between tests, and `--verbosity=2` to receive verbose output of tests
 
 ```sh
-$ (server) docker-compose exec web python manage.py test --keepdb --verbosity=2
+$ (server) docker compose exec web python manage.py test --keepdb --verbosity=2
 ```
 
 # Dependencies

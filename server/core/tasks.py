@@ -46,10 +46,9 @@ def moving_average(user):
     #     return
 
     # # Update latest bars
-    # update_bars(strategy_symbols, "15Min")
+    # update_bars(strategy_symbols, "15Min", limit=1)
 
-    # Check moving average, conditionally update previous X-period bars if
-    # required
+    # Check moving average, conditionally update previous bars if required
     for strategy in strategies:
         if strategy.type == Strategy.MOVING_AVERAGE_7D:
             days = 7
@@ -58,7 +57,9 @@ def moving_average(user):
             days = 14
             business_days = 10
 
-        base_time_utc = datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(days=days)
+        time_now_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
+        base_time_utc = time_now_utc - timedelta(days=days)
+        time_now_epoch = int(time.mktime(time_now_utc.timetuple()))
         base_time_epoch = int(time.mktime(base_time_utc.timetuple()))
         bars = Bar.objects.filter(asset_id=strategy.asset.id, t__gte=base_time_epoch)
 
@@ -70,68 +71,81 @@ def moving_average(user):
         fifteen_min_bars_per_day = 6.5 * 60 / 15
         total_bars_count = business_days * fifteen_min_bars_per_day
         symbol = strategy.asset.symbol
-        if bars.count() < (adjusted * total_bars_count):
-            if strategy.type == Strategy.MOVING_AVERAGE_7D:
-                seven_day_bars_to_update.append(symbol)
-            else:
-                fourteen_day_bars_to_update.append(symbol)
+        # if bars.count() < (adjusted * total_bars_count):
+        #     if strategy.type == Strategy.MOVING_AVERAGE_7D:
+        #         seven_day_bars_to_update.append(symbol)
+        #     else:
+        #         fourteen_day_bars_to_update.append(symbol)
 
-    update_bars(seven_day_bars_to_update, "15Min", 5 * fifteen_min_bars_per_day)
-    update_bars(fourteen_day_bars_to_update, "15Min", 10 * fifteen_min_bars_per_day)
+        # if seven_day_bars_to_update:
+        #     update_bars(seven_day_bars_to_update, "15Min", 5 * fifteen_min_bars_per_day)
+        # if fourteen_day_bars_to_update:
+        #     update_bars(
+        #         fourteen_day_bars_to_update, "15Min", 10 * fifteen_min_bars_per_day
+        #     )
 
-    # Calculate price and moving average and conditionally place order
-    for strategy in strategies:
-        current_bar = Bar.objects.filter(
-            asset_id=strategy.asset.id
-            t__lte=timezone.now()
-        ).annotate(
-            moving_average=Window(
+        # bars = Bar.objects.filter(asset_id=strategy.asset.id, t__gte=base_time_epoch)
+        # if bars.count() < (adjusted * total_bars_count):
+        #     logger.info(f"Insufficient bar data for asset: {strategy.asset.id}")
+        #     continue
+
+        # Calculate price and moving average and conditionally place order
+        annotated_bars = Bar.objects.filter(asset_id=strategy.asset.id).annotate(
+            current_moving_average=Window(
                 expression=Avg("c"),
-                order_by=F("t"),
-                frame=RowRange(start=-total_bars_count, end=0),
-            )
-        )
-        prev_bar = Bar.objects.filter(asset_id=strategy.asset.id).annotate(
-            moving_average=Window(
+                order_by=F("t").desc(),
+                frame=RowRange(start=int(-total_bars_count), end=0),
+            ),
+            previous_moving_average=Window(
                 expression=Avg("c"),
-                order_by=F("t"),
-                frame=RowRange(start=-total_bars_count - 1, end=1),
-            )
+                order_by=F("t").desc(),
+                frame=RowRange(start=int(-total_bars_count - 1), end=1),
+            ),
         )
 
+        print("\nannotated_bars", annotated_bars)
+
+        latest_bar = annotated_bars.first()
+        print("\nlatest_bar", latest_bar)
         symbol = strategy.asset.symbol
         if (
-            current_bar.c >= current_bar.moving_average
-            and prev_bar.c < prev_bar.moving_average
+            latest_bar.c >= latest_bar.current_moving_average
+            and latest_bar.c < latest_bar.previous_moving_average
         ):
-            side = Order.BUY
-            account = api.account_info()
-            trade_value = min(strategy.trade_value, account.equity)
-            quote = api.get_last_quote(symbol)
-            quantity = math.floor(trade_value / quote["askprice"])
+            print("\nBUY")
+            # side = Order.BUY
+            # account = api.account_info()
+            # trade_value = min(strategy.trade_value, account.equity)
+            # quote = api.get_last_quote(symbol)
+            # quantity = math.floor(trade_value / quote["askprice"])
         elif (
-            current_bar.c <= current_bar.moving_average
-            and prev_bar.c > prev_bar.moving_average
+            latest_bar.c <= latest_bar.current_moving_average
+            and latest_bar.c > latest_bar.previous_moving_average
         ):
-            side = Order.SELL
-            account = api.account_info()
-            trade_value = min(strategy.trade_value, account.equity)
-            position = api.list_position_by_symbol(symbol)
+            print("\nSELL")
+        #     side = Order.SELL
+        #     account = api.account_info()
+        #     trade_value = min(strategy.trade_value, account.equity)
+        #     position = api.list_position_by_symbol(symbol)
 
-            if position.status_code == status.HTTP_404_NOT_FOUND:
-                return
+        #     if position.status_code == status.HTTP_404_NOT_FOUND:
+        #         return
 
-            quantity = math.floor(trade_value / position["market_value"])
+        #     quantity = math.floor(trade_value / position["market_value"])
+        else:
+            print("\nNO ORDER")
+            # No order required with current quote
+            continue
 
-        order = {
-            "symbol": symbol,
-            "qty": quantity,
-            "side": side,
-            "type": Order.MARKET,
-            "time_in_force": Order.GTC,
-        }
+        # order = {
+        #     "symbol": symbol,
+        #     "qty": quantity,
+        #     "side": side,
+        #     "type": Order.MARKET,
+        #     "time_in_force": Order.GTC,
+        # }
 
-        print("\norder", order)
+        # print("\norder", order)
 
         # try:
         #     order = api.submit_order(

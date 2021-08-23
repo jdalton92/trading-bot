@@ -3,6 +3,7 @@ import logging
 from alpaca_trade_api.entity import Asset as AlpacaAsset
 from config import celery_app
 from core.alpaca import TradeApiRest
+from django.db.utils import IntegrityError
 
 from .models import Asset, AssetClass, Exchange
 from .serializers import AssetSerializer, BarSerializer
@@ -94,9 +95,16 @@ def get_quotes(symbols):
 def update_bars(
     symbols, timeframe, limit=None, start=None, end=None, after=None, until=None
 ):
-    """Fetch bar data for list of symbols."""
-    if not isinstance(symbols, list):
-        symbols = [symbols]
+    """Fetch bar data for list of symbols.
+
+    :param symbols(list | string): must either be a list or comma separated
+    string of maximum 200 symbols.
+    """
+    if isinstance(symbols, list):
+        if len(symbols) == 1:
+            symbols = symbols[0]
+        else:
+            symbols = ",".join(symbols)
 
     api = TradeApiRest()
     assets_bars = []
@@ -110,7 +118,11 @@ def update_bars(
             bar = bar.__dict__["_raw"]
             bar["asset"] = asset_symbol
             serializer = BarSerializer(data=bar)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
+            if serializer.is_valid():
+                try:
+                    serializer.save()
+                except IntegrityError:
+                    # Fail silently when data already exists
+                    pass
 
     return assets_bars

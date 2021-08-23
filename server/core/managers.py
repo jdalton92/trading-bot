@@ -1,3 +1,4 @@
+from assets.models import Asset, AssetClass
 from django.db.models import QuerySet
 from django.utils import timezone
 
@@ -20,8 +21,14 @@ class StrategyQuerySet(QuerySet):
         """
         Return active strategies.
 
-        Strategies are active if the `start_date` is less than or equal to now,
-        and the `end_date` is greater than now.
+        Strategies are active if:
+        * `start_date` is less than or equal to now
+        * `end_date` is greater than now
+        * The underlying asset has an "active" status
         """
         time_now = timezone.now()
-        return self.filter(start_date__lte=time_now, end_date__gt=time_now)
+        return self.filter(
+            start_date__lte=time_now,
+            end_date__gt=time_now,
+            asset__status=Asset.ACTIVE,
+        )
