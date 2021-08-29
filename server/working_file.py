@@ -10,7 +10,7 @@ django.setup()
 def main():
     from alpaca_trade_api.entity import Asset as AlpacaAsset
 
-    from assets.tasks import update_assets, update_bars
+    from assets.tasks import bulk_add_assets, update_assets, update_bars
     from core.alpaca import TradeApiRest
     from core.tasks import moving_average
     from users.models import User
@@ -32,14 +32,17 @@ def main():
     #         }
     #     ),
     # ]
-    superuser = User.objects.filter(is_superuser=True).first()
-    moving_average(superuser)
+    # superuser = User.objects.filter(is_superuser=True).first()
+    # moving_average(superuser)
     # update_assets(asset_data)
-
     # update_bars(["MSFT"], "15Min", limit=2)
-    # api = TradeApiRest()
-    # quote = api.get_asset("TSLA")
-    # print("\nquote", quote)
+    api = TradeApiRest()
+    asset = api.get_asset("TSLA")
+    print("\nraw", asset.__dict__["_raw"])
+    bulk_add_assets(asset.__dict__["_raw"])
+    asset = api.get_asset("AAPL")
+    bulk_add_assets(asset.__dict__["_raw"])
+    print("\nraw", asset.__dict__["_raw"])
 
 
 if __name__ == "__main__":

@@ -63,6 +63,8 @@ def bulk_add_assets(assets):
 
     :param assets(list): list of assets to be created
     """
+    if not isinstance(assets, list):
+        assets = [assets]
     for asset in assets:
         if asset.get("class"):
             asset["asset_class"] = asset["class"]

@@ -61,7 +61,7 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
-            "-gtd" "--generate-test-data",
+            "-ctd" "--create-test-data",
             action="store_true",
             help="Create test data.",
             default=False,
@@ -77,7 +77,7 @@ class Command(BaseCommand):
             self.create_superuser()
             self.stdout.write("Done")
 
-        if kwargs["gtd__generate_test_data"]:
+        if kwargs["ctd__create_test_data"]:
             if not User.objects.filter(is_superuser=True).exists():
                 self.stdout.write("Superuser does not exist. Aborting...")
                 return
@@ -96,36 +96,56 @@ class Command(BaseCommand):
     def create_test_data(self):
         from datetime import timedelta
 
-        from assets.models import AssetClass, Exchange
+        from assets.models import Asset, AssetClass, Exchange
         from assets.serializers import BarSerializer
-        from assets.tests.factories import AssetFactory
-        from core.tests.factories import StrategyFactory
+        from core.models import Strategy
         from django.db.utils import IntegrityError
         from django.utils import timezone
         from users.models import User
 
         superuser = User.objects.filter(is_superuser=True).first()
+
         asset_class, _ = AssetClass.objects.get_or_create(
             name="us_equity", is_active=True
         )
         exchange, _ = Exchange.objects.get_or_create(name="NASDAQ", is_active=True)
-        asset_1 = AssetFactory(
-            symbol="TSLA", asset_class=asset_class, exchange=exchange
+
+        asset_1, _ = Asset.objects.get_or_create(
+            id="8ccae427-5dd0-45b3-b5fe-7ba5e422c766",
+            symbol="TSLA",
+            asset_class=asset_class,
+            exchange=exchange,
+            status=Asset.ACTIVE,
+            tradable=True,
+            shortable=True,
+            marginable=True,
+            easy_to_borrow=True
+
         )
-        asset_2 = AssetFactory(
-            symbol="MSFT", asset_class=asset_class, exchange=exchange
+        asset_2, _ = Asset.objects.get_or_create(
+            id="b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+            symbol="AAPL",
+            asset_class=asset_class,
+            exchange=exchange,
+            status=Asset.ACTIVE,
+            tradable=True,
+            shortable=True,
+            marginable=True,
+            easy_to_borrow=True
         )
 
-        StrategyFactory(
+        Strategy.objects.get_or_create(
             user=superuser,
             asset=asset_1,
+            type=Strategy.MOVING_AVERAGE_7D,
             start_date=timezone.now() - timedelta(days=1),
             end_date=timezone.now() + timedelta(days=10),
             trade_value=100,
         )
-        StrategyFactory(
+        Strategy.objects.get_or_create(
             user=superuser,
             asset=asset_2,
+            type=Strategy.MOVING_AVERAGE_7D,
             start_date=timezone.now() - timedelta(days=1),
             end_date=timezone.now() + timedelta(days=10),
             trade_value=100,
@@ -133,7 +153,6 @@ class Command(BaseCommand):
 
         for asset_symbol in BAR_DATA:
             for bar in BAR_DATA[asset_symbol]:
-                bar = bar.__dict__["_raw"]
                 bar["asset"] = asset_symbol
                 serializer = BarSerializer(data=bar)
                 if serializer.is_valid():
