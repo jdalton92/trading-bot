@@ -89,28 +89,36 @@ def moving_average(user):
         #     logger.info(f"Insufficient bar data for asset: {strategy.asset.id}")
         #     continue
 
-        # Calculate price and moving average and conditionally place order
-        annotated_bars = Bar.objects.filter(asset_id=strategy.asset.id).annotate(
-            current_moving_average=Window(
+        annotated_bars = Bar.objects.filter(
+            asset_id=strategy.asset.id, t__lte=1628830800
+        ).annotate(
+            moving_average=Window(
                 expression=Avg("c"),
                 order_by=F("t").desc(),
-                frame=RowRange(start=int(-total_bars_count), end=0),
-            ),
-            previous_moving_average=Window(
-                expression=Avg("c"),
-                order_by=F("t").desc(),
-                frame=RowRange(start=int(-total_bars_count - 1), end=1),
+                frame=RowRange(start=0, end=25),
             ),
         )
+        # Calculate price and moving average and conditionally place order
+        # annotated_bars = Bar.objects.filter(asset_id=strategy.asset.id).annotate(
+        #     moving_average=Window(
+        #         expression=Avg("c"),
+        #         order_by=F("t").desc(),
+        #         frame=RowRange(start=0, end=total_bars_count - 1),
+        #     ),
+        # )
 
-        print("\nannotated_bars", annotated_bars)
-
+        previous_bar = annotated_bars[1]
         latest_bar = annotated_bars.first()
-        print("\nlatest_bar", latest_bar)
+
+        print("\nannotated_bars.count()", annotated_bars.count())
+        print("\nprevious_bar.c", previous_bar.c)
+        print("\nlatest_bar.c", latest_bar.c)
+        print("\nprevious_bar.ma", previous_bar.moving_average)
+        print("\nlatest_bar.ma", latest_bar.moving_average)
         symbol = strategy.asset.symbol
         if (
-            latest_bar.c >= latest_bar.current_moving_average
-            and latest_bar.c < latest_bar.previous_moving_average
+            latest_bar.c >= latest_bar.moving_average
+            and previous_bar.c < previous_bar.moving_average
         ):
             print("\nBUY")
             # side = Order.BUY
@@ -119,19 +127,21 @@ def moving_average(user):
             # quote = api.get_last_quote(symbol)
             # quantity = math.floor(trade_value / quote["askprice"])
         elif (
-            latest_bar.c <= latest_bar.current_moving_average
-            and latest_bar.c > latest_bar.previous_moving_average
+            latest_bar.c <= latest_bar.moving_average
+            and previous_bar.c > previous_bar.moving_average
         ):
             print("\nSELL")
-        #     side = Order.SELL
-        #     account = api.account_info()
-        #     trade_value = min(strategy.trade_value, account.equity)
-        #     position = api.list_position_by_symbol(symbol)
+            # side = Order.SELL
+            # account = api.account_info()
+            # position = api.list_position_by_symbol(symbol)
 
-        #     if position.status_code == status.HTTP_404_NOT_FOUND:
-        #         return
+            # if position.status_code == status.HTTP_404_NOT_FOUND:
+            #     # Only sell if currently long in given asset
+            #     continue
 
-        #     quantity = math.floor(trade_value / position["market_value"])
+            # quote = api.get_last_quote(symbol)
+            # trade_value = min(strategy.trade_value, position["market_value"])
+            # quantity = math.floor(trade_value / quote["bidprice"])
         else:
             print("\nNO ORDER")
             # No order required with current quote

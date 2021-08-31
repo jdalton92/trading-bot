@@ -10,16 +10,6 @@ Current supported strategies:
 - 7 day moving average
 - TO DO
 
-# **Alpaca API**
-
-Alpaca Data API provides the market data available to the client user through the REST and websocket streaming interfaces. Alpaca Data API consolidates data sources from five different exchanges.
-
-- IEX (Investors Exchange LLC)
-- NYSE National, Inc.
-- Nasdaq BX, Inc.
-- Nasdaq PSX
-- NYSE Chicago, Inc.
-
 # Author
 
 - [James Dalton](https://jamesdalton.io)

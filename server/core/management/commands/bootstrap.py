@@ -7,48 +7,6 @@ env = environ.Env()
 SUPERUSER_FIRST_NAME = env("DJANGO_SUPERUSER_FIRSTNAME", default="Superuser")
 SUPERUSER_EMAIL = env("DJANGO_SUPERUSER_EMAIL", default="superuser@tradingbot.com")
 SUPERUSER_PASSWORD = env("DJANGO_SUPERUSER_PASSWORD", default="tradingbot123")
-BAR_DATA = {
-    "AAPL": [
-        {
-            "asset": "AAPL",
-            "c": 121,
-            "h": 126.4585,
-            "l": 120.54,
-            "o": 124.68,
-            "t": 1614229200,
-            "v": 134693926,
-        },
-        {
-            "asset": "AAPL",
-            "c": 121.2,
-            "h": 124.85,
-            "l": 121.2,
-            "o": 122.59,
-            "t": 1614315600,
-            "v": 135693674,
-        },
-    ],
-    "TSLA": [
-        {
-            "asset": "TSLA",
-            "c": 682.6,
-            "h": 737.2066,
-            "l": 670.58,
-            "o": 726.15,
-            "t": 1614229200,
-            "v": 36814146,
-        },
-        {
-            "asset": "TSLA",
-            "c": 671.01,
-            "h": 706.7,
-            "l": 659.51,
-            "o": 700,
-            "t": 1614315600,
-            "v": 36281006,
-        },
-    ],
-}
 
 
 class Command(BaseCommand):
@@ -94,12 +52,11 @@ class Command(BaseCommand):
         )
 
     def create_test_data(self):
+        import json
         from datetime import timedelta
 
-        from assets.models import Asset, AssetClass, Exchange
-        from assets.serializers import BarSerializer
+        from assets.models import Asset, AssetClass, Bar, Exchange
         from core.models import Strategy
-        from django.db.utils import IntegrityError
         from django.utils import timezone
         from users.models import User
 
@@ -110,7 +67,7 @@ class Command(BaseCommand):
         )
         exchange, _ = Exchange.objects.get_or_create(name="NASDAQ", is_active=True)
 
-        asset_1, _ = Asset.objects.get_or_create(
+        asset_tsla, _ = Asset.objects.get_or_create(
             id="8ccae427-5dd0-45b3-b5fe-7ba5e422c766",
             symbol="TSLA",
             asset_class=asset_class,
@@ -119,45 +76,33 @@ class Command(BaseCommand):
             tradable=True,
             shortable=True,
             marginable=True,
-            easy_to_borrow=True
-
-        )
-        asset_2, _ = Asset.objects.get_or_create(
-            id="b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
-            symbol="AAPL",
-            asset_class=asset_class,
-            exchange=exchange,
-            status=Asset.ACTIVE,
-            tradable=True,
-            shortable=True,
-            marginable=True,
-            easy_to_borrow=True
+            easy_to_borrow=True,
         )
 
-        Strategy.objects.get_or_create(
+        Strategy.objects.update_or_create(
             user=superuser,
-            asset=asset_1,
+            asset=asset_tsla,
             type=Strategy.MOVING_AVERAGE_7D,
-            start_date=timezone.now() - timedelta(days=1),
-            end_date=timezone.now() + timedelta(days=10),
             trade_value=100,
-        )
-        Strategy.objects.get_or_create(
-            user=superuser,
-            asset=asset_2,
-            type=Strategy.MOVING_AVERAGE_7D,
-            start_date=timezone.now() - timedelta(days=1),
-            end_date=timezone.now() + timedelta(days=10),
-            trade_value=100,
+            defaults={
+                "start_date": timezone.now() - timedelta(days=1),
+                "end_date": timezone.now() + timedelta(days=10),
+            },
         )
 
-        for asset_symbol in BAR_DATA:
-            for bar in BAR_DATA[asset_symbol]:
-                bar["asset"] = asset_symbol
-                serializer = BarSerializer(data=bar)
-                if serializer.is_valid():
-                    try:
-                        serializer.save()
-                    except IntegrityError:
-                        # Fail silently when data already exists
-                        pass
+        with open("assets/tests/sample_tsla_bars.json") as f:
+            tsla = Asset.objects.get(symbol="TSLA")
+            bars = json.load(f)
+            objs = [
+                Bar(
+                    asset=tsla,
+                    t=bar["t"],
+                    o=bar["o"],
+                    h=bar["h"],
+                    l=bar["l"],
+                    c=bar["c"],
+                    v=bar["v"],
+                )
+                for bar in bars
+            ]
+            Bar.objects.bulk_create(objs, batch_size=1000, ignore_conflicts=True)
