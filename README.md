@@ -61,9 +61,13 @@ $ (server) chmod +x ./wait-for-it.sh && chmod +x ./docker-entrypoint.sh
 $ (server) docker compose exec web python manage.py migrate
 # Create superuser account
 $ (server) docker compose exec web python manage.py bootstrap -cs
-# Generate test data
-$ (server) docker compose exec web python manage.py bootstrap -gtd
+# Create example data
+$ (server) docker compose exec web python manage.py bootstrap -ced
 ```
+
+6. Create a strategy via POST to `http://localhost:8000/v1/strategies/` or through your browser using Django's admin at `http://localhost:8000/admin/core/strategy/`
+
+7. Keep the docker, and your local server running for periodic tasks to perform the given strategy created in **6.**
 
 # Testing
 
