@@ -8,7 +8,7 @@ Current supported strategies:
 
 - 14 day moving average
 - 7 day moving average
-- TO DO
+- // TODO
 
 # Author
 
@@ -67,7 +67,7 @@ $ (server) docker compose exec web python manage.py bootstrap -ced
 
 6. Create a strategy via POST to `http://localhost:8000/v1/strategies/` or through your browser using Django's admin at `http://localhost:8000/admin/core/strategy/`
 
-7. Keep the docker, and your local server running for periodic tasks to perform the given strategy created in **6.**
+7. Keep docker and your local server running for periodic tasks to perform the given strategy created in **6.**
 
 # Testing
 
