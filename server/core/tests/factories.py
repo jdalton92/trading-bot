@@ -13,7 +13,7 @@ class StrategyFactory(DjangoModelFactory):
     """Construct a strategy."""
 
     user = factory.SubFactory(UserFactory)
-    type = Strategy.MOVING_AVERAGE_14D
+    type = Strategy.MOVING_AVERAGE_7D
     asset = factory.SubFactory(AssetFactory)
     start_date = factory.fuzzy.FuzzyDateTime(
         start_dt=timezone.now() - timezone.timedelta(days=6),

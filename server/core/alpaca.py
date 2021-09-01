@@ -297,7 +297,7 @@ class TradeApiRest:
 
     def is_market_open(self):
         """Return true if the market is currently open."""
-        return self.api.get_clock()["is_open"]
+        return self.api.get_clock().__dict__["_raw"]["is_open"]
 
     def cancel_orders(self, id):
         return self.api.cancel_order(id)
