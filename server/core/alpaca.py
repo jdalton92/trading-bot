@@ -262,6 +262,7 @@ class TradeApiRest:
             if specified
 
         """
+        print("\HERE")
         return self.api.submit_order(
             symbol,
             qty,

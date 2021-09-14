@@ -29,7 +29,6 @@ def run_strategies_for_users(user_id=None):
 
     api = TradeApiRest()
 
-    # Check market open
     if not api.is_market_open():
         return
 
@@ -61,12 +60,13 @@ def moving_average_strategy(user):
             moving_average=Window(
                 expression=Avg("c"),
                 order_by=F("t").desc(),
-                frame=RowRange(start=0, end=total_bars_count - 1),
+                frame=RowRange(start=0, end=int(total_bars_count - 1)),
             ),
         )
 
-        previous_bar = annotated_bars[1]
         latest_bar = annotated_bars.first()
+        previous_bar = annotated_bars[1]
+
         symbol = strategy.asset.symbol
         if (
             latest_bar.c >= latest_bar.moving_average
@@ -74,9 +74,13 @@ def moving_average_strategy(user):
         ):
             side = Order.BUY
             account = api.account_info()
-            trade_value = min(strategy.trade_value, account.equity)
+            trade_value = min(
+                float(strategy.trade_value), float(account.__dict__["_raw"]["equity"])
+            )
             quote = api.get_last_quote(symbol)
-            quantity = math.floor(trade_value / quote["askprice"])
+            quantity = math.floor(
+                trade_value / float(quote.__dict__["_raw"]["askprice"])
+            )
         elif (
             latest_bar.c <= latest_bar.moving_average
             and previous_bar.c > previous_bar.moving_average
@@ -84,49 +88,55 @@ def moving_average_strategy(user):
             side = Order.SELL
             position = api.list_position_by_symbol(symbol)
 
-            if position.status_code == status.HTTP_404_NOT_FOUND:
+            if (
+                position.status_code == status.HTTP_404_NOT_FOUND
+                or position.__dict__["_raw"]["side"] == "short"
+            ):
                 # Only sell if currently long in given asset
                 logger.info(f"No long position, unable to sell: {strategy.asset.id}")
                 continue
 
             quote = api.get_last_quote(symbol)
-            trade_value = min(strategy.trade_value, position["market_value"])
-            quantity = math.floor(trade_value / quote["bidprice"])
+            trade_value = min(
+                float(strategy.trade_value),
+                float(position.__dict__["_raw"]["market_value"]),
+            )
+            quantity = math.floor(
+                trade_value / float(quote.__dict__["_raw"]["bidprice"])
+            )
         else:
             print("\nNO ORDER")
 
             # No order required with current quote
             continue
 
-        order = {
-            "symbol": symbol,
-            "qty": quantity,
-            "side": side,
-            "type": Order.MARKET,
-            "time_in_force": Order.GTC,
-        }
+        # print(
+        #     "\norder",
+        #     {
+        #         "symbol": symbol,
+        #         "qty": quantity,
+        #         "side": side,
+        #         "type": Order.MARKET,
+        #         "time_in_force": Order.GTC,
+        #     },
+        # )
 
-        print("\norder", order)
-
-        # try:
-        #     order = api.submit_order(
-        #         symbol=symbol,
-        #         qty=quantity,
-        #         side=side,
-        #         type=Order.MARKET,
-        #         time_in_force=Order.GTC,
-        #     )
-        #     Order.object.create(**order)
-        # except Exception as e:
-        #     logger.error(f"Tradeview order failed: {e}")
-        #     return
+        try:
+            order = api.submit_order(
+                symbol=symbol,
+                qty=quantity,
+                side=side,
+                type=Order.MARKET,
+                time_in_force=Order.GTC,
+            )
+            Order.object.create(**order)
+        except Exception as e:
+            logger.error(f"Tradeview order failed: {e}")
+            return
 
 
 def fetch_bar_data_for_strategy(strategy):
-    """Conditionally fetch bar data if there is not enough historical data.
-
-    :response (bool): Is there enough bar data to perform the strategy
-    """
+    """Conditionally fetch bar data if there is not enough historical data."""
     if strategy.type == Strategy.MOVING_AVERAGE_7D:
         days = 7
         business_days = 5
@@ -167,6 +177,6 @@ def fetch_bar_data_for_strategy(strategy):
 
     bars = Bar.objects.filter(asset_id=strategy.asset.id, t__gte=base_time_epoch)
     if bars.count() < adjusted_count:
-        return False
+        return
 
     return total_bars_count

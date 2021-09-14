@@ -8,11 +8,18 @@ django.setup()
 
 
 def main():
-    from core.tasks import moving_average
-    from users.models import User
+    from core.alpaca import TradeApiRest
 
-    superuser = User.objects.filter(is_superuser=True).first()
-    moving_average(superuser)
+    api = TradeApiRest()
+
+    # account_info = api.account_info()
+    # print("\n", account_info)
+    # print("\nequity", account_info["equity"])
+
+    last_quote = api.get_last_quote("TSLA")
+
+    print("\n", last_quote)
+    print("\nask_price", last_quote.__dict__["_raw"]["ask_price"])
 
 
 if __name__ == "__main__":
