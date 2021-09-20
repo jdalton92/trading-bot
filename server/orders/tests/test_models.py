@@ -38,6 +38,7 @@ class OrderTests(TestCase):
             updated_at=time_now,
             submitted_at=time_now,
             filled_at=time_now,
+            order_class=Order.SIMPLE,
             expired_at=time_now,
             canceled_at=time_now,
             failed_at=time_now,
@@ -45,6 +46,7 @@ class OrderTests(TestCase):
             replaced_by=self.order_1,
             replaces=self.order_2,
             asset_id=self.asset,
+            notional=None,
             qty=100,
             filled_qty=100,
             type=Order.MARKET,
@@ -56,7 +58,7 @@ class OrderTests(TestCase):
             status=Order.FILLED,
             extended_hours=True,
             trail_price=100,
-            trail_percentage=50.05,
+            trail_percent=50.05,
             hwm=95.7,
         )
         order.legs.add(self.order_3, self.order_4)
@@ -71,6 +73,7 @@ class OrderTests(TestCase):
         self.assertEqual(order.updated_at, time_now)
         self.assertEqual(order.submitted_at, time_now)
         self.assertEqual(order.filled_at, time_now)
+        self.assertEqual(order.order_class, Order.SIMPLE)
         self.assertEqual(order.canceled_at, time_now)
         self.assertEqual(order.failed_at, time_now)
         self.assertEqual(order.replaced_at, time_now)
@@ -78,8 +81,6 @@ class OrderTests(TestCase):
         self.assertEqual(order.replaces, self.order_2)
         self.assertEqual(order.replaces, self.order_2)
         self.assertEqual(order.asset_id, self.asset)
-        self.assertEqual(order.symbol, self.asset)
-        self.assertEqual(order.asset_class, self.asset.asset_class)
         self.assertEqual(order.qty, 100)
         self.assertEqual(order.filled_qty, 100)
         self.assertEqual(order.type, Order.MARKET)
@@ -92,7 +93,7 @@ class OrderTests(TestCase):
         self.assertTrue(order.extended_hours)
         self.assertEqual(order.legs.count(), 2)
         self.assertEqual(order.trail_price, 100)
-        self.assertEqual(order.trail_percentage, 50.05)
+        self.assertEqual(order.trail_percent, 50.05)
         self.assertEqual(order.hwm, 95.7)
 
     def test_create_invalid_strategy_order(self):
@@ -104,3 +105,11 @@ class OrderTests(TestCase):
             "Strategy ``asset`` and order ``asset_id`` must be the same",
         ):
             OrderFactory(strategy=self.strategy, asset_id=invalid_asset)
+
+    def test_create_invalid_notional_qty(self):
+        """An order asset_id and strategy asset must be the same."""
+        with self.assertRaisesRegex(
+            ValidationError,
+            "Enter either ``notional`` or ``qty``",
+        ):
+            OrderFactory(notional=100, qty=100)

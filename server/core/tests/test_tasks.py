@@ -1,8 +1,10 @@
 import json
+import uuid
 from datetime import timedelta
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from alpaca_trade_api.entity import Account as AlpacaAccount
+from alpaca_trade_api.entity import Order as AlpacaOrder
 from alpaca_trade_api.entity import Position as AlpacaPosition
 from alpaca_trade_api.entity import Quote as AlpacaQuote
 from assets.models import Asset, Bar
@@ -73,8 +75,14 @@ class CoreTaskTests(TestCase):
 
     @patch("core.tasks.logger")
     @patch("core.tasks.fetch_bar_data_for_strategy")
+    @patch("core.tasks.update_bars")
+    @patch("core.tasks.TradeApiRest")
     def test_moving_average_strategy_not_enough_data(
-        self, mock_fetch_bar_data_for_strategy, mock_logger
+        self,
+        mock_trade_api,
+        mock_update_bars,
+        mock_fetch_bar_data_for_strategy,
+        mock_logger,
     ):
         """Active strategy does not create an order if there is not enough bar data."""
         mock_fetch_bar_data_for_strategy.return_value = None
@@ -108,14 +116,19 @@ class CoreTaskTests(TestCase):
     @patch("core.tasks.TradeApiRest")
     @patch("core.tasks.time.mktime")
     @patch("core.tasks.update_bars")
+    @patch("core.tasks.fetch_bar_data_for_strategy")
     def test_moving_average_strategy(
-        self, mock_update_bars, mock_mktime, mock_trade_api
+        self,
+        mock_fetch_bar_data_for_strategy,
+        mock_update_bars,
+        mock_mktime,
+        mock_trade_api,
     ):
         """Active strategy creates an order if required."""
         account_info = AlpacaAccount(
             {
                 "account_blocked": False,
-                "account_number": "PA24RIKIGB1U",
+                "account_number": "GS78FJEUMA4P",
                 "buying_power": "200000",
                 "cash": "100000",
                 "created_at": "2020-10-31T23:40:50.376107Z",
@@ -123,7 +136,7 @@ class CoreTaskTests(TestCase):
                 "daytrade_count": 0,
                 "daytrading_buying_power": "0",
                 "equity": "100000",
-                "id": "2aa28199-1ff1-4b28-929b-51aaa3d7bdd7",
+                "id": str(uuid.uuid4()),
                 "initial_margin": "0",
                 "last_equity": "100000",
                 "last_maintenance_margin": "0",
@@ -164,7 +177,7 @@ class CoreTaskTests(TestCase):
                 "avg_entry_price": "0",
                 "qty": "10",
                 "side": "long",
-                "market_value": "600.0",
+                "market_value": "2000.0",
                 "cost_basis": "0",
                 "unrealized_pl": "0",
                 "unrealized_plpc": "0",
@@ -175,53 +188,90 @@ class CoreTaskTests(TestCase):
                 "change_today": "0",
             }
         )
+        order = AlpacaOrder(
+            {
+                "id": str(uuid.uuid4()),
+                "client_order_id": str(uuid.uuid4()),
+                "created_at": "2021-03-16T18:38:01.942282Z",
+                "updated_at": "2021-03-16T18:38:01.942282Z",
+                "submitted_at": "2021-03-16T18:38:01.937734Z",
+                "filled_at": None,
+                "expired_at": None,
+                "canceled_at": None,
+                "failed_at": None,
+                "replaced_at": None,
+                "replaced_by": None,
+                "replaces": None,
+                "asset_id": self.tsla.pk,
+                "symbol": "TSLA",
+                "asset_class": "us_equity",
+                "notional": "500",
+                "qty": None,
+                "filled_qty": "0",
+                "filled_avg_price": None,
+                "order_class": "",
+                "order_type": "market",
+                "type": "market",
+                "side": "buy",
+                "time_in_force": "day",
+                "limit_price": None,
+                "stop_price": None,
+                "status": "accepted",
+                "extended_hours": False,
+                "trail_percent": None,
+                "trail_price": None,
+                "hwm": None,
+            }
+        )
 
-        mock_submit_order = Mock()
+        mock_fetch_bar_data_for_strategy.return_value = 130
         mock_trade_api.return_value.is_market_open.return_value = True
         mock_trade_api.return_value.account_info.return_value = account_info
         mock_trade_api.return_value.get_last_quote.return_value = tsla_quote
         mock_trade_api.return_value.list_position_by_symbol.return_value = position
-        mock_trade_api.return_value.submit_order = mock_submit_order
+        mock_trade_api.return_value.submit_order.return_value = order
 
+        seven_days_epoch = 104 * 86400
         with self.subTest(msg="buy order is placed."):
             max_epoch_time = 1630818000
-            seven_days_epoch = 104 * 86400
             base_epoch = max_epoch_time - seven_days_epoch
             mock_mktime.return_value = base_epoch
             self.refresh_tsla_bars(max_epoch=max_epoch_time)
             moving_average_strategy(self.user_1)
-            mock_submit_order.assert_called_once_with(
+            mock_trade_api.return_value.submit_order.assert_called_once_with(
                 symbol=self.strategy_1.asset.symbol,
-                qty=10,
+                notional=float(self.strategy_1.trade_value),
                 side=Order.BUY,
                 type=Order.MARKET,
                 time_in_force=Order.GTC,
             )
 
         mock_mktime.reset_mock()
-        mock_submit_order.reset_mock()
+        mock_trade_api.reset_mock()
+        Order.objects.all().delete()
 
         with self.subTest(msg="sell order is placed."):
             max_epoch_time = 1618894800
-            seven_days_epoch = 104 * 86400
             base_epoch = max_epoch_time - seven_days_epoch
             mock_mktime.return_value = base_epoch
             self.refresh_tsla_bars(max_epoch=max_epoch_time)
             moving_average_strategy(self.user_1)
-            mock_submit_order.assert_called_once_with(
+            mock_trade_api.return_value.submit_order.assert_called_once_with(
                 symbol=self.strategy_1.asset.symbol,
-                qty=10,
+                notional=float(self.strategy_1.trade_value),
                 side=Order.SELL,
                 type=Order.MARKET,
                 time_in_force=Order.GTC,
             )
 
-        # mock_mktime.reset_mock()
-        # mock_submit_order.reset_mock()
+        mock_mktime.reset_mock()
+        mock_trade_api.reset_mock()
+        Order.objects.all().delete()
 
-        # with self.subTest(msg="no order is placed."):
-        #     # TODO:
-        #     self.assertTrue(False)
-        #     # mock_mktime.return_value = "1614229200"
-        #     # moving_average_strategy(self.user_1)
-        #     # mock_submit_order.assert_not_called()
+        with self.subTest(msg="no order is placed."):
+            max_epoch_time = 1633150800
+            base_epoch = max_epoch_time - seven_days_epoch
+            mock_mktime.return_value = base_epoch
+            self.refresh_tsla_bars(max_epoch=max_epoch_time)
+            moving_average_strategy(self.user_1)
+            mock_trade_api.return_value.submit_order.assert_not_called()

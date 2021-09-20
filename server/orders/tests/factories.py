@@ -20,6 +20,7 @@ class OrderFactory(DjangoModelFactory):
     side = (Order.BUY,)
     time_in_force = (Order.DAY,)
     status = Order.FILLED
+    order_class = Order.SIMPLE
 
     class Meta:
         model = Order

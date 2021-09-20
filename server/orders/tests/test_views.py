@@ -60,7 +60,6 @@ class OrderViewTests(APITestCase):
             "replaced_by": self.order_1.pk,
             "replaces": self.order_2.pk,
             "asset_id": self.asset.pk,
-            "symbol": self.asset.symbol,
             "asset_class": self.asset.asset_class.name,
             "legs": [self.order_3.pk],
             "qty": 100,
@@ -74,7 +73,7 @@ class OrderViewTests(APITestCase):
             "status": Order.FILLED,
             "extended_hours": True,
             "trail_price": 100,
-            "trail_percentage": 50.05,
+            "trail_percent": 50.05,
             "hwm": 95.7,
         }
         order_2 = {
@@ -93,7 +92,6 @@ class OrderViewTests(APITestCase):
             "replaced_by": self.order_1.pk,
             "replaces": self.order_2.pk,
             "asset_id": self.asset.pk,
-            "symbol": self.asset.symbol,
             "asset_class": self.asset.asset_class.name,
             "legs": [self.order_4.pk],
             "qty": 100,
@@ -107,7 +105,7 @@ class OrderViewTests(APITestCase):
             "status": Order.FILLED,
             "extended_hours": True,
             "trail_price": 100,
-            "trail_percentage": 50.05,
+            "trail_percent": 50.05,
             "hwm": 95.7,
         }
 

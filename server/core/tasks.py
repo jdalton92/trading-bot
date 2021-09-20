@@ -1,15 +1,14 @@
 import logging
-import math
 import time
 from datetime import datetime, timedelta
 
 import pytz
+from alpaca_trade_api.rest import APIError
 from assets.models import Bar
 from assets.tasks import update_bars
 from config import celery_app
 from django.db.models import Avg, F, RowRange, Window
 from orders.models import Order
-from rest_framework import status
 from users.models import User
 
 from core.alpaca import TradeApiRest
@@ -66,7 +65,6 @@ def moving_average_strategy(user):
 
         latest_bar = annotated_bars.first()
         previous_bar = annotated_bars[1]
-
         symbol = strategy.asset.symbol
         if (
             latest_bar.c >= latest_bar.moving_average
@@ -77,32 +75,25 @@ def moving_average_strategy(user):
             trade_value = min(
                 float(strategy.trade_value), float(account.__dict__["_raw"]["equity"])
             )
-            quote = api.get_last_quote(symbol)
-            quantity = math.floor(
-                trade_value / float(quote.__dict__["_raw"]["askprice"])
-            )
         elif (
             latest_bar.c <= latest_bar.moving_average
             and previous_bar.c > previous_bar.moving_average
         ):
             side = Order.SELL
-            position = api.list_position_by_symbol(symbol)
 
-            if (
-                position.status_code == status.HTTP_404_NOT_FOUND
-                or position.__dict__["_raw"]["side"] == "short"
-            ):
-                # Only sell if currently long in given asset
-                logger.info(f"No long position, unable to sell: {strategy.asset.id}")
+            try:
+                position = api.list_position_by_symbol(symbol)
+            except APIError:
+                logger.info(f"No position exists, unable to sell: {strategy.asset.id}")
                 continue
+            else:
+                if position.__dict__["_raw"]["side"] == "short":
+                    logger.info(f"Asset is long, unable to sell: {strategy.asset.id}")
+                    continue
 
-            quote = api.get_last_quote(symbol)
             trade_value = min(
                 float(strategy.trade_value),
                 float(position.__dict__["_raw"]["market_value"]),
-            )
-            quantity = math.floor(
-                trade_value / float(quote.__dict__["_raw"]["bidprice"])
             )
         else:
             print("\nNO ORDER")
@@ -110,29 +101,53 @@ def moving_average_strategy(user):
             # No order required with current quote
             continue
 
-        # print(
-        #     "\norder",
-        #     {
-        #         "symbol": symbol,
-        #         "qty": quantity,
-        #         "side": side,
-        #         "type": Order.MARKET,
-        #         "time_in_force": Order.GTC,
-        #     },
-        # )
-
         try:
             order = api.submit_order(
                 symbol=symbol,
-                qty=quantity,
+                notional=trade_value,
                 side=side,
                 type=Order.MARKET,
                 time_in_force=Order.GTC,
             )
-            Order.object.create(**order)
         except Exception as e:
             logger.error(f"Tradeview order failed: {e}")
             return
+
+        raw_order = order.__dict__["_raw"]
+        order = Order.objects.create(
+            user=user,
+            id=raw_order.get("id"),
+            client_order_id=raw_order.get("client_order_id"),
+            created_at=raw_order.get("created_at"),
+            updated_at=raw_order.get("updated_at"),
+            submitted_at=raw_order.get("submitted_at"),
+            filled_at=raw_order.get("filled_at"),
+            expired_at=raw_order.get("expired_at"),
+            canceled_at=raw_order.get("canceled_at"),
+            failed_at=raw_order.get("failed_at"),
+            replaced_at=raw_order.get("replaced_at"),
+            replaced_by=raw_order.get("replaced_by"),
+            replaces=raw_order.get("replaces"),
+            asset_id=strategy.asset,
+            notional=raw_order.get("notional"),
+            qty=raw_order.get("qty"),
+            filled_qty=raw_order.get("filled_qty"),
+            filled_avg_price=raw_order.get("filled_avg_price"),
+            order_class=raw_order.get("order_class"),
+            type=raw_order.get("type"),
+            side=raw_order.get("side"),
+            time_in_force=raw_order.get("time_in_force"),
+            limit_price=raw_order.get("limit_price"),
+            stop_price=raw_order.get("stop_price"),
+            status=raw_order.get("status"),
+            extended_hours=raw_order.get("extended_hours"),
+            trail_percent=raw_order.get("trail_percent"),
+            trail_price=raw_order.get("trail_price"),
+            hwm=raw_order.get("hwm"),
+        )
+        legs = raw_order.get("legs")
+        if legs:
+            order.legs.set(legs)
 
 
 def fetch_bar_data_for_strategy(strategy):

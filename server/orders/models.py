@@ -139,10 +139,20 @@ class Order(models.Model):
         related_name="+",
         on_delete=models.CASCADE,
     )
+    notional = models.DecimalField(
+        verbose_name=_("notional"),
+        max_digits=12,
+        decimal_places=5,
+        blank=True,
+        null=True,
+        help_text=_("Ordered notional amount. If entered, qty will be null."),
+    )
     qty = models.DecimalField(
         verbose_name=_("quantity"),
         max_digits=12,
         decimal_places=5,
+        blank=True,
+        null=True,
     )
     filled_qty = models.DecimalField(
         verbose_name=_("filled quantity"),
@@ -158,6 +168,12 @@ class Order(models.Model):
         verbose_name=_("side"),
         choices=SIDE_CHOICES,
         max_length=56,
+    )
+    order_class = models.CharField(
+        verbose_name=_("order class"),
+        choices=ORDER_CLASS_CHOICES,
+        max_length=56,
+        default=SIMPLE,
     )
     time_in_force = models.CharField(
         verbose_name=_("time in force"),
@@ -205,8 +221,8 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    trail_percentage = models.DecimalField(
-        verbose_name=_("trail percentage"),
+    trail_percent = models.DecimalField(
+        verbose_name=_("trail percent"),
         max_digits=5,
         decimal_places=2,
         blank=True,
@@ -223,26 +239,23 @@ class Order(models.Model):
         verbose_name_plural = "orders"
 
     def __str__(self):
-        return f"{self.side} {self.qty} {self.asset_id.symbol}"
+        if self.qty:
+            return f"{self.side} {self.qty} no. of {self.asset_id.symbol}"
+        else:
+            return f"{self.side} ${self.notional} {self.asset_id.symbol}"
 
     def clean(self):
         if self.strategy:
-            if (
-                self.asset_id.symbol != self.strategy.asset.symbol
-                or self.symbol.symbol != self.strategy.asset.symbol
-            ):
+            if self.asset_id.symbol != self.strategy.asset.symbol:
                 raise ValidationError(
-                    _("Strategy ``asset`` and order ``asset_id`` must be the " "same"),
-                    code="invalid",
+                    _("Strategy ``asset`` and order ``asset_id`` must be the same"),
+                    code="asset_and_symbol_mismatch",
                 )
-
-    @property
-    def symbol(self):
-        return self.asset_id
-
-    @property
-    def asset_class(self):
-        return self.asset_id.asset_class
+        if self.notional and self.qty:
+            raise ValidationError(
+                _("Enter either ``notional`` or ``qty``"),
+                code="notional_or_qty",
+            )
 
     def save(self, *args, **kwargs):
         self.clean()

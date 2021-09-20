@@ -49,7 +49,7 @@ class OrderSerializerTests(TestCase):
             "limit_price": 110.05,
             "stop_price": 90.05,
             "trail_price": 100.05,
-            "trail_percentage": 50.05,
+            "trail_percent": 50.05,
             "extended_hours": True,
             "order_class": "simple",
             "take_profit": {"limit_price": 100.05},
@@ -120,12 +120,12 @@ class OrderSerializerTests(TestCase):
         self.assertFalse(serializer.is_valid())
         self.assertEqual(
             str(serializer.errors["trail_price"][0]),
-            "Either `trail_price` or `trail_percentage` is required if `type` "
+            "Either `trail_price` or `trail_percent` is required if `type` "
             "is `trailing_stop`",
         )
         self.assertEqual(
             str(serializer.errors["trail_percent"][0]),
-            "Either `trail_price` or `trail_percentage` is required if `type` "
+            "Either `trail_price` or `trail_percent` is required if `type` "
             "is `trailing_stop`",
         )
 
@@ -152,6 +152,7 @@ class OrderSerializerTests(TestCase):
             canceled_at=time_now,
             failed_at=time_now,
             replaced_at=time_now,
+            order_class=Order.SIMPLE,
             replaced_by=self.order_1,
             replaces=self.order_2,
             asset_id=self.asset,
@@ -166,7 +167,7 @@ class OrderSerializerTests(TestCase):
             status=Order.FILLED,
             extended_hours=True,
             trail_price=100,
-            trail_percentage=50.05,
+            trail_percent=50.05,
             hwm=95.7,
         )
         order.legs.add(self.order_3, self.order_4)
@@ -188,12 +189,11 @@ class OrderSerializerTests(TestCase):
         self.assertEqual(data["canceled_at"], time_now)
         self.assertEqual(data["failed_at"], time_now)
         self.assertEqual(data["replaced_at"], time_now)
+        self.assertEqual(data["order_class"], Order.SIMPLE)
         self.assertEqual(data["replaced_by"], self.order_1.pk)
         self.assertEqual(data["replaces"], self.order_2.pk)
         self.assertEqual(data["replaces"], self.order_2.pk)
         self.assertEqual(data["asset_id"], self.asset.pk)
-        self.assertEqual(data["symbol"], self.asset.symbol)
-        self.assertEqual(data["asset_class"], self.asset.asset_class.name)
         self.assertEqual(float(data["qty"]), 100)
         self.assertEqual(float(data["filled_qty"]), 100)
         self.assertEqual(data["type"], Order.MARKET)
@@ -220,7 +220,7 @@ class OrderSerializerTests(TestCase):
             ).data,
         )
         self.assertEqual(float(data["trail_price"]), 100)
-        self.assertEqual(float(data["trail_percentage"]), 50.05)
+        self.assertEqual(float(data["trail_percent"]), 50.05)
         self.assertEqual(float(data["hwm"]), 95.7)
 
     def test_create_order(self):
@@ -240,6 +240,7 @@ class OrderSerializerTests(TestCase):
             "canceled_at": time_now,
             "failed_at": time_now,
             "replaced_at": time_now,
+            "order_class": Order.SIMPLE,
             "replaced_by": self.order_1.pk,
             "replaces": self.order_2.pk,
             "asset_id": self.asset.pk,
@@ -257,7 +258,7 @@ class OrderSerializerTests(TestCase):
             "status": Order.FILLED,
             "extended_hours": True,
             "trail_price": 100,
-            "trail_percentage": 50.05,
+            "trail_percent": 50.05,
             "hwm": 95.7,
         }
 
@@ -279,6 +280,7 @@ class OrderSerializerTests(TestCase):
         self.assertEqual(data["canceled_at"], time_now)
         self.assertEqual(data["failed_at"], time_now)
         self.assertEqual(data["replaced_at"], time_now)
+        self.assertEqual(data["order_class"], Order.SIMPLE)
         self.assertEqual(data["replaced_by"], self.order_1.pk)
         self.assertEqual(data["replaces"], self.order_2.pk)
         self.assertEqual(data["replaces"], self.order_2.pk)
@@ -297,7 +299,7 @@ class OrderSerializerTests(TestCase):
         self.assertTrue(data["extended_hours"])
         self.assertEqual(len(data["legs"]), 2)
         self.assertEqual(float(data["trail_price"]), 100)
-        self.assertEqual(float(data["trail_percentage"]), 50.05)
+        self.assertEqual(float(data["trail_percent"]), 50.05)
         self.assertEqual(float(data["hwm"]), 95.7)
 
     def test_update_order(self):

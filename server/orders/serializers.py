@@ -12,13 +12,8 @@ class OrderSerializer(serializers.ModelSerializer):
     """Serializer for reading order objects returned from Alpaca."""
 
     user = UserSerializer(fields=("id", "first_name", "last_name"))
-    symbol = serializers.SlugRelatedField(
+    asset_id = serializers.PrimaryKeyRelatedField(
         queryset=Asset.objects.all(),
-        slug_field="symbol",
-    )
-    asset_class = serializers.SlugRelatedField(
-        queryset=AssetClass.objects.all(),
-        slug_field="name",
     )
     strategy = serializers.SlugRelatedField(
         queryset=Strategy.objects.all(),
@@ -143,7 +138,7 @@ class OrderPostSerializer(serializers.Serializer):
             )
         if is_trailing_stop and not (has_trail_percent or has_trail_price):
             error_message = [
-                "Either `trail_price` or `trail_percentage` is required if "
+                "Either `trail_price` or `trail_percent` is required if "
                 "`type` is `trailing_stop`"
             ]
             raise serializers.ValidationError(
@@ -161,9 +156,8 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(
         default=serializers.CurrentUserDefault(), queryset=User.objects.all()
     )
-    symbol = serializers.SlugRelatedField(
+    asset_id = serializers.PrimaryKeyRelatedField(
         queryset=Asset.objects.all(),
-        slug_field="symbol",
     )
     strategy = serializers.PrimaryKeyRelatedField(
         queryset=Strategy.objects.all(), required=False
@@ -182,7 +176,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         if instance.legs.count():
             ret["legs"] = OrderSerializer(
                 instance.legs,
-                fields=("id", "symbol", "side", "qty"),
+                fields=("id", "asset_id", "side", "qty", "notional"),
                 many=True,
             ).data
         return ret
