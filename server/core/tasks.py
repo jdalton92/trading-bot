@@ -96,8 +96,6 @@ def moving_average_strategy(user):
                 float(position.__dict__["_raw"]["market_value"]),
             )
         else:
-            print("\nNO ORDER")
-
             # No order required with current quote
             continue
 
@@ -110,7 +108,7 @@ def moving_average_strategy(user):
                 time_in_force=Order.GTC,
             )
         except Exception as e:
-            logger.error(f"Tradeview order failed: {e}")
+            logger.warning(f"Tradeview order failed: {e}")
             return
 
         raw_order = order.__dict__["_raw"]

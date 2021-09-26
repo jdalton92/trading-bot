@@ -14,7 +14,6 @@ class TradeApiRest:
             #   * APCA_API_KEY_ID
             #   * APCA_API_SECRET_KEY
             #   * APCA_API_BASE_URL
-            print("\n\n\n\n\n\n\n\n\n\n\nTRADEAPI")
             self.api = tradeapi.REST()
         except Exception as e:
             logger.error(f"Tradeview api connection failed: {e}")

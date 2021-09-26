@@ -9,11 +9,11 @@ from .serializers import OrderCreateSerializer
 logger = logging.getLogger(__name__)
 
 
-def update_orders(all_orders=None):
+def update_orders(orders=None):
     """Update db with historical orders placed from Alpaca account."""
     logger.info("Updating historical orders...")
 
-    if not all_orders:
+    if orders is None:
         api = TradeApiRest()
         all_orders = api.get_orders(status="all", limit=500)
 
