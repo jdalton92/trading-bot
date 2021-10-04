@@ -109,7 +109,7 @@ To make running `docker compose` commands on your local machine easier, use alia
 alias pm="docker compose exec web python manage.py"
 ```
 
-Then the command `docker compose exec web python manage.py test server` becomes `pm test server`
+Then the command `docker compose exec web python manage.py test` becomes `pm test`
 
 # Licence
 
