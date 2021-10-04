@@ -29,6 +29,7 @@ def run_strategies_for_users(user_id=None):
     api = TradeApiRest()
 
     if not api.is_market_open():
+        logger.info("Market closed, skipping strategies")
         return
 
     for user in users:
@@ -97,6 +98,9 @@ def moving_average_strategy(user):
             )
         else:
             # No order required with current quote
+            logger.info(
+                f"No order placed. symbol, close price, moving average {symbol}, {latest_bar.c}, {latest_bar.moving_average}"
+            )
             continue
 
         try:
@@ -106,6 +110,9 @@ def moving_average_strategy(user):
                 side=side,
                 type=Order.MARKET,
                 time_in_force=Order.GTC,
+            )
+            logger.info(
+                f"Order placed. symbol, side, close, moving_average: {symbol}, {side}, {latest_bar.c}, {latest_bar.moving_average}"
             )
         except Exception as e:
             logger.warning(f"Tradeview order failed: {e}")
