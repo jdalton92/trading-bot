@@ -228,7 +228,6 @@ class OrderSerializerTests(TestCase):
         uuid_1 = uuid.uuid4()
         uuid_2 = uuid.uuid4()
         data = {
-            "user": self.user.pk,
             "strategy": self.strategy.pk,
             "id": uuid_1,
             "client_order_id": uuid_2,
@@ -266,10 +265,9 @@ class OrderSerializerTests(TestCase):
 
         self.assertTrue(serializer.is_valid())
 
-        order = serializer.save()
+        order = serializer.save(user=self.user)
 
         self.assertEqual(data["id"], order.id)
-        self.assertEqual(data["user"], order.user.pk)
         self.assertEqual(data["strategy"], order.strategy.pk)
         self.assertEqual(str(data["id"]), str(uuid_1))
         self.assertEqual(str(data["client_order_id"]), str(uuid_2))

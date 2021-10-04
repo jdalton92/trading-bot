@@ -29,3 +29,11 @@ class OrderView(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+        """Auto add the requesting user."""
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        """Auto add the requesting user."""
+        serializer.save(user=self.request.user)

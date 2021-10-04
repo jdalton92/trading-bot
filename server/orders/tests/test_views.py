@@ -45,7 +45,6 @@ class OrderViewTests(APITestCase):
         uuid_3 = uuid.uuid4()
         uuid_4 = uuid.uuid4()
         order_1 = {
-            "user": self.user.pk,
             "strategy": self.strategy.pk,
             "id": uuid_1,
             "client_order_id": uuid_2,
@@ -77,7 +76,6 @@ class OrderViewTests(APITestCase):
             "hwm": 95.7,
         }
         order_2 = {
-            "user": self.user.pk,
             "strategy": self.strategy.pk,
             "id": uuid_3,
             "client_order_id": uuid_4,

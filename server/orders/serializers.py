@@ -1,6 +1,5 @@
-from assets.models import Asset, AssetClass
+from assets.models import Asset
 from core.models import Strategy
-from django.db import transaction
 from rest_framework import serializers
 from users.models import User
 from users.serializers import UserSerializer
@@ -9,7 +8,7 @@ from .models import Order
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    """Serializer for reading order objects returned from Alpaca."""
+    """Serializer for reading order objects."""
 
     user = UserSerializer(fields=("id", "first_name", "last_name"))
     asset_id = serializers.PrimaryKeyRelatedField(
@@ -153,16 +152,16 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     """
 
     id = serializers.UUIDField(format="hex_verbose")
-    user = serializers.PrimaryKeyRelatedField(
-        default=serializers.CurrentUserDefault(), queryset=User.objects.all()
+    client_order_id = serializers.UUIDField(format="hex_verbose")
+    replaced_by = serializers.PrimaryKeyRelatedField(
+        queryset=Order.objects.all(), required=False
+    )
+    replaces = serializers.PrimaryKeyRelatedField(
+        queryset=Order.objects.all(), required=False
     )
     asset_id = serializers.PrimaryKeyRelatedField(
         queryset=Asset.objects.all(),
     )
-    strategy = serializers.PrimaryKeyRelatedField(
-        queryset=Strategy.objects.all(), required=False
-    )
-    client_order_id = serializers.UUIDField(format="hex_verbose")
     legs = serializers.PrimaryKeyRelatedField(
         queryset=Order.objects.all(), many=True, required=False
     )
@@ -170,6 +169,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = "__all__"
+        read_only_fields = ("user",)
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -181,13 +181,11 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             ).data
         return ret
 
-    @transaction.atomic
     def create(self, validated_data):
         validated_data.pop("symbol", None)
         validated_data.pop("asset_class", None)
         return super().create(validated_data)
 
-    @transaction.atomic
     def update(self, instance, validated_data):
         validated_data.pop("symbol", None)
         validated_data.pop("asset_class", None)
